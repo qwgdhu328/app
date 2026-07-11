@@ -214,7 +214,7 @@ struct IntroView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(16)
-            .background(selectedGoal == goal ? AppTint : .regularMaterial)
+            .background(selectedGoal == goal ? AnyShapeStyle(AppTint) : AnyShapeStyle(.regularMaterial))
             .foregroundStyle(selectedGoal == goal ? .white : .primary)
             .clipShape(.rect(cornerRadius: 16))
         }

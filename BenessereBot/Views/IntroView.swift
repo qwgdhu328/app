@@ -178,6 +178,28 @@ struct IntroView: View {
         }
     }
 
+    private func moodEmojiButton(emoji: String) -> some View {
+        Button {
+            withAnimation(.spring) {
+                selectedMood = emoji
+                showConfetti = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showConfetti = false
+                }
+            }
+        } label: {
+            Text(emoji)
+                .font(.system(size: 40))
+                .padding(12)
+                .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.2)) : AnyShapeStyle(.regularMaterial))
+                .clipShape(.circle)
+                .overlay(
+                    selectedMood == emoji ?
+                    Circle().stroke(AppTint, lineWidth: 2) : nil
+                )
+        }
+    }
+
     private func goalButton(goal: String, icon: String) -> some View {
         Button {
             withAnimation(.spring) {
@@ -212,25 +234,7 @@ struct IntroView: View {
 
             HStack(spacing: 16) {
                 ForEach(["😊", "😐", "😢", "😡", "😴"], id: \.self) { emoji in
-                    Button {
-                        withAnimation(.spring) {
-                            selectedMood = emoji
-                            showConfetti = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                showConfetti = false
-                            }
-                        }
-                    } label: {
-                        Text(emoji)
-                            .font(.system(size: 40))
-                            .padding(12)
-                            .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.2)) : AnyShapeStyle(.regularMaterial))
-                            .clipShape(.circle)
-                            .overlay(
-                                selectedMood == emoji ?
-                                Circle().stroke(AppTint, lineWidth: 2) : nil
-                            )
-                    }
+                    moodEmojiButton(emoji: emoji)
                 }
             }
         }

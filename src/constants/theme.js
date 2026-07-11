@@ -30,51 +30,45 @@ export const C = {
 
   // Foreground
   text:      '#FDF5F2',
-  textSec:   '#C9B5BE',
-  textMuted: '#927D87',
+  textSec:   '#D4C0CA',
+  textMuted: '#A8909B',
 
   // Brand: coral mango (was electric lime).
-  primary:     '#FF7E67',
+  primary:     '#FF6B55',
   primaryInk:  '#1A0F14',
-  primaryLight:'rgba(255, 126, 103, 0.18)',
+  primaryLight:'rgba(255, 107, 85, 0.18)',
 
   // Secondary brand: goldenrod (was violet).
-  accent:     '#FFB800',
+  accent:     '#FFD300',
   accentInk:  '#1A0F14',
-  accentLight:'rgba(255, 184, 0, 0.18)',
+  accentLight:'rgba(255, 211, 0, 0.18)',
 
   // Mood palette (legacy aliases — semantic values for the FreeWrite bars
   // and the chat emotion-level scale).
-  sage:        '#83D475',                       // mint positive
-  sageLight:   'rgba(131, 212, 117, 0.16)',
-  terracotta:  '#FFA984',                       // peach
-  terracottaLight:'rgba(255, 169, 132, 0.16)',
-  amber:       '#FFD166',                       // gold
+  sage:        '#6CD85E',
+  sageLight:   'rgba(108, 216, 94, 0.16)',
+  terracotta:  '#FFA07A',
+  terracottaLight:'rgba(255, 160, 122, 0.16)',
+  amber:       '#FFD166',
   amberLight:  'rgba(255, 209, 102, 0.16)',
-  danger:      '#FF2E63',                       // hot coral-red
+  danger:      '#FF2E63',
   dangerLight: 'rgba(255, 46, 99, 0.16)',
-  rose:        '#FFA984',                       // alias for terracotta
-  roseLight:   'rgba(255, 169, 132, 0.16)',
+  rose:        '#FFA07A',
+  roseLight:   'rgba(255, 160, 122, 0.16)',
 
   // Emotion axes
-  sky:       '#8CA8FF',                         // periwinkle
-  skyLight:  'rgba(140, 168, 255, 0.16)',
+  sky:       '#7BA0FF',
+  skyLight:  'rgba(123, 160, 255, 0.16)',
 
-  border:    'rgba(253, 245, 242, 0.08)',
-  borderHi:  'rgba(253, 245, 242, 0.16)',
+  border:    'rgba(253, 245, 242, 0.1)',
+  borderHi:  'rgba(253, 245, 242, 0.2)',
 
-  // === Phase 1.x — Minimal editorial ink/surface aliases ===
-  // Maps the existing warm coral-mango palette into 4-step grayscale +
-  // 2-step surface scale. Components read from C.ink1‑4 + C.surface /
-  // C.surface2 so a future palette swap doesn't touch every screen.
-  // The underlying hexes still come from the same warm coral brand —
-  // we're restyling, not rebranding.
-  ink1:     '#FDF5F2',                          // primary text (was C.text)
-  ink2:     '#C9B5BE',                          // secondary text (was C.textSec)
-  ink3:     '#927D87',                          // muted/tertiary (was C.textMuted)
-  ink4:     'rgba(253, 245, 242, 0.08)',        // rules/lines (was C.border)
-  surface:  '#2D1A23',                          // flat card fill (was C.card)
-  surface2: '#3B232E',                          // elevated card (was C.cardHi)
+  ink1:     '#FDF5F2',
+  ink2:     '#D4C0CA',
+  ink3:     '#A8909B',
+  ink4:     'rgba(253, 245, 242, 0.1)',
+  surface:  '#2D1A23',
+  surface2: '#3B232E',
 };
 
 // Semantic mapping for the chat emotion level (VERDE/GIALLO/ARANCIONE/ROSSO).

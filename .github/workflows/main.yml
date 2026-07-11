@@ -95,8 +95,7 @@ jobs:
               --entry-file index.js \
               --dev false \
               --bundle-output build/bundle/main.jsbundle \
-              --assets-dest build/bundle/assets \
-              --bytecode
+              --assets-dest build/bundle/assets
             cp build/bundle/main.jsbundle "$APP_PATH/main.jsbundle"
           else
             echo "Xcode generated main.jsbundle successfully"

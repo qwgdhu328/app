@@ -30,7 +30,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "hermes": false,
+            "flipper": false
+          }
+        }
+      ]
     ],
     "extra": {
       "apiUrl": "https://openrouter.ai/api/v1/chat/completions",

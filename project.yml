@@ -21,6 +21,7 @@ targets:
       - path: BenessereBot
     dependencies:
       - target: BenessereBotKit
+      - target: BenessereBotWidget
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app
       INFOPLIST_FILE: BenessereBot/Info.plist

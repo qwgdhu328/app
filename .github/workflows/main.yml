@@ -20,24 +20,18 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: |
-          xcodegen dump --project . 2>&1
-          echo "---"
-          xcodegen generate --project . 2>&1
+        run: xcodegen generate
 
       - name: Debug - show generated project
         if: success()
         run: |
           echo "=== Swift files ==="
-          find BenessereBot -name "*.swift" -type f
-          echo "=== Shared files ==="
-          find Shared -name "*.swift" -type f
-          echo "=== Widget files ==="
-          find BenessereBotWidget -name "*.swift" -type f
           echo "=== XcodeGen version ==="
           xcodegen --version
           echo "=== Project structure ==="
           ls -la BenessereBot.xcodeproj/ 2>/dev/null || echo "No .xcodeproj generated"
+          echo "=== Target list ==="
+          xcodebuild -project BenessereBot.xcodeproj -list 2>&1
 
       - name: Build for Device (Release)
         run: |
@@ -87,24 +81,18 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: |
-          xcodegen dump --project . 2>&1
-          echo "---"
-          xcodegen generate --project . 2>&1
+        run: xcodegen generate
 
       - name: Debug - show generated project
         if: success()
         run: |
           echo "=== Swift files ==="
-          find BenessereBot -name "*.swift" -type f
-          echo "=== Shared files ==="
-          find Shared -name "*.swift" -type f
-          echo "=== Widget files ==="
-          find BenessereBotWidget -name "*.swift" -type f
           echo "=== XcodeGen version ==="
           xcodegen --version
           echo "=== Project structure ==="
           ls -la BenessereBot.xcodeproj/ 2>/dev/null || echo "No .xcodeproj generated"
+          echo "=== Target list ==="
+          xcodebuild -project BenessereBot.xcodeproj -list 2>&1
           echo "=== Available SDKs ==="
           xcodebuild -showsdks 2>&1
 

@@ -41,6 +41,18 @@ jobs:
       - name: Install Pods
         run: pod install --project-directory=ios
 
+      - name: Bundle JS
+        run: |
+          npx react-native bundle \
+            --entry-file index.js \
+            --platform ios \
+            --dev false \
+            --bundle-output "ios/${{ env.SCHEME }}/main.jsbundle" \
+            --assets-dest "ios/${{ env.SCHEME }}"
+        env:
+          EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+
       - name: Build Project
         run: |
           xcodebuild clean archive \
@@ -53,11 +65,19 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
+      - name: Debug bundle contents
+        run: |
+          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d)
+          echo "App found at: $APP_PATH"
+          ls -la "$APP_PATH/"
+          find "$APP_PATH" -name "*.jsbundle" -o -name "*.hbc" | head -5
+          find "$APP_PATH" -name "main.jsbundle" -exec ls -la {} \;
+
       - name: Create unsigned IPA
         run: |
-          find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d
+          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d)
           mkdir -p build/ipa/Payload
-          cp -r $(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d) build/ipa/Payload/
+          cp -r "$APP_PATH" build/ipa/Payload/
           cd build/ipa
           zip -r "${{ env.SCHEME }}.ipa" Payload/
 

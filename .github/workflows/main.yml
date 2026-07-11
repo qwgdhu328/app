@@ -41,7 +41,17 @@ jobs:
       - name: Install Pods
         run: pod install --project-directory=ios
 
-
+      - name: Bundle JS
+        run: |
+          npx react-native bundle \
+            --entry-file index.js \
+            --platform ios \
+            --dev false \
+            --bundle-output "ios/${{ env.SCHEME }}/main.jsbundle" \
+            --assets-dest "ios/${{ env.SCHEME }}"
+        env:
+          EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
       - name: Build Project
         run: |
@@ -54,6 +64,8 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
+        env:
+          SKIP_BUNDLING: 1
 
       - name: Debug bundle contents
         run: |

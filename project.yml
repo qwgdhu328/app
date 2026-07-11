@@ -19,11 +19,3 @@ targets:
       CODE_SIGN_IDENTITY: ""
       CODE_SIGNING_REQUIRED: NO
       CODE_SIGNING_ALLOWED: NO
-  BenessereBotWidget:
-    type: extension
-    platform: iOS
-    sources:
-      - path: BenessereBotWidget
-    settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app.widget
-      GENERATE_INFOPLIST_FILE: YES

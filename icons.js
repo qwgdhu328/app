@@ -438,3 +438,16 @@ export function MehIcon({ size = 22, color }) {
     </Svg>
   );
 }
+
+// Globe — community / Spazio tab.
+export function GlobeIcon({ active }) {
+  const c = active ? C.primary : C.textMuted;
+  return (
+    <Svg width={26} height={26} viewBox="0 0 24 24" fill="none">
+      <Circle cx={12} cy={12} r={9} stroke={c} strokeWidth={w} />
+      <Path d="M3 12H21" stroke={c} strokeWidth={w} strokeLinecap="round" />
+      <Path d="M12 3C14 5 15 8 15 12C15 16 14 19 12 21" stroke={c} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M12 3C10 5 9 8 9 12C9 16 10 19 12 21" stroke={c} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}

@@ -56,6 +56,7 @@ import PsychologistsScreen from './src/features/chat/screens/PsychologistsScreen
 import ProfileScreen from './src/features/profile/screens/ProfileScreen';
 import CommunityScreen from './src/features/community/screens/CommunityScreen';
 import InfoScreen from './src/features/info/screens/InfoScreen';
+import TabBar from './src/navigation/TabBar';
 
 // === Phase 1: TabBar extracted to src/navigation/ (kept dormant here) ===
 // TabBar (with TabIconRenderer + tabStyles + TABS const + GlassView +
@@ -549,11 +550,11 @@ export default function App() {
   );
 
   return (
-    // Root View takes inline paddingTop: insets.top, NOT SafeAreaView
-    // (which has a documented flex-collapse gotcha at the layout root —
-    // that was the "non si vede tutta l'app" regression). The TabBar
-    // owns the bottom inset via its own `bottom: insets.bottom + 8`.
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    // Root View takes inline paddingTop: insets.top + paddingBottom
+    // for TabBar, NOT SafeAreaView (which has a documented flex-collapse
+    // gotcha at the layout root — that was the "non si vede tutta l'app"
+    // regression). TabBar is positioned absolute below the content.
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: 60 }]}>
       <StatusBar style="light" />
 
       {showIntro && <IntroScreen onDone={() => setShowIntro(false)} />}
@@ -618,10 +619,9 @@ export default function App() {
         <InfoScreen onBack={() => setActiveTab('home')} />
       )}
 
-      {/* Bottom TabBar removed (it was covering page content on small
-          screens / landscape). Each non-Home screen owns its own
-          "← Home" back chip; Home's quickGrid has a "Tu" card now that
-          gives full-page reachability without the bar. */}
+      {!showIntro && !showOnboarding && !showFreeWrite && (
+        <TabBar activeTab={activeTab} onTabPress={setActiveTab} />
+      )}
     </View>
   );
 }

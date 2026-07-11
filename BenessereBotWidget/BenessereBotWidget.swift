@@ -1,12 +1,24 @@
 import WidgetKit
 import SwiftUI
 import ActivityKit
+import BenessereBotKit
+
+@main
+struct BenessereBotWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        BenessereBotWidget()
+        ReminderLiveActivity()
+    }
+}
 
 struct BenessereBotWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "com.benesserebot.widget", provider: Provider()) { entry in
-            WidgetEntryView(entry: entry)
-                .containerBackground(.regularMaterial, for: .widget)
+            VStack(spacing: 8) {
+                Image(systemName: "brain.head.profile").font(.title).foregroundStyle(.tint)
+                Text("Parla con\nBenessereBot").font(.caption.weight(.semibold)).multilineTextAlignment(.center)
+            }
+            .containerBackground(.regularMaterial, for: .widget)
         }
         .configurationDisplayName("BenessereBot")
         .description("Parla con BenessereBot dalla schermata Home.")
@@ -23,16 +35,6 @@ struct Provider: TimelineProvider {
 }
 
 struct SimpleEntry: TimelineEntry { let date: Date }
-
-struct WidgetEntryView: View {
-    var entry: SimpleEntry
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "brain.head.profile").font(.title).foregroundStyle(.tint)
-            Text("Parla con\nBenessereBot").font(.caption.weight(.semibold)).multilineTextAlignment(.center)
-        }
-    }
-}
 
 struct ReminderLiveActivity: Widget {
     var body: some WidgetConfiguration {

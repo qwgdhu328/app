@@ -1,6 +1,7 @@
 import SwiftUI
 import UserNotifications
 import ActivityKit
+import BenessereBotKit
 
 struct SettingsView: View {
     @State private var prefs = ReminderPrefs.stored

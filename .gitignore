@@ -1,52 +1,34 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
+# Expo remnants (was React Native, keep gitignore for any leftover cache)
 .expo/
 dist/
-web-build/
-expo-env.d.ts
+metro.log
 
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+# Xcode
+build/
+DerivedData/
+*.xcworkspace
+xcuserdata/
 
-# Metro
-.metro-health-check*
+# macOS
+.DS_Store
+*.pem
 
 # debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
-.DS_Store
-*.pem
-
 # local env files
 .env
 .env*.local
-.env.development
-.env.production
 
-# typescript
-*.tsbuildinfo
+# Provisioning
+*.mobileprovision
+*.p8
+*.p12
+*.key
+*.jks
+*.orig.*
 
-# generated native folders
-/ios
-/android
-
-# Dev-time noise — these are local scratch / one-shot artifacts, NOT part of the product.
-# Excluded from the initial commit so the public repo doesn't carry them; comment out
-# any line to ship that file to GitHub.
-metro.log
-nul                                  # artifact of bad 2>nul redirects on git-bash on Windows
-_*.js                                # throwaway refactor scripts (e.g. _flatten.js, _phase1_slim.js, _slim.js)
-emoji-to-icons-migration.js          # one-shot emoji → SVG migration (already ran in Phase 2.x)
+# SwiftPM
+.build/

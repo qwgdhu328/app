@@ -1,7 +1,10 @@
-const { withAppDelegate } = require('expo/config-plugins');
+const { withAppDelegate, withXcodeProject } = require('expo/config-plugins');
+const path = require('path');
+const fs = require('fs');
 
 function withLiquidGlass(config) {
-  return withAppDelegate(config, (cfg) => {
+  // Modify AppDelegate: configure native UITabBar appearance at startup
+  config = withAppDelegate(config, (cfg) => {
     const contents = cfg.modResults.contents;
     const marker = '#import "ExpoAppDelegate.h"';
 
@@ -18,7 +21,7 @@ function withLiquidGlass(config) {
       UITabBarAppearance *appearance = [[UITabBarAppearance alloc] init];
       [appearance configureWithDefaultBackground];
       appearance.backgroundEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
-      appearance.backgroundColor = [UIColor colorWithWhite:0.08 alpha:0.25];
+      appearance.backgroundColor = [UIColor colorWithWhite:0.06 alpha:0.2];
       [[UITabBar appearance] setStandardAppearance:appearance];
       [[UITabBar appearance] setScrollEdgeAppearance:appearance];
       [[UITabBar appearance] setTranslucent:YES];
@@ -29,9 +32,29 @@ function withLiquidGlass(config) {
 `;
       cfg.modResults.contents = contents.replace(marker, marker + block);
     }
-
     return cfg;
   });
+
+  // Copy Swift/ObjC native module files to ios/ and add to Xcode project
+  config = withXcodeProject(config, (cfg) => {
+    const iosDir = cfg.modRequest.platformProjectRoot;
+    const pairs = [
+      ['LiquidGlassView.swift', 'LiquidGlassView.swift'],
+      ['LGTabBarManager.m', 'LGTabBarManager.m'],
+    ];
+
+    for (const [srcName, dstName] of pairs) {
+      const srcPath = path.join(__dirname, srcName);
+      const dstPath = path.join(iosDir, dstName);
+      if (fs.existsSync(srcPath) && !fs.existsSync(dstPath)) {
+        fs.copyFileSync(srcPath, dstPath);
+        cfg.modResults.addSourceFile(dstName, null, null);
+      }
+    }
+    return cfg;
+  });
+
+  return config;
 }
 
 module.exports = withLiquidGlass;

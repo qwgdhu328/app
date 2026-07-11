@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { C, R, S } from '../constants/theme';
+import { C } from '../constants/theme';
 import { HomeIcon, ChatIcon, GlobeIcon, ProfileIcon } from '../../icons';
 import PressableScale from '../components/PressableScale';
 
@@ -25,20 +25,19 @@ export default function TabBar({ activeTab, onTabPress }) {
   };
 
   return (
-    <View style={[styles.wrapper, { paddingBottom: insets.bottom + 6 }]}>
-      <BlurView intensity={90} tint="dark" style={styles.blur}>
+    <View style={[styles.wrapper, { paddingBottom: insets.bottom + 8 }]}>
+      <BlurView intensity={60} tint="dark" style={styles.glass}>
         <View style={styles.inner}>
           {TABS.map(({ key, icon: Icon, label }) => {
             const active = activeTab === key;
             return (
-              <PressableScale key={key} onPress={() => handlePress(key)} style={styles.tab} scaleTo={0.92}>
-                <View style={styles.iconWrap}>
+              <PressableScale key={key} onPress={() => handlePress(key)} style={styles.tab} scaleTo={0.88}>
+                <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
                   <Icon active={active} />
                 </View>
                 <Text style={[styles.label, active && styles.labelActive]}>
                   {label}
                 </Text>
-                {active && <View style={styles.dot} />}
               </PressableScale>
             );
           })}
@@ -48,59 +47,59 @@ export default function TabBar({ activeTab, onTabPress }) {
   );
 }
 
+const TAB_BAR_HEIGHT = 50;
+const ICON_SIZE = 24;
+
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
     bottom: 0,
-    left: 8,
-    right: 8,
+    left: 12,
+    right: 12,
     zIndex: 100,
   },
-  blur: {
-    borderRadius: 24,
+  glass: {
+    borderRadius: 28,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.12)',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 24,
       },
     }),
   },
   inner: {
     flexDirection: 'row',
-    paddingTop: 8,
-    paddingBottom: 6,
-    backgroundColor: 'rgba(26, 15, 20, 0.2)',
+    height: TAB_BAR_HEIGHT,
+    alignItems: 'center',
+    backgroundColor: 'rgba(26, 15, 20, 0.15)',
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
-    gap: 1,
+    height: TAB_BAR_HEIGHT,
+    gap: 2,
   },
   iconWrap: {
-    width: 28,
-    height: 28,
+    width: ICON_SIZE + 8,
+    height: ICON_SIZE + 8,
+    borderRadius: (ICON_SIZE + 8) / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: C.primary,
-    marginTop: 1,
+  iconWrapActive: {
+    backgroundColor: 'rgba(255, 107, 85, 0.15)',
   },
   label: {
     fontSize: 10,
     color: C.textMuted,
-    letterSpacing: 0.2,
-    marginTop: 1,
+    letterSpacing: 0.3,
+    fontWeight: '500',
   },
   labelActive: {
     color: C.primary,

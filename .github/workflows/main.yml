@@ -1,0 +1,56 @@
+name: Build and Archive iOS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_with_xcode:
+    name: Build and Archive iOS App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Pods
+        run: |
+          cd ios && pod install
+
+      - name: Build Project
+        env:
+          scheme: "app"
+        run: |
+          xcodebuild clean archive \
+            -workspace ios/$scheme.xcworkspace \
+            -scheme $scheme \
+            -configuration Release \
+            -archivePath $PWD/build/$scheme.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Export IPA
+        env:
+          scheme: "app"
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/$scheme.xcarchive \
+            -exportPath $PWD/build/ipa \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO || true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-App
+          path: build/ipa/*.ipa

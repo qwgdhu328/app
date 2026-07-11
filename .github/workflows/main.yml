@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  SCHEME: app
+  SCHEME: BenessereBot
 
 jobs:
   build_with_xcode:

@@ -9,7 +9,6 @@ struct SettingsView: View {
     var body: some View {
         Form {
             reminderSection
-            dynamicIslandSection
             aboutSection
         }
         .navigationTitle("Impostazioni")
@@ -21,7 +20,6 @@ struct SettingsView: View {
         .onChange(of: prefs.isEnabled) { _, _ in apply() }
         .onChange(of: prefs.hour) { _, _ in apply() }
         .onChange(of: prefs.minute) { _, _ in apply() }
-        .onChange(of: prefs.useDynamicIsland) { _, _ in apply() }
         .onChange(of: prefs.message) { _, _ in apply() }
         .onChange(of: prefs.repeatDaily) { _, _ in apply() }
     }
@@ -89,16 +87,14 @@ struct SettingsView: View {
             }
 
             Button("Test promemoria") {
+                let content = UNMutableNotificationContent()
+                content.title = "BenessereBot"
+                content.body = prefs.message
+                content.sound = .default
                 UNUserNotificationCenter.current().add(
                     UNNotificationRequest(
                         identifier: "testReminder",
-                        content: {
-                            let c = UNMutableNotificationContent()
-                            c.title = "BenessereBot"
-                            c.body = prefs.message
-                            c.sound = .default
-                            return c
-                        }(),
+                        content: content,
                         trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
                     )
                 )
@@ -107,21 +103,6 @@ struct SettingsView: View {
             .foregroundStyle(.tint)
         } header: {
             Label("Promemoria", systemImage: "bell.fill")
-        }
-    }
-
-    private var dynamicIslandSection: some View {
-        Section {
-            Toggle("Mostra in Dynamic Island", isOn: $prefs.useDynamicIsland)
-                .disabled(!ActivityAuthorizationInfo().areActivitiesEnabled)
-
-            if !ActivityAuthorizationInfo().areActivitiesEnabled {
-                Text("Dynamic Island non disponibile su questo dispositivo.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        } header: {
-            Label("Dynamic Island", systemImage: "iphone.gen3")
         }
     }
 

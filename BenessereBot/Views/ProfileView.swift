@@ -113,24 +113,6 @@ struct ProfileView: View {
                 .foregroundStyle(.primary)
             }
 
-            Divider().padding(.leading, 52)
-
-            NavigationLink {
-                SettingsView()
-            } label: {
-                HStack {
-                    Image(systemName: "bell.badge.fill")
-                        .foregroundStyle(.tint)
-                        .frame(width: 28)
-                    Text("Promemoria e Dynamic Island")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(14)
-                .foregroundStyle(.primary)
-            }
         }
         .background(.regularMaterial)
         .clipShape(.rect(cornerRadius: 16))

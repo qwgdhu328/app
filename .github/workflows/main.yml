@@ -17,21 +17,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install XcodeGen
-        run: brew install xcodegen
+        run: |
+          brew install xcodegen
+          echo "XCODEGEN_VERSION=$(xcodegen --version)" >> $GITHUB_ENV
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          xcodegen generate 2>&1 | tee xcodegen.log || true
+          if [ ! -f BenessereBot.xcodeproj/project.pbxproj ]; then
+            echo "=== XcodeGen FAILED ==="
+            cat xcodegen.log
+            exit 1
+          fi
 
       - name: Debug - show generated project
-        if: success()
         run: |
-          echo "=== Swift files ==="
-          echo "=== XcodeGen version ==="
-          xcodegen --version
+          echo "=== XcodeGen version: ${{ env.XCODEGEN_VERSION }} ==="
           echo "=== Project structure ==="
           ls -la BenessereBot.xcodeproj/ 2>/dev/null || echo "No .xcodeproj generated"
           echo "=== Target list ==="
-          xcodebuild -project BenessereBot.xcodeproj -list 2>&1
+          xcodebuild -project BenessereBot.xcodeproj -list 2>&1 || echo "xcodebuild list failed"
 
       - name: Build for Device (Release)
         run: |
@@ -78,21 +83,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install XcodeGen
-        run: brew install xcodegen
+        run: |
+          brew install xcodegen
+          echo "XCODEGEN_VERSION=$(xcodegen --version)" >> $GITHUB_ENV
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          xcodegen generate 2>&1 | tee xcodegen.log || true
+          if [ ! -f BenessereBot.xcodeproj/project.pbxproj ]; then
+            echo "=== XcodeGen FAILED ==="
+            cat xcodegen.log
+            exit 1
+          fi
 
       - name: Debug - show generated project
-        if: success()
         run: |
-          echo "=== Swift files ==="
-          echo "=== XcodeGen version ==="
-          xcodegen --version
+          echo "=== XcodeGen version: ${{ env.XCODEGEN_VERSION }} ==="
           echo "=== Project structure ==="
           ls -la BenessereBot.xcodeproj/ 2>/dev/null || echo "No .xcodeproj generated"
           echo "=== Target list ==="
-          xcodebuild -project BenessereBot.xcodeproj -list 2>&1
+          xcodebuild -project BenessereBot.xcodeproj -list 2>&1 || echo "xcodebuild list failed"
           echo "=== Available SDKs ==="
           xcodebuild -showsdks 2>&1
 

@@ -3,71 +3,127 @@ import SwiftUI
 struct ChatView: View {
     @State private var viewModel = ChatViewModel()
     @State private var inputText = ""
+    @State private var showPsychologists = false
     @FocusState private var isFocused: Bool
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(viewModel.messages) { msg in
-                                MessageBubble(message: msg)
-                            }
-                            if viewModel.isLoading {
-                                HStack {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                    Text("Sta scrivendo...")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Spacer()
-                                }
-                                .padding(.horizontal)
-                            }
-                            if let error = viewModel.errorMessage {
-                                Text(error)
-                                    .font(.caption)
-                                    .foregroundStyle(.red)
-                                    .padding()
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                    }
-                    .onChange(of: viewModel.messages.count) { _, _ in
-                        withAnimation {
-                            proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
-                        }
-                    }
+                if viewModel.messages.isEmpty {
+                    emptyState
+                } else {
+                    messageList
                 }
 
-                HStack(spacing: 8) {
-                    TextField("Scrivi un messaggio...", text: $inputText)
-                        .textFieldStyle(.plain)
-                        .padding(12)
-                        .background(.regularMaterial)
-                        .clipShape(.rect(cornerRadius: 20))
-                        .focused($isFocused)
-
-                    Button {
-                        let text = inputText
-                        inputText = ""
-                        viewModel.send(text)
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 32))
-                            .foregroundStyle(.primary)
-                    }
-                    .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
+                if viewModel.showPsychologists {
+                    psychologistBanner
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(.regularMaterial)
+
+                inputBar
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Chat")
+            .navigationTitle("BenessereBot")
+            .sheet(isPresented: $showPsychologists) {
+                PsychologistsListView(city: viewModel.suggestedCity)
+            }
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "brain.head.profile")
+                .font(.system(size: 60))
+                .foregroundStyle(.tint)
+            Text("Parla con BenessereBot")
+                .font(.title2.bold())
+            Text("Uno psicologo virtuale sempre pronto ad ascoltarti.\nCondividi ciò che senti, senza giudizio.")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
+            Spacer()
+        }
+    }
+
+    private var messageList: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    ForEach(viewModel.messages) { msg in
+                        MessageBubble(message: msg)
+                    }
+                    if viewModel.isLoading {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Sta riflettendo...")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                    }
+                    if let error = viewModel.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding()
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+            }
+            .onChange(of: viewModel.messages.count) { _, _ in
+                withAnimation {
+                    proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
+                }
+            }
+        }
+    }
+
+    private var psychologistBanner: some View {
+        Button {
+            showPsychologists = true
+        } label: {
+            HStack {
+                Image(systemName: "person.2.fill")
+                Text("Parlare con uno psicologo umano?")
+                    .font(.subheadline.weight(.medium))
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+            .padding(12)
+            .background(.blue.opacity(0.1))
+            .clipShape(.rect(cornerRadius: 12))
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var inputBar: some View {
+        HStack(spacing: 8) {
+            TextField("Scrivi come ti senti...", text: $inputText)
+                .textFieldStyle(.plain)
+                .padding(12)
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 20))
+                .focused($isFocused)
+
+            Button {
+                let text = inputText
+                inputText = ""
+                viewModel.send(text)
+            } label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 32))
+                    .foregroundStyle(.tint)
+            }
+            .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(.regularMaterial)
     }
 }
 
@@ -80,7 +136,7 @@ struct MessageBubble: View {
                 Spacer()
                 Text(message.content)
                     .padding(14)
-                    .background(Color.primary.opacity(0.1))
+                    .background(Color.tint.opacity(0.12))
                     .clipShape(.rect(cornerRadius: 18))
                     .padding(.leading, 60)
             } else {

@@ -2,9 +2,17 @@ import SwiftUI
 
 @main
 struct BenessereBotApp: App {
+    @State private var showIntro = !UserDefaults.standard.bool(forKey: "hasSeenIntro")
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if showIntro {
+                IntroView(showIntro: $showIntro)
+                    .transition(.opacity)
+            } else {
+                ContentView()
+                    .transition(.opacity)
+            }
         }
     }
 }
@@ -13,7 +21,7 @@ enum Tab: String, CaseIterable {
     case home = "Home"
     case chat = "Chat"
     case community = "Spazio"
-    case profile = "Tu"
+    case profile = "Profilo"
 
     var icon: String {
         switch self {

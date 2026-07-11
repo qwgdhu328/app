@@ -22,6 +22,13 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate --project .
 
+      - name: Debug - show project files
+        run: |
+          echo "=== Swift files ==="
+          find BenessereBot -name "*.swift" -type f
+          echo "=== Project structure ==="
+          ls -la BenessereBot.xcodeproj/
+
       - name: Build for Device (Release)
         run: |
           xcodebuild clean build \
@@ -63,6 +70,17 @@ jobs:
 
       - name: Generate Xcode project
         run: xcodegen generate --project .
+
+      - name: Debug - show project files
+        run: |
+          echo "=== Swift files ==="
+          find BenessereBot -name "*.swift" -type f
+          echo "=== XcodeGen info ==="
+          xcodegen --version
+          echo "=== Project structure ==="
+          ls -la BenessereBot.xcodeproj/
+          echo "=== Available SDKs ==="
+          xcodebuild -showsdks 2>&1
 
       - name: Build for Simulator (Debug)
         run: |

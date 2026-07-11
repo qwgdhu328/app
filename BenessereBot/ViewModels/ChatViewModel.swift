@@ -1,6 +1,7 @@
 import SwiftUI
 import Observation
 
+@MainActor
 @Observable
 class ChatViewModel {
     var messages: [Message] = []

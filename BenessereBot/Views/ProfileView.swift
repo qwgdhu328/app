@@ -77,6 +77,25 @@ struct ProfileView: View {
 
     private var settingsSection: some View {
         VStack(spacing: 0) {
+            NavigationLink {
+                SettingsView()
+            } label: {
+                HStack {
+                    Image(systemName: "gear")
+                        .foregroundStyle(.tint)
+                        .frame(width: 28)
+                    Text("Impostazioni")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(14)
+                .foregroundStyle(.primary)
+            }
+
+            Divider().padding(.leading, 52)
+
             Button {
                 showFeatures = true
             } label: {
@@ -85,6 +104,25 @@ struct ProfileView: View {
                         .foregroundStyle(.tint)
                         .frame(width: 28)
                     Text("Scopri le funzioni")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(14)
+                .foregroundStyle(.primary)
+            }
+
+            Divider().padding(.leading, 52)
+
+            NavigationLink {
+                SettingsView()
+            } label: {
+                HStack {
+                    Image(systemName: "bell.badge.fill")
+                        .foregroundStyle(.tint)
+                        .frame(width: 28)
+                    Text("Promemoria e Dynamic Island")
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.caption)

@@ -40,8 +40,10 @@ struct HomeView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 80)
             }
+            .scrollBounceBehavior(.basedOnSize)
             .background(Color(.systemGroupedBackground))
             .navigationTitle("BenessereBot")
+            .toolbarBackground(.hidden, for: .navigationBar)
             .onAppear {
                 checkStreak()
                 dailyAffirmation = affirmations.randomElement() ?? affirmations[0]
@@ -60,11 +62,13 @@ struct HomeView: View {
                 }
             }()
             Text("\(greeting)! 👋")
-                .font(.title.bold())
+                .font(.largeTitle.bold())
             Text("Come stai oggi?")
+                .font(.title3)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 8)
     }
 
     private var streakSection: some View {

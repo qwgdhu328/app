@@ -24,13 +24,9 @@ struct PsychologistsListView: View {
                             Text(psychologist.specialty)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            HStack {
-                                Image(systemName: "mappin.circle.fill")
-                                    .font(.caption2)
-                                Text(psychologist.city)
-                                    .font(.caption2)
-                            }
-                            .foregroundStyle(.blue)
+                            Label(psychologist.city, systemImage: "mappin.circle.fill")
+                                .font(.caption2)
+                                .foregroundStyle(.blue)
                         }
                     }
 
@@ -65,6 +61,7 @@ struct PsychologistsListView: View {
                 }
                 .padding(.vertical, 4)
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Psicologi a \(city)")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

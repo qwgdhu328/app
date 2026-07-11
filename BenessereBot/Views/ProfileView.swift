@@ -7,54 +7,53 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    profileHeader
-                    statsSection
-                    settingsSection
-                    aboutSection
+            List {
+                Section {
+                    VStack(spacing: 12) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 72))
+                            .foregroundStyle(.tint.opacity(0.4))
+
+                        Text(userName.isEmpty ? "Il tuo profilo" : userName)
+                            .font(.title2.bold())
+
+                        Text("Obiettivo: \(userGoal)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 80)
+
+                Section("Statistiche") {
+                    HStack(spacing: 12) {
+                        statCard(value: "0", label: "Chat", icon: "message.fill")
+                        statCard(value: "0", label: "Giorni", icon: "flame.fill")
+                        statCard(value: "0", label: "Umore", icon: "face.smiling.fill")
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                }
+
+                Section {
+                    Button {
+                        showFeatures = true
+                    } label: {
+                        Label("Scopri le funzioni", systemImage: "sparkles.rectangle.stack")
+                    }
+                }
+
+                Section("Info") {
+                    LabeledContent("Versione", value: "2.0.0")
+                    LabeledContent("AI Model", value: "OpenRouter")
+                    LabeledContent("Piattaforma", value: "iOS nativo")
+                }
             }
-            .background(Color(.systemGroupedBackground))
+            .listStyle(.insetGrouped)
+            .scrollBounceBehavior(.basedOnSize)
             .navigationTitle("Profilo")
             .sheet(isPresented: $showFeatures) {
                 FeatureIntroView()
-            }
-        }
-    }
-
-    private var profileHeader: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "person.crop.circle.fill")
-                .font(.system(size: 72))
-                .foregroundStyle(.tint.opacity(0.4))
-
-            Text(userName.isEmpty ? "Il tuo profilo" : userName)
-                .font(.title2.bold())
-
-            Text("Obiettivo: \(userGoal)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(24)
-        .background(.regularMaterial)
-        .clipShape(.rect(cornerRadius: 20))
-    }
-
-    private var statsSection: some View {
-        VStack(spacing: 12) {
-            Text("Statistiche")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            HStack(spacing: 12) {
-                statCard(value: "0", label: "Chat", icon: "message.fill")
-                statCard(value: "0", label: "Giorni", icon: "flame.fill")
-                statCard(value: "0", label: "Umore", icon: "face.smiling.fill")
             }
         }
     }
@@ -73,72 +72,6 @@ struct ProfileView: View {
         .padding(16)
         .background(.regularMaterial)
         .clipShape(.rect(cornerRadius: 16))
-    }
-
-    private var settingsSection: some View {
-        VStack(spacing: 0) {
-            NavigationLink {
-                SettingsView()
-            } label: {
-                HStack {
-                    Image(systemName: "gear")
-                        .foregroundStyle(.tint)
-                        .frame(width: 28)
-                    Text("Impostazioni")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(14)
-                .foregroundStyle(.primary)
-            }
-
-            Divider().padding(.leading, 52)
-
-            Button {
-                showFeatures = true
-            } label: {
-                HStack {
-                    Image(systemName: "sparkles.rectangle.stack")
-                        .foregroundStyle(.tint)
-                        .frame(width: 28)
-                    Text("Scopri le funzioni")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(14)
-                .foregroundStyle(.primary)
-            }
-
-        }
-        .background(.regularMaterial)
-        .clipShape(.rect(cornerRadius: 16))
-    }
-
-    private var aboutSection: some View {
-        VStack(spacing: 0) {
-            aboutRow(title: "Versione", value: "2.0.0")
-            Divider().padding(.leading, 16)
-            aboutRow(title: "AI Model", value: "OpenRouter GPT-4o")
-            Divider().padding(.leading, 16)
-            aboutRow(title: "Piattaforma", value: "iOS nativo")
-        }
-        .background(.regularMaterial)
-        .clipShape(.rect(cornerRadius: 16))
-    }
-
-    private func aboutRow(title: String, value: String) -> some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .foregroundStyle(.primary)
-        }
-        .padding(14)
     }
 }
 

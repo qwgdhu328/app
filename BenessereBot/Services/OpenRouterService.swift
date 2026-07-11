@@ -21,8 +21,8 @@ class OpenRouterService {
     """
 
     private init() {
-        self.apiKey = ProcessInfo.processInfo.environment["EXPO_PUBLIC_OPENROUTER_API_KEY"] ?? ""
-        self.model = ProcessInfo.processInfo.environment["EXPO_PUBLIC_OPENROUTER_MODEL"] ?? "openai/gpt-4o"
+        self.apiKey = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"] ?? ""
+        self.model = ProcessInfo.processInfo.environment["OPENROUTER_MODEL"] ?? "openai/gpt-4o"
     }
 
     func sendMessage(_ text: String, history: [Message]) async throws -> String {

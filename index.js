@@ -10,10 +10,12 @@ import { C } from './src/constants/theme';
 // (e.g. react-native-mmkv native init failure) shows an error UI
 // instead of a blank black screen.
 let AppComponent;
+let loadError;
 try {
   AppComponent = require('./App').default;
 } catch (e) {
   console.error('[BenessereBot] Fatal: App module failed to load:', e);
+  loadError = e;
 }
 
 function Root() {
@@ -22,8 +24,7 @@ function Root() {
       <View style={styles.errorWrap}>
         <Text style={styles.errorTitle}>Errore di avvio</Text>
         <Text style={styles.errorBody}>
-          L'app non ha potuto caricare i moduli nativi necessari.
-          Prova a reinstallare l'app o contatta lo sviluppatore.
+          {loadError ? loadError.toString() : 'Modulo principale non caricabile'}
         </Text>
       </View>
     );

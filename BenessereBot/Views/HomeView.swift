@@ -109,11 +109,11 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(selectedMood == emoji ? Color.tint.opacity(0.15) : .regularMaterial)
+                        .background(selectedMood == emoji ? AppTint.opacity(0.15) : .regularMaterial)
                         .clipShape(.rect(cornerRadius: 16))
                         .overlay(
                             selectedMood == emoji ?
-                            RoundedRectangle(cornerRadius: 16).stroke(Color.tint, lineWidth: 2) : nil
+                            RoundedRectangle(cornerRadius: 16).stroke(AppTint, lineWidth: 2) : nil
                         )
                     }
                 }

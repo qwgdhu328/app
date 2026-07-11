@@ -136,7 +136,7 @@ struct MessageBubble: View {
                 Spacer()
                 Text(message.content)
                     .padding(14)
-                    .background(Color.tint.opacity(0.12))
+                    .background(AppTint.opacity(0.12))
                     .clipShape(.rect(cornerRadius: 18))
                     .padding(.leading, 60)
             } else {

@@ -21,7 +21,7 @@ struct IntroView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(.systemBackground), Color.tint.opacity(0.08)],
+                colors: [Color(.systemBackground), AppTint.opacity(0.08)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -56,7 +56,7 @@ struct IntroView: View {
                         HStack(spacing: 6) {
                             ForEach(0..<5) { i in
                                 Circle()
-                                    .fill(currentPage >= i ? Color.tint : Color.gray.opacity(0.3))
+                                    .fill(currentPage >= i ? AppTint : Color.gray.opacity(0.3))
                                     .frame(width: currentPage == i ? 10 : 6, height: currentPage == i ? 10 : 6)
                                     .animation(.spring, value: currentPage)
                             }
@@ -167,7 +167,7 @@ struct IntroView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(16)
-                        .background(selectedGoal == goal ? Color.tint : .regularMaterial)
+                        .background(selectedGoal == goal ? AppTint : .regularMaterial)
                         .foregroundStyle(selectedGoal == goal ? .white : .primary)
                         .clipShape(.rect(cornerRadius: 16))
                     }
@@ -206,11 +206,11 @@ struct IntroView: View {
                         Text(emoji)
                             .font(.system(size: 40))
                             .padding(12)
-                            .background(selectedMood == emoji ? Color.tint.opacity(0.2) : .regularMaterial)
+                            .background(selectedMood == emoji ? AppTint.opacity(0.2) : .regularMaterial)
                             .clipShape(.circle)
                             .overlay(
                                 selectedMood == emoji ?
-                                Circle().stroke(Color.tint, lineWidth: 2) : nil
+                                Circle().stroke(AppTint, lineWidth: 2) : nil
                             )
                     }
                 }
@@ -268,7 +268,7 @@ struct IntroView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.tint)
+                    .background(AppTint)
                     .clipShape(.rect(cornerRadius: 16))
             }
             .padding(.horizontal, 40)

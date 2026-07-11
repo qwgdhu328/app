@@ -9,6 +9,9 @@ struct IntroView: View {
     @State private var selectedMood: String? = nil
     @State private var showConfetti = false
 
+    private var contentOpacity: Double { animateContent ? 1 : 0 }
+    private var contentOffset: CGFloat { animateContent ? 0 : 20 }
+
     private let goals = [
         ("Gestire l'ansia", "brain.head.profile"),
         ("Migliorare l'umore", "sun.max.fill"),
@@ -90,7 +93,7 @@ struct IntroView: View {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 80))
                 .foregroundStyle(.tint)
-                .symbolEffect(.bounce, options: .repeat(3))
+                .symbolEffect(.bounce)
 
             Text("Benvenuto su\nBenessereBot")
                 .font(.largeTitle.bold())
@@ -106,8 +109,8 @@ struct IntroView: View {
                 .padding(.top, 20)
         }
         .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .opacity(contentOpacity)
+        .offset(y: contentOffset)
     }
 
     private var namePage: some View {
@@ -136,8 +139,8 @@ struct IntroView: View {
             }
         }
         .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .opacity(contentOpacity)
+        .offset(y: contentOffset)
     }
 
     private var goalPage: some View {
@@ -176,8 +179,8 @@ struct IntroView: View {
             .padding(.horizontal, 20)
         }
         .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .opacity(contentOpacity)
+        .offset(y: contentOffset)
     }
 
     private var moodPage: some View {
@@ -206,7 +209,7 @@ struct IntroView: View {
                         Text(emoji)
                             .font(.system(size: 40))
                             .padding(12)
-                            .background(selectedMood == emoji ? AppTint.opacity(0.2) : .regularMaterial)
+                            .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.2)) : AnyShapeStyle(.regularMaterial))
                             .clipShape(.circle)
                             .overlay(
                                 selectedMood == emoji ?
@@ -217,8 +220,8 @@ struct IntroView: View {
             }
         }
         .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .opacity(contentOpacity)
+        .offset(y: contentOffset)
     }
 
     private var finalPage: some View {
@@ -274,8 +277,8 @@ struct IntroView: View {
             .padding(.horizontal, 40)
         }
         .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .opacity(contentOpacity)
+        .offset(y: contentOffset)
     }
 }
 

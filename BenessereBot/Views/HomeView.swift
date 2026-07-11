@@ -92,30 +92,7 @@ struct HomeView: View {
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                 ForEach(moods, id: \.0) { emoji, label in
-                    Button {
-                        withAnimation(.spring) {
-                            selectedMood = emoji
-                            showAffirmation = true
-                            updateStreak()
-                        }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Text(emoji)
-                                .font(.system(size: 32))
-                                .scaleEffect(selectedMood == emoji ? 1.3 : 1.0)
-                            Text(label)
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(12)
-                        .background(selectedMood == emoji ? AppTint.opacity(0.15) : .regularMaterial)
-                        .clipShape(.rect(cornerRadius: 16))
-                        .overlay(
-                            selectedMood == emoji ?
-                            RoundedRectangle(cornerRadius: 16).stroke(AppTint, lineWidth: 2) : nil
-                        )
-                    }
+                    moodButton(emoji: emoji, label: label)
                 }
             }
         }
@@ -126,7 +103,7 @@ struct HomeView: View {
             Image(systemName: "quote.opening")
                 .foregroundStyle(.tint)
             Text(dailyAffirmation)
-                .font(.subheadline.italic)
+                .font(.subheadline.italic())
                 .multilineTextAlignment(.center)
             Image(systemName: "quote.closing")
                 .foregroundStyle(.tint)
@@ -179,6 +156,33 @@ struct HomeView: View {
             .padding(16)
             .background(.regularMaterial)
             .clipShape(.rect(cornerRadius: 16))
+        }
+    }
+
+    private func moodButton(emoji: String, label: String) -> some View {
+        Button {
+            withAnimation(.spring) {
+                selectedMood = emoji
+                showAffirmation = true
+                updateStreak()
+            }
+        } label: {
+            VStack(spacing: 4) {
+                Text(emoji)
+                    .font(.system(size: 32))
+                    .scaleEffect(selectedMood == emoji ? 1.3 : 1.0)
+                Text(label)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(12)
+            .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.15)) : AnyShapeStyle(.regularMaterial))
+            .clipShape(.rect(cornerRadius: 16))
+            .overlay(
+                selectedMood == emoji ?
+                RoundedRectangle(cornerRadius: 16).stroke(AppTint, lineWidth: 2) : nil
+            )
         }
     }
 

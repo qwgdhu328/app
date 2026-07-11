@@ -165,28 +165,36 @@ struct IntroView: View {
             Text("Scegli il tuo obiettivo principale.")
                 .foregroundStyle(.secondary)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach(goals, id: \.0) { goal, icon in
-                    Button {
-                        withAnimation(.spring) {
-                            selectedGoal = goal
-                        }
-                    } label: {
-                        VStack(spacing: 8) {
-                            Image(systemName: icon)
-                                .font(.title3)
-                            Text(goal)
-                                .font(.caption.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(16)
-                        .background(selectedGoal == goal ? AppTint : .regularMaterial)
-                        .foregroundStyle(selectedGoal == goal ? .white : .primary)
-                        .clipShape(.rect(cornerRadius: 16))
-                    }
-                }
+            goalGrid
+                .padding(.horizontal, 20)
+        }
+    }
+
+    private var goalGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            ForEach(goals, id: \.0) { goal, icon in
+                goalButton(goal: goal, icon: icon)
             }
-            .padding(.horizontal, 20)
+        }
+    }
+
+    private func goalButton(goal: String, icon: String) -> some View {
+        Button {
+            withAnimation(.spring) {
+                selectedGoal = goal
+            }
+        } label: {
+            VStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.title3)
+                Text(goal)
+                    .font(.caption.weight(.medium))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(selectedGoal == goal ? AppTint : .regularMaterial)
+            .foregroundStyle(selectedGoal == goal ? .white : .primary)
+            .clipShape(.rect(cornerRadius: 16))
         }
     }
 

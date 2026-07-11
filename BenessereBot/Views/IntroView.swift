@@ -1,5 +1,14 @@
 import SwiftUI
 
+private struct FadeSlideModifier: ViewModifier {
+    let animate: Bool
+    func body(content: Content) -> some View {
+        content
+            .opacity(animate ? 1 : 0)
+            .offset(y: animate ? 0 : 20)
+    }
+}
+
 struct IntroView: View {
     @Binding var showIntro: Bool
     @State private var currentPage = 0
@@ -8,9 +17,6 @@ struct IntroView: View {
     @State private var selectedGoal: String? = nil
     @State private var selectedMood: String? = nil
     @State private var showConfetti = false
-
-    private var contentOpacity: Double { animateContent ? 1 : 0 }
-    private var contentOffset: CGFloat { animateContent ? 0 : 20 }
 
     private let goals = [
         ("Gestire l'ansia", "brain.head.profile"),
@@ -109,8 +115,7 @@ struct IntroView: View {
                 .padding(.top, 20)
         }
         .padding(30)
-        .opacity(contentOpacity)
-        .offset(y: contentOffset)
+        .modifier(FadeSlideModifier(animate: animateContent))
     }
 
     private var namePage: some View {
@@ -139,15 +144,13 @@ struct IntroView: View {
             }
         }
         .padding(30)
-        .opacity(contentOpacity)
-        .offset(y: contentOffset)
+        .modifier(FadeSlideModifier(animate: animateContent))
     }
 
     private var goalPage: some View {
         goalPageContent
             .padding(30)
-            .opacity(contentOpacity)
-            .offset(y: contentOffset)
+            .modifier(FadeSlideModifier(animate: animateContent))
     }
 
     private var goalPageContent: some View {
@@ -224,8 +227,7 @@ struct IntroView: View {
             }
         }
         .padding(30)
-        .opacity(contentOpacity)
-        .offset(y: contentOffset)
+        .modifier(FadeSlideModifier(animate: animateContent))
     }
 
     private var finalPage: some View {
@@ -281,8 +283,7 @@ struct IntroView: View {
             .padding(.horizontal, 40)
         }
         .padding(30)
-        .opacity(contentOpacity)
-        .offset(y: contentOffset)
+        .modifier(FadeSlideModifier(animate: animateContent))
     }
 }
 

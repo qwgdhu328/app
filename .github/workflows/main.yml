@@ -43,8 +43,9 @@ jobs:
 
       - name: Create unsigned IPA
         run: |
+          find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d
           mkdir -p build/ipa/Payload
-          cp -r "build/${{ env.SCHEME }}.xcarchive/Products/Applications/${{ env.SCHEME }}.app" build/ipa/Payload/
+          cp -r $(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d) build/ipa/Payload/
           cd build/ipa
           zip -r "${{ env.SCHEME }}.ipa" Payload/
 

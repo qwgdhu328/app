@@ -156,15 +156,20 @@ jobs:
       - name: Install Pods
         run: pod install --project-directory=ios
 
+      - name: List available simulators
+        run: |
+          echo "=== Available SDKs ==="
+          xcodebuild -showsdks 2>&1 | head -20
+          echo "=== Available Simulators ==="
+          xcrun simctl list devices available 2>&1 | head -30
+
       - name: Build for Simulator (Debug)
         run: |
           xcodebuild clean build \
             -workspace "ios/${{ env.SCHEME }}.xcworkspace" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
-            -allowProvisioningUpdates \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \

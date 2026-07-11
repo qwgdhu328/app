@@ -29,9 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Expo prebuild
-        run: npx expo prebuild --platform ios --no-install
-
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:

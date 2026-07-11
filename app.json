@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "BenessereBot",
+    "slug": "angelo56",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A0F14"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.benesserebot.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIViewControllerBasedStatusBarAppearance": false
+      }
+    },
+    "android": {
+      "package": "com.benesserebot.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1A0F14"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-build-properties"
+    ],
+    "extra": {
+      "apiUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "eas": {
+        "projectId": "e6ced583-21c9-421e-b46c-dcd68f572831"
+      }
+    },
+    "owner": "angelos56s-team"
+  }
+}

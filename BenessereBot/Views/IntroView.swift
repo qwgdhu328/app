@@ -39,14 +39,17 @@ struct IntroView: View {
             VStack {
                 Spacer()
 
-                switch currentPage {
-                case 0: welcomePage
-                case 1: namePage
-                case 2: goalPage
-                case 3: moodPage
-                case 4: finalPage
-                default: welcomePage
+                Group {
+                    switch currentPage {
+                    case 0: welcomePage
+                    case 1: namePage
+                    case 2: goalPage
+                    case 3: moodPage
+                    case 4: finalPage
+                    default: welcomePage
+                    }
                 }
+                .transition(.slide)
 
                 Spacer()
 
@@ -180,6 +183,7 @@ struct IntroView: View {
 
     private func moodEmojiButton(emoji: String) -> some View {
         Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             withAnimation(.spring) {
                 selectedMood = emoji
                 showConfetti = true
@@ -202,6 +206,7 @@ struct IntroView: View {
 
     private func goalButton(goal: String, icon: String) -> some View {
         Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
             withAnimation(.spring) {
                 selectedGoal = goal
             }

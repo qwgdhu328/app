@@ -51,23 +51,26 @@ struct ChatView: View {
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.messages) { msg in
                         MessageBubble(message: msg)
+                            .transition(.opacity.combined(with: .slide))
                     }
                     if viewModel.isLoading {
-                        HStack {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                            Text("Sta riflettendo...")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                        }
-                        .padding(.horizontal)
+                        TypingIndicator()
+                            .padding(.horizontal)
                     }
                     if let error = viewModel.errorMessage {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .padding()
+                        HStack {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                            Button("Riprova") {
+                                viewModel.errorMessage = nil
+                            }
+                            .font(.caption.bold())
+                        }
+                        .padding()
+                        .background(.red.opacity(0.08))
+                        .clipShape(.rect(cornerRadius: 12))
+                        .padding(.horizontal)
                     }
                 }
                 .padding(.horizontal)
@@ -113,6 +116,7 @@ struct ChatView: View {
             Button {
                 let text = inputText
                 inputText = ""
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 viewModel.send(text)
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
@@ -127,11 +131,36 @@ struct ChatView: View {
     }
 }
 
+private struct TypingIndicator: View {
+    @State private var animate = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3) { i in
+                Circle()
+                    .fill(Color.secondary.opacity(0.4))
+                    .frame(width: 8, height: 8)
+                    .offset(y: animate ? -5 : 0)
+                    .animation(
+                        .easeInOut(duration: 0.5).repeatForever().delay(Double(i) * 0.15),
+                        value: animate
+                    )
+            }
+            Text("Sta riflettendo...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.leading, 4)
+        }
+        .padding(.vertical, 8)
+        .onAppear { animate = true }
+    }
+}
+
 struct MessageBubble: View {
     let message: Message
 
     var body: some View {
-        HStack {
+        HStack(alignment: .bottom, spacing: 8) {
             if message.role == "user" {
                 Spacer()
                 Text(message.content)
@@ -140,6 +169,13 @@ struct MessageBubble: View {
                     .clipShape(.rect(cornerRadius: 18))
                     .padding(.leading, 60)
             } else {
+                Image(systemName: "brain.head.profile")
+                    .font(.caption)
+                    .foregroundStyle(.tint)
+                    .frame(width: 28, height: 28)
+                    .background(AppTint.opacity(0.1))
+                    .clipShape(.circle)
+
                 Text(message.content)
                     .padding(14)
                     .background(.regularMaterial)

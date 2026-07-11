@@ -41,12 +41,23 @@ struct CommunityView: View {
 
     private func communityCard(title: String, subtitle: String, icon: String, color: Color) -> some View {
         HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
-                .frame(width: 44, height: 44)
-                .background(color.opacity(0.12))
-                .clipShape(.circle)
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(color)
+                    .frame(width: 44, height: 44)
+                    .background(color.opacity(0.12))
+                    .clipShape(.circle)
+
+                Text("PROSSIMAMENTE")
+                    .font(.system(size: 7, weight: .black))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(color)
+                    .clipShape(.capsule)
+                    .offset(x: 4, y: -4)
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -64,6 +75,7 @@ struct CommunityView: View {
         .padding(16)
         .background(.regularMaterial)
         .clipShape(.rect(cornerRadius: 16))
+        .opacity(0.85)
     }
 }
 

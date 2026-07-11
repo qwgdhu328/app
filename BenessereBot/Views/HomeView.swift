@@ -68,16 +68,30 @@ struct HomeView: View {
     }
 
     private var streakSection: some View {
-        HStack {
-            Image(systemName: "flame.fill")
-                .foregroundStyle(.orange)
-            Text("\(streak) giorni di fila!")
-                .font(.subheadline.weight(.medium))
-            Spacer()
-            if streak > 0 {
-                Text("🔥")
+        VStack(spacing: 8) {
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+                    .symbolEffect(.pulse, value: streak)
+                Text("\(streak) giorni di fila!")
+                    .font(.subheadline.weight(.medium))
+                Spacer()
+                Text(streak >= 7 ? "🔥🔥" : "🔥")
                     .font(.caption)
             }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.15))
+                        .frame(height: 5)
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(AppTint)
+                        .frame(width: geo.size.width * min(CGFloat(streak) / 30.0, 1.0), height: 5)
+                        .animation(.spring(duration: 0.6), value: streak)
+                }
+            }
+            .frame(height: 5)
         }
         .padding(12)
         .background(.regularMaterial)
@@ -143,7 +157,10 @@ struct HomeView: View {
     }
 
     private func actionCard(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            action()
+        } label: {
             VStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.title2)
@@ -161,6 +178,7 @@ struct HomeView: View {
 
     private func moodButton(emoji: String, label: String) -> some View {
         Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             withAnimation(.spring) {
                 selectedMood = emoji
                 showAffirmation = true

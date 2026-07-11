@@ -2,11 +2,9 @@ import SwiftUI
 
 @main
 struct BenessereBotApp: App {
-    @State private var selectedTab: Tab = .home
-
     var body: some Scene {
         WindowGroup {
-            ContentView(selectedTab: $selectedTab)
+            ContentView()
         }
     }
 }

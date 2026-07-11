@@ -1,25 +1,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Binding var selectedTab: Tab
+    @State private var selectedTab: Tab = .home
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            switch selectedTab {
-            case .home:
-                HomeView()
-            case .chat:
-                ChatView()
-            case .community:
-                CommunityView()
-            case .profile:
-                ProfileView()
-            }
-            LiquidGlassTabBar(selectedTab: $selectedTab)
-                .frame(height: 50)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 12)
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tag(Tab.home)
+                .tabItem { Label(Tab.home.rawValue, systemImage: Tab.home.icon) }
+            ChatView()
+                .tag(Tab.chat)
+                .tabItem { Label(Tab.chat.rawValue, systemImage: Tab.chat.icon) }
+            CommunityView()
+                .tag(Tab.community)
+                .tabItem { Label(Tab.community.rawValue, systemImage: Tab.community.icon) }
+            ProfileView()
+                .tag(Tab.profile)
+                .tabItem { Label(Tab.profile.rawValue, systemImage: Tab.profile.icon) }
         }
-        .ignoresSafeArea(.keyboard)
     }
 }

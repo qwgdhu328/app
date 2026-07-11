@@ -38,7 +38,8 @@
             "flipper": false
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "apiUrl": "https://openrouter.ai/api/v1/chat/completions",

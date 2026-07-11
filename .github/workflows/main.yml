@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  SCHEME: app
+
 jobs:
   build_with_xcode:
     name: Build and Archive iOS App
@@ -15,39 +18,70 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Expo prebuild
+        run: npx expo prebuild --platform ios --no-install
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: pods-${{ hashFiles('ios/Podfile.lock') }}
 
       - name: Install Pods
+        run: pod install --project-directory=ios
+
+      - name: Create export options
         run: |
-          cd ios && pod install
+          cat > ios/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>development</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>-</string>
+            <key>provisioningProfiles</key>
+            <dict/>
+          </dict>
+          </plist>
+          EOF
 
       - name: Build Project
-        env:
-          scheme: "app"
         run: |
           xcodebuild clean archive \
-            -workspace ios/$scheme.xcworkspace \
-            -scheme $scheme \
+            -workspace "ios/${{ env.SCHEME }}.xcworkspace" \
+            -scheme "${{ env.SCHEME }}" \
             -configuration Release \
-            -archivePath $PWD/build/$scheme.xcarchive \
+            -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
+            -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Export IPA
-        env:
-          scheme: "app"
         run: |
           xcodebuild -exportArchive \
-            -archivePath $PWD/build/$scheme.xcarchive \
-            -exportPath $PWD/build/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist \
+            -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
+            -exportPath "$PWD/build/ipa" \
+            -exportOptionsPlist "ios/ExportOptions.plist" \
+            -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO || true
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

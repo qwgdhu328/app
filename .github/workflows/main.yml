@@ -80,9 +80,38 @@ jobs:
           EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
-      - name: Upload Simulator .app
+      - name: Upload Simulator .app (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: iOS-App-Simulator
           path: build-sim/**/BenessereBot.app
           compression-level: 6
+
+      - name: Zip .app for Appetize
+        run: |
+          APP_PATH=$(find "$PWD/build-sim" -name "*.app" -type d | head -1)
+          cd "$(dirname "$APP_PATH")"
+          zip -r "${{ env.SCHEME }}-simulator.zip" "$(basename "$APP_PATH")"
+          echo "ZIP_PATH=$(pwd)/${{ env.SCHEME }}-simulator.zip" >> $GITHUB_ENV
+
+      - name: Upload to Appetize.io
+        env:
+          APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
+        run: |
+          if [ -z "$APPETIZE_TOKEN" ]; then
+            echo "⚠️ APPETIZE_TOKEN not set — skipping upload"
+            exit 0
+          fi
+          echo "Uploading to Appetize.io..."
+          RESPONSE=$(curl -s -X POST https://api.appetize.io/v1/apps \
+            -u "$APPETIZE_TOKEN:" \
+            -F "file=@$ZIP_PATH" \
+            -F "platform=ios")
+          echo "Response: $RESPONSE"
+          PUBLIC_KEY=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('publicKey',''))" 2>/dev/null || echo "")
+          if [ -n "$PUBLIC_KEY" ]; then
+            echo "✅ App uploaded to https://appetize.io/app/$PUBLIC_KEY"
+            echo "Appetize URL: https://appetize.io/app/$PUBLIC_KEY" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Upload failed: $RESPONSE"
+          fi

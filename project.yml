@@ -4,7 +4,7 @@ options:
   deploymentTarget:
     iOS: "18.0"
 settings:
-  SWIFT_VERSION: "6.0"
+  SWIFT_VERSION: "5.0"
 targets:
   BenessereBot:
     type: application

@@ -41,47 +41,12 @@ jobs:
       - name: Install Pods
         run: pod install --project-directory=ios
 
-      - name: Create export options
+      - name: Create unsigned IPA
         run: |
-          cat > ios/ExportOptions.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>development</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>signingCertificate</key>
-            <string>-</string>
-            <key>provisioningProfiles</key>
-            <dict/>
-          </dict>
-          </plist>
-          EOF
-
-      - name: Build Project
-        run: |
-          xcodebuild clean archive \
-            -workspace "ios/${{ env.SCHEME }}.xcworkspace" \
-            -scheme "${{ env.SCHEME }}" \
-            -configuration Release \
-            -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
-            -allowProvisioningUpdates \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Export IPA
-        run: |
-          xcodebuild -exportArchive \
-            -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
-            -exportPath "$PWD/build/ipa" \
-            -exportOptionsPlist "ios/ExportOptions.plist" \
-            -allowProvisioningUpdates \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+          mkdir -p build/ipa/Payload
+          cp -r "build/${{ env.SCHEME }}.xcarchive/Products/Applications/${{ env.SCHEME }}.app" build/ipa/Payload/
+          cd build/ipa
+          zip -r "${{ env.SCHEME }}.ipa" Payload/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

@@ -1,28 +1,21 @@
 import WidgetKit
 import SwiftUI
-import ActivityKit
-import BenessereBotKit
 
 @main
 struct BenessereBotWidgetBundle: WidgetBundle {
     var body: some Widget {
         BenessereBotWidget()
-        ReminderLiveActivity()
     }
 }
 
 struct BenessereBotWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "com.benesserebot.widget", provider: Provider()) { entry in
-            VStack(spacing: 8) {
-                Image(systemName: "brain.head.profile").font(.title).foregroundStyle(.tint)
-                Text("Parla con\nBenessereBot").font(.caption.weight(.semibold)).multilineTextAlignment(.center)
-            }
-            .containerBackground(.regularMaterial, for: .widget)
+            Text("BenessereBot").containerBackground(.regularMaterial, for: .widget)
         }
         .configurationDisplayName("BenessereBot")
-        .description("Parla con BenessereBot dalla schermata Home.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .description("Widget BenessereBot")
+        .supportedFamilies([.systemSmall])
     }
 }
 
@@ -35,39 +28,3 @@ struct Provider: TimelineProvider {
 }
 
 struct SimpleEntry: TimelineEntry { let date: Date }
-
-struct ReminderLiveActivity: Widget {
-    var body: some WidgetConfiguration {
-        ActivityConfiguration(for: ReminderActivityAttributes.self) { context in
-            HStack(spacing: 12) {
-                Image(systemName: "brain.head.profile").font(.title2).foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("BenessereBot").font(.headline)
-                    Text(context.state.reminderMessage).font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            .padding()
-            .activityBackgroundTint(.blue.opacity(0.15))
-        } dynamicIsland: { context in
-            DynamicIsland {
-                DynamicIslandExpandedRegion(.center) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "brain.head.profile").font(.title2).foregroundStyle(.tint)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("BenessereBot").font(.headline)
-                            Text(context.state.reminderMessage).font(.subheadline).foregroundStyle(.secondary)
-                        }
-                    }
-                    .padding()
-                }
-            } compactLeading: {
-                Image(systemName: "brain.head.profile").foregroundStyle(.tint)
-            } compactTrailing: {
-                Text("Ora").font(.caption2.weight(.bold)).foregroundStyle(.tint)
-            } minimal: {
-                Image(systemName: "brain.head.profile").foregroundStyle(.tint)
-            }
-            .keylineTint(.blue)
-        }
-    }
-}

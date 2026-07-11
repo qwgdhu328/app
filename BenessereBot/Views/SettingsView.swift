@@ -1,7 +1,5 @@
 import SwiftUI
 import UserNotifications
-import ActivityKit
-import BenessereBotKit
 
 struct SettingsView: View {
     @State private var prefs = ReminderPrefs.stored
@@ -11,7 +9,6 @@ struct SettingsView: View {
     var body: some View {
         Form {
             reminderSection
-            dynamicIslandSection
             aboutSection
         }
         .navigationTitle("Impostazioni")
@@ -22,7 +19,6 @@ struct SettingsView: View {
         .onChange(of: prefs.isEnabled) { _, _ in apply() }
         .onChange(of: prefs.hour) { _, _ in apply() }
         .onChange(of: prefs.minute) { _, _ in apply() }
-        .onChange(of: prefs.useDynamicIsland) { _, _ in apply() }
         .onChange(of: prefs.message) { _, _ in apply() }
         .onChange(of: prefs.repeatDaily) { _, _ in apply() }
     }
@@ -78,20 +74,8 @@ struct SettingsView: View {
                 UNUserNotificationCenter.current().add(
                     UNNotificationRequest(identifier: "testReminder", content: c, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))
                 )
-                if prefs.useDynamicIsland { startTestActivity() }
             }.font(.subheadline).foregroundStyle(.tint)
         } header: { Label("Promemoria", systemImage: "bell.fill") }
-    }
-
-    private var dynamicIslandSection: some View {
-        Section {
-            Toggle("Mostra in Dynamic Island", isOn: $prefs.useDynamicIsland)
-                .disabled(!ActivityAuthorizationInfo().areActivitiesEnabled)
-            if !ActivityAuthorizationInfo().areActivitiesEnabled {
-                Text("Dynamic Island non disponibile su questo dispositivo.")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-        } header: { Label("Dynamic Island", systemImage: "iphone.gen3") }
     }
 
     private var aboutSection: some View {
@@ -112,13 +96,6 @@ struct SettingsView: View {
     private func apply() {
         ReminderPrefs.stored = prefs
         ReminderManager.shared.schedule()
-    }
-
-    private func startTestActivity() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-        let attrs = ReminderActivityAttributes(reminderMessage: prefs.message)
-        let state = ReminderActivityAttributes.ContentState(reminderMessage: prefs.message)
-        try? Activity.request(attributes: attrs, content: ActivityContent(state: state, staleDate: Date().addingTimeInterval(300)))
     }
 }
 

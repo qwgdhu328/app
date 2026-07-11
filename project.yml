@@ -6,22 +6,11 @@ options:
 settings:
   SWIFT_VERSION: "5.9"
 targets:
-  BenessereBotKit:
-    type: framework
-    platform: iOS
-    sources:
-      - path: BenessereBotKit
-    settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.kit
-      GENERATE_INFOPLIST_FILE: YES
   BenessereBot:
     type: application
     platform: iOS
     sources:
       - path: BenessereBot
-    dependencies:
-      - target: BenessereBotKit
-      - target: BenessereBotWidget
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app
       INFOPLIST_FILE: BenessereBot/Info.plist
@@ -35,14 +24,6 @@ targets:
     platform: iOS
     sources:
       - path: BenessereBotWidget
-    dependencies:
-      - target: BenessereBotKit
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app.widget
-      INFOPLIST_FILE: BenessereBotWidget/Info.plist
-      DEVELOPMENT_TEAM: ""
-      CODE_SIGN_STYLE: Manual
-      CODE_SIGN_IDENTITY: ""
-      CODE_SIGNING_REQUIRED: NO
-      CODE_SIGNING_ALLOWED: NO
-      GENERATE_INFOPLIST_FILE: NO
+      GENERATE_INFOPLIST_FILE: YES

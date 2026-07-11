@@ -43,17 +43,9 @@ import { PROMPT_KB_BLOCK } from '../../../constants/resources2026';
 // build time and are visible to anyone using the app. They are NOT a
 // secret defense. For a privacy-sensitive production deployment, route
 // requests through a backend proxy and keep the key on the server.
-const API_KEY    = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY || '';
+const API_KEY    = (typeof process !== 'undefined' && process.env && process.env.EXPO_PUBLIC_OPENROUTER_API_KEY) || '';
 
-// Default to the smallest free chat model on OpenRouter to keep response
-// latency low on mobile. 3B is small enough to be snappy but still
-// produces coherent Italian multi-paragraph replies (required for
-// technique descriptions and clinical tone). Override via
-// EXPO_PUBLIC_OPENROUTER_MODEL in .env if you want a larger model, e.g.
-//   meta-llama/llama-3.1-8b-instruct:free   (medium, more capable)
-//   meta-llama/llama-3.3-70b-instruct:free  (large, slower)
-//   mistralai/mistral-small-24b-instruct-2501:free
-const MODEL      = process.env.EXPO_PUBLIC_OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
+const MODEL      = (typeof process !== 'undefined' && process.env && process.env.EXPO_PUBLIC_OPENROUTER_MODEL) || 'meta-llama/llama-3.2-3b-instruct:free';
 const API_URL    = 'https://openrouter.ai/api/v1/chat/completions';
 const TIMEOUT_MS = 30000;
 

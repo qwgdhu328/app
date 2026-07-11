@@ -1,42 +1,64 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { registerRootComponent } from 'expo';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
-import App from './App';
 import ErrorBoundary from './src/components/ErrorBoundary';
+import { C } from './src/constants/theme';
 
-// Wrap the entire app with an error boundary so that any render error in
-// any child screen is caught and shows a recoverable screen instead of
-// crashing the whole app. For a clinical single-purpose app this is
-// critical — a crash mid-conversation could be disorienting for a user
-// already in distress.
-//
-// SafeAreaProvider is INSIDE ErrorBoundary so a theoretical crash in the
-// provider itself would also be caught — but in practice the provider is
-// just a React context that never crashes. Placing it between
-// ErrorBoundary and <App /> means every `useSafeAreaInsets()` call in the
-// tree (currently just the TabBar) gets accurate OS-reported insets on
-// iOS notches, Android gesture bars, foldables in flex mode, and
-// landscape iPad — without any screen-size heuristic in user code.
+// Dynamic require with try/catch so a module-level crash in App.js
+// (e.g. react-native-mmkv native init failure) shows an error UI
+// instead of a blank black screen.
+let AppComponent;
+try {
+  AppComponent = require('./App').default;
+} catch (e) {
+  console.error('[BenessereBot] Fatal: App module failed to load:', e);
+}
+
 function Root() {
+  if (!AppComponent) {
+    return (
+      <View style={styles.errorWrap}>
+        <Text style={styles.errorTitle}>Errore di avvio</Text>
+        <Text style={styles.errorBody}>
+          L'app non ha potuto caricare i moduli nativi necessari.
+          Prova a reinstallare l'app o contatta lo sviluppatore.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ErrorBoundary>
-      {/* initialMetrics={initialWindowMetrics} populates the safe-area
-          context synchronously on first paint. Without it, the
-          default 0,0,0,0 insets are returned until the async
-          measurement completes (one frame of empty insets, which
-          manifested as "non si vede tutta l'app" on web and older
-          Android when combined with the SafeAreaView flex gotcha).
-          initialWindowMetrics is the package's exported snapshot of
-          the device's window insets — static + free. */}
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <App />
+        <AppComponent />
       </SafeAreaProvider>
     </ErrorBoundary>
   );
 }
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => Root);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately.
 registerRootComponent(Root);
+
+const styles = StyleSheet.create({
+  errorWrap: {
+    flex: 1,
+    backgroundColor: '#1A0F14',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  errorTitle: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  errorBody: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+});

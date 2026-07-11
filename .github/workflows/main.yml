@@ -31,6 +31,7 @@ jobs:
 
       - name: Build for Device (Release)
         run: |
+          set -o pipefail
           xcodebuild clean build \
             -project "${{ env.PROJECT }}" \
             -scheme "${{ env.SCHEME }}" \
@@ -39,10 +40,17 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            SYMROOT="$PWD/build"
+            SYMROOT="$PWD/build" 2>&1 | tee build_device.log
         env:
           EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+
+      - name: Upload build log (Device)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-device
+          path: build_device.log
 
       - name: Create unsigned IPA
         run: |
@@ -84,6 +92,7 @@ jobs:
 
       - name: Build for Simulator (Debug)
         run: |
+          set -o pipefail
           xcodebuild clean build \
             -project "${{ env.PROJECT }}" \
             -scheme "${{ env.SCHEME }}" \
@@ -93,10 +102,17 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            SYMROOT="$PWD/build-sim"
+            SYMROOT="$PWD/build-sim" 2>&1 | tee build_sim.log
         env:
           EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+
+      - name: Upload build log (Simulator)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-simulator
+          path: build_sim.log
 
       - name: Upload Simulator .app (artifact)
         uses: actions/upload-artifact@v4

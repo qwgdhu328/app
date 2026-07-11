@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import ActivityKit
 
 struct SettingsView: View {
     @State private var prefs = ReminderPrefs.stored
@@ -9,17 +10,18 @@ struct SettingsView: View {
     var body: some View {
         Form {
             reminderSection
+            dynamicIslandSection
             aboutSection
         }
         .navigationTitle("Impostazioni")
         .task {
-            let center = UNUserNotificationCenter.current()
-            let settings = await center.notificationSettings()
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
             notifGranted = settings.authorizationStatus == .authorized
         }
         .onChange(of: prefs.isEnabled) { _, _ in apply() }
         .onChange(of: prefs.hour) { _, _ in apply() }
         .onChange(of: prefs.minute) { _, _ in apply() }
+        .onChange(of: prefs.useDynamicIsland) { _, _ in apply() }
         .onChange(of: prefs.message) { _, _ in apply() }
         .onChange(of: prefs.repeatDaily) { _, _ in apply() }
     }
@@ -34,36 +36,24 @@ struct SettingsView: View {
                     Spacer()
                     Button(action: { showTimePicker.toggle() }) {
                         HStack {
-                            Image(systemName: "clock.fill")
-                                .foregroundStyle(.tint)
+                            Image(systemName: "clock.fill").foregroundStyle(.tint)
                             Text(String(format: "%02d:%02d", prefs.hour, prefs.minute))
                                 .font(.title3.weight(.medium))
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(.regularMaterial)
-                        .clipShape(.rect(cornerRadius: 10))
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(.regularMaterial).clipShape(.rect(cornerRadius: 10))
                     }
                     .buttonStyle(.plain)
                 }
 
                 if showTimePicker {
-                    DatePicker(
-                        "Seleziona ora",
+                    DatePicker("Seleziona ora",
                         selection: Binding(
-                            get: {
-                                Calendar.current.date(from: DateComponents(hour: prefs.hour, minute: prefs.minute)) ?? Date()
-                            },
-                            set: { date in
-                                let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
-                                prefs.hour = comps.hour ?? 9
-                                prefs.minute = comps.minute ?? 0
-                                showTimePicker = false
-                            }
+                            get: { Calendar.current.date(from: DateComponents(hour: prefs.hour, minute: prefs.minute)) ?? Date() },
+                            set: { let c = Calendar.current.dateComponents([.hour, .minute], from: $0); prefs.hour = c.hour ?? 9; prefs.minute = c.minute ?? 0; showTimePicker = false }
                         ),
                         displayedComponents: .hourAndMinute
-                    )
-                    .datePickerStyle(.wheel)
+                    ).datePickerStyle(.wheel)
                 }
 
                 Toggle("Ripeti ogni giorno", isOn: $prefs.repeatDaily)
@@ -71,39 +61,36 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Messaggio").font(.subheadline).foregroundStyle(.secondary)
                     TextField("Testo del promemoria", text: $prefs.message)
-                        .textFieldStyle(.plain)
-                        .padding(10)
-                        .background(.regularMaterial)
-                        .clipShape(.rect(cornerRadius: 10))
+                        .textFieldStyle(.plain).padding(10)
+                        .background(.regularMaterial).clipShape(.rect(cornerRadius: 10))
                 }
             }
 
             if !notifGranted && prefs.isEnabled {
                 Button("Abilita notifiche") {
                     Task { notifGranted = await ReminderManager.shared.requestPermission() }
-                }
-                .font(.subheadline)
-                .foregroundStyle(.tint)
+                }.font(.subheadline).foregroundStyle(.tint)
             }
 
             Button("Test promemoria") {
-                let content = UNMutableNotificationContent()
-                content.title = "BenessereBot"
-                content.body = prefs.message
-                content.sound = .default
+                let c = UNMutableNotificationContent(); c.title = "BenessereBot"; c.body = prefs.message; c.sound = .default
                 UNUserNotificationCenter.current().add(
-                    UNNotificationRequest(
-                        identifier: "testReminder",
-                        content: content,
-                        trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-                    )
+                    UNNotificationRequest(identifier: "testReminder", content: c, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))
                 )
+                if prefs.useDynamicIsland { startTestActivity() }
+            }.font(.subheadline).foregroundStyle(.tint)
+        } header: { Label("Promemoria", systemImage: "bell.fill") }
+    }
+
+    private var dynamicIslandSection: some View {
+        Section {
+            Toggle("Mostra in Dynamic Island", isOn: $prefs.useDynamicIsland)
+                .disabled(!ActivityAuthorizationInfo().areActivitiesEnabled)
+            if !ActivityAuthorizationInfo().areActivitiesEnabled {
+                Text("Dynamic Island non disponibile su questo dispositivo.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
-            .font(.subheadline)
-            .foregroundStyle(.tint)
-        } header: {
-            Label("Promemoria", systemImage: "bell.fill")
-        }
+        } header: { Label("Dynamic Island", systemImage: "iphone.gen3") }
     }
 
     private var aboutSection: some View {
@@ -112,30 +99,25 @@ struct SettingsView: View {
             aboutRow("AI Model", "OpenRouter GPT-4o")
             aboutRow("Piattaforma", "iOS nativo")
             Link(destination: URL(string: "https://github.com/qwgdhu328/app")!) {
-                HStack {
-                    Text("Codice sorgente")
-                    Spacer()
-                    Image(systemName: "arrow.up.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
+                HStack { Text("Codice sorgente"); Spacer(); Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary) }
             }
-        } header: {
-            Label("Informazioni", systemImage: "info.circle.fill")
-        }
+        } header: { Label("Informazioni", systemImage: "info.circle.fill") }
     }
 
     private func aboutRow(_ label: String, _ value: String) -> some View {
-        HStack {
-            Text(label).foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-        }
+        HStack { Text(label).foregroundStyle(.secondary); Spacer(); Text(value) }
     }
 
     private func apply() {
         ReminderPrefs.stored = prefs
         ReminderManager.shared.schedule()
+    }
+
+    private func startTestActivity() {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        let attrs = ReminderActivityAttributes(reminderMessage: prefs.message)
+        let state = ReminderActivityAttributes.ContentState(reminderMessage: prefs.message)
+        try? Activity.request(attributes: attrs, content: ActivityContent(state: state, staleDate: Date().addingTimeInterval(300)))
     }
 }
 

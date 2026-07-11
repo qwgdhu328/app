@@ -5,15 +5,15 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
+            switch selectedTab {
+            case .home:
                 HomeView()
-                    .tag(Tab.home)
+            case .chat:
                 ChatView()
-                    .tag(Tab.chat)
+            case .community:
                 CommunityView()
-                    .tag(Tab.community)
+            case .profile:
                 ProfileView()
-                    .tag(Tab.profile)
             }
             LiquidGlassTabBar(selectedTab: $selectedTab)
                 .frame(height: 50)

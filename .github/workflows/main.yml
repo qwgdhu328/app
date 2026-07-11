@@ -49,7 +49,11 @@ jobs:
             --entry-file index.js \
             --dev false \
             --bundle-output build/bundle/main.jsbundle \
-            --assets-dest build/bundle/assets
+            --assets-dest build/bundle/assets \
+            --bytecode
+        env:
+          EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
       - name: Build Project
         run: |

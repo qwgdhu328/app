@@ -179,19 +179,9 @@ jobs:
           EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
-      - name: Package .app for Appetize
-        run: |
-          APP_PATH=$(find "$PWD/build-sim" -name "*.app" -type d | head -1)
-          echo "Found .app at: $APP_PATH"
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: No .app found"
-            exit 1
-          fi
-          cd "$(dirname "$APP_PATH")"
-          zip -r "${{ env.SCHEME }}-simulator.zip" "$(basename "$APP_PATH")"
-
-      - name: Upload Simulator Artifact
+      - name: Upload Simulator .app
         uses: actions/upload-artifact@v4
         with:
           name: iOS-App-Simulator
-          path: build-sim/**/${{ env.SCHEME }}-simulator.zip
+          path: build-sim/**/BenessereBot.app
+          compression-level: 6

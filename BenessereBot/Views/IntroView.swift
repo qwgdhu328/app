@@ -144,6 +144,13 @@ struct IntroView: View {
     }
 
     private var goalPage: some View {
+        goalPageContent
+            .padding(30)
+            .opacity(contentOpacity)
+            .offset(y: contentOffset)
+    }
+
+    private var goalPageContent: some View {
         VStack(spacing: 20) {
             Image(systemName: "target")
                 .font(.system(size: 50))
@@ -178,9 +185,6 @@ struct IntroView: View {
             }
             .padding(.horizontal, 20)
         }
-        .padding(30)
-        .opacity(contentOpacity)
-        .offset(y: contentOffset)
     }
 
     private var moodPage: some View {

@@ -169,7 +169,7 @@ jobs:
             -workspace "ios/${{ env.SCHEME }}.xcworkspace" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
+            -sdk iphonesimulator \
             -arch arm64 \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \

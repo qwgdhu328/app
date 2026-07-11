@@ -32,6 +32,9 @@ jobs:
       - name: Expo prebuild
         run: npx expo prebuild --platform ios --no-install
 
+      - name: Show generated Metro config
+        run: cat metro.config.js 2>/dev/null || echo "No metro.config.js found"
+
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -41,54 +44,75 @@ jobs:
       - name: Install Pods
         run: pod install --project-directory=ios
 
-      - name: Generate JS bundle
+      - name: Build Project (Release)
         run: |
-          mkdir -p build/bundle
-          npx expo export:embed \
-            --platform ios \
-            --entry-file index.js \
-            --dev false \
-            --bundle-output build/bundle/main.jsbundle \
-            --assets-dest build/bundle/assets \
-            --bytecode
-        env:
-          EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
-
-      - name: Build Project
-        run: |
-          xcodebuild clean archive \
+          xcodebuild clean build \
             -workspace "ios/${{ env.SCHEME }}.xcworkspace" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Release \
-            -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
             -destination 'generic/platform=iOS' \
             -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            SYMROOT="$PWD/build"
         env:
           EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
-      - name: Inject bundle into archive
+      - name: Find .app and verify bundle
         run: |
-          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d | head -1)
-          echo "Injecting bundle into: $APP_PATH"
-          cp -v build/bundle/main.jsbundle "$APP_PATH/main.jsbundle"
-          ls -la "$APP_PATH/main.jsbundle"
+          echo "=== Build output structure ==="
+          find "$PWD/build" -name "*.app" -type d 2>/dev/null || echo "No .app found"
+          echo ""
+          APP_PATH=$(find "$PWD/build" -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then
+            echo "=== .app contents ==="
+            ls -la "$APP_PATH/"
+            echo ""
+            echo "=== Looking for JS bundles ==="
+            find "$APP_PATH" -name "*.jsbundle" -o -name "*.hbc" 2>/dev/null
+            echo ""
+            find "$APP_PATH" -name "main*" 2>/dev/null
+          else
+            echo "APP NOT FOUND - listing build directory"
+            find "$PWD/build" -type f -name "*.app" -o -type d -name "*.app" 2>/dev/null
+            ls -R "$PWD/build/" 2>/dev/null | head -50
+          fi
 
-      - name: Debug bundle contents
+      - name: Generate fallback bundle (if Xcode one is missing)
         run: |
-          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d | head -1)
-          echo "App found at: $APP_PATH"
-          ls -la "$APP_PATH/"
-          find "$APP_PATH" -name "*.jsbundle" -o -name "*.hbc" | head -5
-          find "$APP_PATH" -name "main.jsbundle" -exec ls -la {} \;
+          APP_PATH=$(find "$PWD/build" -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: No .app found"
+            exit 1
+          fi
+          if [ ! -f "$APP_PATH/main.jsbundle" ]; then
+            echo "Xcode did NOT generate main.jsbundle — generating with expo export:embed"
+            mkdir -p build/bundle
+            npx expo export:embed \
+              --platform ios \
+              --entry-file index.js \
+              --dev false \
+              --bundle-output build/bundle/main.jsbundle \
+              --assets-dest build/bundle/assets \
+              --bytecode
+            cp build/bundle/main.jsbundle "$APP_PATH/main.jsbundle"
+          else
+            echo "Xcode generated main.jsbundle successfully"
+          fi
+          ls -la "$APP_PATH/main.jsbundle" 2>/dev/null
+          if [ -f "$APP_PATH/main.jsbundle" ]; then
+            echo "Bundle size: $(wc -c < "$APP_PATH/main.jsbundle") bytes"
+            echo "First 4 bytes (hex): $(xxd -l 4 "$APP_PATH/main.jsbundle" | head -1)"
+          fi
+        env:
+          EXPO_PUBLIC_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          EXPO_PUBLIC_OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
       - name: Create unsigned IPA
         run: |
-          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d | head -1)
+          APP_PATH=$(find "$PWD/build" -name "*.app" -type d | head -1)
           mkdir -p build/ipa/Payload
           cp -r "$APP_PATH" build/ipa/Payload/
           cd build/ipa

@@ -48,6 +48,7 @@ jobs:
             -scheme "${{ env.SCHEME }}" \
             -configuration Release \
             -archivePath "$PWD/build/${{ env.SCHEME }}.xcarchive" \
+            -destination 'generic/platform=iOS' \
             -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -58,7 +59,7 @@ jobs:
 
       - name: Debug bundle contents
         run: |
-          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d)
+          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d | head -1)
           echo "App found at: $APP_PATH"
           ls -la "$APP_PATH/"
           find "$APP_PATH" -name "*.jsbundle" -o -name "*.hbc" | head -5
@@ -66,7 +67,7 @@ jobs:
 
       - name: Create unsigned IPA
         run: |
-          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d)
+          APP_PATH=$(find "build/${{ env.SCHEME }}.xcarchive" -name "*.app" -type d | head -1)
           mkdir -p build/ipa/Payload
           cp -r "$APP_PATH" build/ipa/Payload/
           cd build/ipa

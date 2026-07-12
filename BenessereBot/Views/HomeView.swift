@@ -106,12 +106,12 @@ struct HomeView: View {
                     let angle = angles[i] * .pi / 180
                     let x = cx2 + r * cos(angle); let y = cy + r * sin(angle)
                     if days[i].score > 0 {
-                        cx.setFillColor(moodColor(days[i].emoji).cgColor ?? UIColor.systemYellow.cgColor)
                         let starR: CGFloat = highlightedConstellation == i ? 10 : 5 + CGFloat(days[i].score) / 30
-                        cx.fill(Circle().path(in: CGRect(x: x - starR, y: y - starR, width: starR * 2, height: starR * 2)))
+                        let rect = CGRect(x: x - starR, y: y - starR, width: starR * 2, height: starR * 2)
+                        cx.fill(Path(ellipseIn: rect), with: .color(moodColor(days[i].emoji)))
                     } else {
-                        cx.setFillColor(UIColor.systemGray4.cgColor)
-                        cx.fill(Circle().path(in: CGRect(x: x - 3, y: y - 3, width: 6, height: 6)))
+                        let rect = CGRect(x: x - 3, y: y - 3, width: 6, height: 6)
+                        cx.fill(Path(ellipseIn: rect), with: .color(.gray.opacity(0.4)))
                     }
                 }
                 for i in 0..<days.count where days[i].score > 0 {
@@ -119,8 +119,10 @@ struct HomeView: View {
                         let a1 = angles[i] * .pi / 180; let a2 = angles[j] * .pi / 180
                         let x1 = cx2 + r * cos(a1); let y1 = cy + r * sin(a1)
                         let x2 = cx2 + r * cos(a2); let y2 = cy + r * sin(a2)
-                        cx.setStrokeColor(UIColor.white.withAlphaComponent(0.15))
-                        cx.stroke(Path { p in p.move(to: CGPoint(x: x1, y: y1)); p.addLine(to: CGPoint(x: x2, y: y2)) }, lineWidth: 0.5)
+                        var linePath = Path()
+                        linePath.move(to: CGPoint(x: x1, y: y1))
+                        linePath.addLine(to: CGPoint(x: x2, y: y2))
+                        cx.stroke(linePath, with: .color(.white.opacity(0.12)), lineWidth: 0.5)
                     }
                 }
             }
@@ -157,28 +159,13 @@ struct HomeView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                 ForEach(moodGrid.indices, id: \.self) { i in
                     let (emoji, label, color) = moodGrid[i]
-                    Button {
+                    MoodButton(emoji: emoji, label: label, color: color, isSelected: selectedMood == emoji) {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                             selectedMood = emoji; showAffirmation = true
                             addRipple(color: color)
                             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                             let entry = MoodEntry(emoji: emoji, label: label, score: (i + 1) * 20)
                             context.insert(entry); try? context.save()
-                        }
-                    } label: {
-                        VStack(spacing: 6) {
-                            Text(emoji).font(.system(size: 32))
-                                .scaleEffect(selectedMood == emoji ? 1.3 : 1)
-                                .animation(.spring(response: 0.3), value: selectedMood == emoji)
-                            Text(label).font(.caption2).foregroundStyle(Theme.muted)
-                        }
-                        .frame(maxWidth: .infinity).padding(12)
-                        .background(selectedMood == emoji ? color.opacity(0.2) : Color.clear)
-                        .clipShape(.rect(cornerRadius: 16))
-                        .overlay {
-                            if selectedMood == emoji {
-                                .rect(cornerRadius: 16).stroke(color.opacity(0.5), lineWidth: 1)
-                            }
                         }
                     }
                 }
@@ -207,21 +194,29 @@ struct HomeView: View {
                 wordField($word2, placeholder: "parola 2")
                 wordField($word3, placeholder: "parola 3")
             }
-            if !recentEntries.filter({ $0.prompt == "3-Word Snapshot" }).isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(recentEntries.filter { $0.prompt == "3-Word Snapshot" }.prefix(5)) { entry in
-                            Text(entry.content)
-                                .font(.caption2).foregroundStyle(Theme.textSecondary)
-                                .padding(.horizontal, 10).padding(.vertical, 6)
-                                .glassEffect(.regular, in: .capsule)
-                        }
-                    }
-                }
-            }
+            recentSnapshotCapsules
         }
         .padding(16)
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
+    }
+
+    private var recentSnapshotCapsules: some View {
+        let snapshots = recentEntries.filter { $0.prompt == "3-Word Snapshot" }
+        if snapshots.isEmpty {
+            return AnyView(EmptyView())
+        }
+        return AnyView(
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(snapshots.prefix(5)) { entry in
+                        Text(entry.content)
+                            .font(.caption2).foregroundStyle(Theme.textSecondary)
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .glassEffect(.regular, in: .capsule)
+                    }
+                }
+            }
+        )
     }
 
     private var affirmationCard: some View {
@@ -300,6 +295,28 @@ struct HomeView: View {
         }
     }
 
+}
+
+private struct MoodButton: View {
+    let emoji: String; let label: String; let color: Color; let isSelected: Bool; let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Text(emoji).font(.system(size: 32))
+                    .scaleEffect(isSelected ? 1.3 : 1)
+                    .animation(.spring(response: 0.3), value: isSelected)
+                Text(label).font(.caption2).foregroundStyle(Theme.muted)
+            }
+            .frame(maxWidth: .infinity).padding(12)
+            .background(isSelected ? color.opacity(0.2) : Color.clear)
+            .clipShape(.rect(cornerRadius: 16))
+            .overlay {
+                if isSelected {
+                    .rect(cornerRadius: 16).stroke(color.opacity(0.5), lineWidth: 1)
+                }
+            }
+        }
+    }
 }
 
 private struct RippleView: View {

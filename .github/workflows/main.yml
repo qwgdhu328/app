@@ -22,6 +22,9 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate --project .
 
+      - name: Select correct Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.5.app
+
       - name: Build for Device (Release)
         run: |
           set -o pipefail
@@ -36,6 +39,7 @@ jobs:
             SYMROOT="$PWD/build" 2>&1 | tee build_device.log
           exit ${PIPESTATUS[0]}
         env:
+          DEVELOPER_DIR: /Applications/Xcode_26.5.app
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
@@ -84,6 +88,9 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate --project .
 
+      - name: Select correct Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.5.app
+
       - name: Build for Simulator (Debug)
         run: |
           set -o pipefail
@@ -91,8 +98,7 @@ jobs:
             -project "${{ env.PROJECT }}" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Debug \
-            -sdk iphonesimulator \
-            -arch arm64 \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -100,6 +106,7 @@ jobs:
           # Exit with xcodebuild status (tee hides it)
           exit ${PIPESTATUS[0]}
         env:
+          DEVELOPER_DIR: /Applications/Xcode_26.5.app
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 

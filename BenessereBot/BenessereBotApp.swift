@@ -52,19 +52,17 @@ struct BenessereBotApp: App {
     }
 
     private func styleTabBar() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Theme.bgTop)
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(Theme.muted)
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Theme.muted)]
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.breathing)
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Theme.breathing)]
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithTransparentBackground()
+        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Theme.muted)
+        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Theme.muted)]
+        tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.breathing)
+        tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Theme.breathing)]
+        UITabBar.appearance().standardAppearance = tabAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
 
         let nav = UINavigationBarAppearance()
-        nav.configureWithOpaqueBackground()
-        nav.backgroundColor = UIColor(Theme.bgTop)
+        nav.configureWithTransparentBackground()
         nav.titleTextAttributes = [.foregroundColor: UIColor(Theme.text)]
         nav.largeTitleTextAttributes = [.foregroundColor: UIColor(Theme.text)]
         UINavigationBar.appearance().standardAppearance = nav

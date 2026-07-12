@@ -16,7 +16,7 @@ struct HomeView: View {
     @AppStorage("lastActiveDate") private var lastActiveDate = ""
     @Query var moodEntries: [MoodEntry]
     @Query var entries: [JournalEntry]
-    @Query(sort: \JournalEntry.date, order: .reverse) var recentEntries: [JournalEntry]
+    @Query(sort: [SortDescriptor(\JournalEntry.date, order: .reverse)]) var recentEntries: [JournalEntry]
     @Environment(\.modelContext) var context
 
     private let moodGrid = [
@@ -201,23 +201,21 @@ struct HomeView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
     }
 
+    @ViewBuilder
     private var recentSnapshotCapsules: some View {
         let snapshots = recentEntries.filter { $0.prompt == "3-Word Snapshot" }
-        if snapshots.isEmpty {
-            return AnyView(EmptyView())
-        }
-        return AnyView(
+        if !snapshots.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(snapshots.prefix(5)) { entry in
                         Text(entry.content)
                             .font(.caption2).foregroundStyle(Theme.textSecondary)
                             .padding(.horizontal, 10).padding(.vertical, 6)
-                            .glassEffect(.regular, in: .capsule)
+                            .glassEffect(.regular, in: Capsule())
                     }
                 }
             }
-        )
+        }
     }
 
     private var affirmationCard: some View {
@@ -279,14 +277,16 @@ struct HomeView: View {
     private func averageMoodColor() -> Color {
         let recent = moodEntries.suffix(7)
         guard !recent.isEmpty else { return Theme.accent }
-        let total = recent.reduce(into: (r: 0.0, g: 0.0, b: 0.0, count: 0)) { acc, entry in
-            let c = moodColor(for: entry.emoji)
-            if let comps = UIColor(c).cgColor.components, comps.count >= 3 {
-                acc.r += Double(comps[0]); acc.g += Double(comps[1]); acc.b += Double(comps[2]); acc.count += 1
+        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0; var count = 0
+        for entry in recent {
+            let c = UIColor(moodColor(for: entry.emoji))
+            var cr: CGFloat = 0; var cg: CGFloat = 0; var cb: CGFloat = 0; var ca: CGFloat = 0
+            if c.getRed(&cr, green: &cg, blue: &cb, alpha: &ca) {
+                r += cr; g += cg; b += cb; count += 1
             }
         }
-        guard total.count > 0 else { return Theme.accent }
-        return Color(red: total.r / Double(total.count), green: total.g / Double(total.count), blue: total.b / Double(total.count))
+        guard count > 0 else { return Theme.accent }
+        return Color(red: Double(r / CGFloat(count)), green: Double(g / CGFloat(count)), blue: Double(b / CGFloat(count)))
     }
 
     private func last7Days() -> [(emoji: String, label: String, score: Int, date: Date)] {
@@ -314,6 +314,11 @@ struct HomeView: View {
     }
     private func formattedDate(_ d: Date) -> String { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f.string(from: d) }
     private func dateFromString(_ s: String) -> Date? { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f.date(from: s) }
+    private func computeWellnessScore(moods: Int, streak: Int, sessions: Int, entries: Int) -> Int {
+        let m = min(moods * 10, 30); let s = min(streak * 5, 30)
+        let b = min(sessions * 15, 25); let j = min(entries * 10, 25)
+        return min(m + s + b + j, 100)
+    }
 }
 
 private struct MoodButton: View {
@@ -328,8 +333,11 @@ private struct MoodButton: View {
             }
             .frame(maxWidth: .infinity).padding(12)
             .background(isSelected ? color.opacity(0.2) : Color.clear)
-            .clipShape(.rect(cornerRadius: 16))
-            .overlay(isSelected ? AnyView(RoundedRectangle(cornerRadius: 16).stroke(color.opacity(0.5), lineWidth: 1)) : AnyView(EmptyView()))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? color.opacity(0.5) : Color.clear, lineWidth: 1)
+            )
         }
     }
 }
@@ -376,8 +384,4 @@ private struct HubCard: View {
     }
 }
 
-private func computeWellnessScore(moods: Int, streak: Int, sessions: Int, entries: Int) -> Int {
-    let m = min(moods * 10, 30); let s = min(streak * 5, 30)
-    let b = min(sessions * 15, 25); let j = min(entries * 10, 25)
-    return min(m + s + b + j, 100)
-}
+

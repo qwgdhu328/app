@@ -1,14 +1,12 @@
 import SwiftUI
-import Observation
 
 @MainActor
-@Observable
-class ChatViewModel {
-    var messages: [Message] = []
-    var isLoading = false
-    var errorMessage: String?
-    var showPsychologists = false
-    var suggestedCity = "Milano"
+class ChatViewModel: ObservableObject {
+    @Published var messages: [Message] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    @Published var showPsychologists = false
+    @Published var suggestedCity = "Milano"
 
     func send(_ text: String, persona: AIPersona = .therapist) {
         guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }

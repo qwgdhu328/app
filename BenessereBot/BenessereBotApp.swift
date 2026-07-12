@@ -6,10 +6,16 @@ import SwiftData
 struct BenessereBotApp: App {
     @State private var showIntro = !UserDefaults.standard.bool(forKey: "hasSeenIntro")
     @StateObject private var breathingService = BreathingService()
+    let modelContainer: ModelContainer
 
     init() {
         requestNotificationPermission()
         styleTabBar()
+        let types: [any PersistentModel.Type] = [StoredMessage.self, MoodEntry.self, BreathingSession.self, JournalEntry.self, Goal.self, Habit.self, Achievement.self]
+        guard let container = try? ModelContainer(for: types) else {
+            fatalError("Could not initialize ModelContainer")
+        }
+        modelContainer = container
     }
 
     var body: some Scene {
@@ -35,16 +41,17 @@ struct BenessereBotApp: App {
             }
             .environmentObject(breathingService)
             .onChange(of: breathingService.isActive) { _, active in
-                if !active, let ctx = try? ModelContext(.init(for: BreathingSession.self)) {
+                if !active {
                     let s = breathingService
                     if s.secondsLeft <= 0 {
                         let session = BreathingSession(pattern: s.pattern.rawValue, duration: s.totalDuration, rounds: s.rounds)
-                        ctx.insert(session); try? ctx.save()
+                        modelContainer.mainContext.insert(session)
+                        try? modelContainer.mainContext.save()
                     }
                 }
             }
         }
-        .modelContainer(for: [StoredMessage.self, MoodEntry.self, BreathingSession.self, JournalEntry.self, Goal.self, Habit.self, Achievement.self])
+        .modelContainer(modelContainer)
     }
 
     private func requestNotificationPermission() {

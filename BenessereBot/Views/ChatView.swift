@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ChatView: View {
-    @State private var viewModel = ChatViewModel()
+    @StateObject private var viewModel = ChatViewModel()
     @State private var inputText = ""
     @State private var showPsychologists = false
     @State private var speechRecognizer: SpeechRecognizer?

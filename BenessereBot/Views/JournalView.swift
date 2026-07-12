@@ -13,35 +13,33 @@ struct JournalView: View {
     ]
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AppBackground()
-                if entries.isEmpty {
-                    ContentUnavailableView("Nessun pensiero", systemImage: "book", description: Text("Inizia a scrivere il tuo diario")).foregroundStyle(Theme.muted)
-                } else {
-                    List {
+        ZStack {
+            AppBackground()
+            if entries.isEmpty {
+                ContentUnavailableView("Nessun pensiero", systemImage: "book", description: Text("Inizia a scrivere il tuo diario")).foregroundStyle(Theme.muted)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
                         ForEach(entries) { entry in
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 8) {
                                 Text(entry.prompt).font(.caption).foregroundStyle(Theme.accent)
-                                Text(entry.content).font(.body).foregroundStyle(Theme.text).lineLimit(3)
+                                Text(entry.content).font(.body).foregroundStyle(Theme.text).lineLimit(4)
                                 Text(entry.date.formatted(date: .abbreviated, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                             }
-                            .padding(.vertical, 4)
-                            .listRowBackground(Theme.card)
+                            .glass()
                         }
                     }
-                    .listStyle(.insetGrouped)
-                    .scrollContentBackground(.hidden)
+                    .padding()
                 }
             }
-            .navigationTitle("Diario")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { showWrite = true } label: { Image(systemName: "square.and.pencil").foregroundStyle(Theme.accent) }
-                }
-            }
-            .sheet(isPresented: $showWrite) { JournalWriteView(prompts: prompts) }
         }
+        .navigationTitle("Diario")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { showWrite = true } label: { Image(systemName: "square.and.pencil").foregroundStyle(Theme.accent) }
+            }
+        }
+        .sheet(isPresented: $showWrite) { JournalWriteView(prompts: prompts) }
     }
 }
 
@@ -59,23 +57,19 @@ struct JournalWriteView: View {
                 VStack(spacing: 16) {
                     Text(prompt).font(.headline).foregroundStyle(Theme.accent).multilineTextAlignment(.center).padding(.top)
                     TextEditor(text: $content)
-                        .scrollContentBackground(.hidden)
-                        .padding(12)
-                        .background(Theme.card)
+                        .scrollContentBackground(.hidden).padding(14)
+                        .background(Theme.surface).background(Theme.glassGradient)
                         .clipShape(.rect(cornerRadius: 16))
+                        .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
                         .foregroundStyle(Theme.text)
                     HStack {
-                        Button("Salta") {
-                            prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."
-                            content = ""
-                        }.foregroundStyle(Theme.muted)
+                        Button("Salta") { prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."; content = "" }.foregroundStyle(Theme.muted).buttonStyle(.plain)
                         Spacer()
                         Button("Salva") {
                             guard !content.isEmpty else { return }
                             context.insert(JournalEntry(prompt: prompt, content: content))
-                            try? context.save()
-                            dismiss()
-                        }.foregroundStyle(Theme.accent).fontWeight(.semibold)
+                            try? context.save(); dismiss()
+                        }.foregroundStyle(Theme.accent).fontWeight(.semibold).buttonStyle(.plain)
                     }
                 }
                 .padding()

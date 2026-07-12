@@ -169,7 +169,7 @@ struct IntroView: View {
                         .frame(maxWidth: .infinity)
                         .padding(16)
                         .background(selectedGoal == goal ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.card))
-                        .foregroundStyle(selectedGoal == goal ? .white : Theme.text)
+                        .foregroundStyle(selectedGoal == goal ? Theme.text : Theme.text)
                         .clipShape(.rect(cornerRadius: 16))
                     }
                 }
@@ -262,11 +262,13 @@ struct IntroView: View {
             } label: {
                 Text("Inizia il percorso →")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Theme.accent)
+                    .background(Theme.surface)
+                    .background(Theme.glassGradient)
                     .clipShape(.rect(cornerRadius: 16))
+                    .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
             }
             .padding(.horizontal, 40)
         }

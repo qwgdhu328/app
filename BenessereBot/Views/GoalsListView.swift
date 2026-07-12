@@ -8,57 +8,64 @@ struct GoalsListView: View {
     @State private var showNewHabit = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AppBackground()
-                List {
-                    Section("Obiettivi") {
+        ZStack {
+            AppBackground()
+            ScrollView {
+                VStack(spacing: 16) {
+                    VStack(spacing: 8) {
                         if goals.isEmpty {
-                            Text("Nessun obiettivo. Aggiungine uno!").foregroundStyle(Theme.muted).listRowBackground(Theme.card)
+                            Text("Nessun obiettivo. Aggiungine uno!").font(.subheadline).foregroundStyle(Theme.muted)
                         }
                         ForEach(goals) { g in
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 8) {
                                 HStack {
                                     Image(systemName: g.icon).foregroundStyle(Theme.accent)
-                                    Text(g.title).font(.headline).foregroundStyle(Theme.text)
+                                    Text(g.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.text)
                                     Spacer()
-                                    Text("\(Int(g.progress / g.target * 100))%").font(.caption).foregroundStyle(Theme.muted)
+                                    Text("\(Int(g.progress / g.target * 100))%").font(.caption).foregroundStyle(Theme.accent)
                                 }
-                                ProgressView(value: g.progress, total: g.target).tint(Theme.breathing)
+                                ProgressView(value: g.progress, total: g.target).tint(Theme.accent)
                             }
-                            .listRowBackground(Theme.card)
+                            .glass()
                         }
                         Button { showNewGoal = true } label: {
-                            Label("Nuovo obiettivo", systemImage: "plus.circle").foregroundStyle(Theme.accent)
-                        }.listRowBackground(Theme.card)
+                            Label("Nuovo obiettivo", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
+                                .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
+                                .clipShape(.rect(cornerRadius: 14))
+                                .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                        }
                     }
-                    Section("Abitudini") {
+                    VStack(spacing: 8) {
                         if habits.isEmpty {
-                            Text("Nessuna abitudine. Creane una!").foregroundStyle(Theme.muted).listRowBackground(Theme.card)
+                            Text("Nessuna abitudine. Creane una!").font(.subheadline).foregroundStyle(Theme.muted)
                         }
                         ForEach(habits) { h in
                             HStack {
-                                Image(systemName: h.icon).foregroundStyle(Theme.breathing)
-                                Text(h.title).foregroundStyle(Theme.text)
+                                Image(systemName: h.icon).foregroundStyle(Theme.accent)
+                                Text(h.title).font(.subheadline).foregroundStyle(Theme.text)
                                 Spacer()
-                                Text("\(h.streak) gg").font(.caption).foregroundStyle(Theme.accent)
+                                Text("\(h.streak) gg").font(.caption).foregroundStyle(Theme.accentSecondary)
                                 Button { toggleHabit(h) } label: {
-                                    Image(systemName: "checkmark.circle\(h.lastCompleted.map { Calendar.current.isDateInToday($0) ? ".fill" : "" } ?? "")").foregroundStyle(Theme.breathing)
+                                    Image(systemName: "checkmark.circle\(h.lastCompleted.map { Calendar.current.isDateInToday($0) ? ".fill" : "" } ?? "")")
+                                        .foregroundStyle(Theme.accent).font(.title3)
                                 }
                             }
-                            .listRowBackground(Theme.card)
+                            .glass()
                         }
                         Button { showNewHabit = true } label: {
-                            Label("Nuova abitudine", systemImage: "plus.circle").foregroundStyle(Theme.breathing)
-                        }.listRowBackground(Theme.card)
+                            Label("Nuova abitudine", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
+                                .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
+                                .clipShape(.rect(cornerRadius: 14))
+                                .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                        }
                     }
                 }
-                .listStyle(.insetGrouped).scrollContentBackground(.hidden)
+                .padding()
             }
-            .navigationTitle("Obiettivi")
-            .sheet(isPresented: $showNewGoal) { NewGoalView() }
-            .sheet(isPresented: $showNewHabit) { NewHabitView() }
         }
+        .navigationTitle("Obiettivi")
+        .sheet(isPresented: $showNewGoal) { NewGoalView() }
+        .sheet(isPresented: $showNewHabit) { NewHabitView() }
     }
 
     private func toggleHabit(_ h: Habit) {
@@ -88,8 +95,7 @@ struct NewGoalView: View {
                     Button("Salva") {
                         guard !title.isEmpty else { return }
                         context.insert(Goal(title: title, icon: icon))
-                        try? context.save()
-                        dismiss()
+                        try? context.save(); dismiss()
                     }.foregroundStyle(Theme.accent)
                 }.scrollContentBackground(.hidden)
             }
@@ -113,8 +119,7 @@ struct NewHabitView: View {
                     Button("Salva") {
                         guard !title.isEmpty else { return }
                         context.insert(Habit(title: title))
-                        try? context.save()
-                        dismiss()
+                        try? context.save(); dismiss()
                     }.foregroundStyle(Theme.accent)
                 }.scrollContentBackground(.hidden)
             }

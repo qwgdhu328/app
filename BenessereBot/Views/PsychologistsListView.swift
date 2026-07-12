@@ -26,7 +26,7 @@ struct PsychologistsListView: View {
                                 .foregroundStyle(Theme.muted)
                             Label(psychologist.city, systemImage: "mappin.circle.fill")
                                 .font(.caption2)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Theme.accent)
                         }
                     }
 
@@ -45,7 +45,7 @@ struct PsychologistsListView: View {
                                 .font(.caption)
                         }
                         .buttonStyle(.bordered)
-                        .tint(.green)
+                        .tint(Theme.accent)
 
                         Button {
                             if let url = URL(string: "mailto:\(psychologist.email)") {
@@ -56,7 +56,7 @@ struct PsychologistsListView: View {
                                 .font(.caption)
                         }
                         .buttonStyle(.bordered)
-                        .tint(.blue)
+                        .tint(Theme.accent)
                     }
                 }
                 .padding(.vertical, 4)

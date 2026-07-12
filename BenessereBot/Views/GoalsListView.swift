@@ -26,13 +26,14 @@ struct GoalsListView: View {
                                 }
                                 ProgressView(value: g.progress, total: g.target).tint(Theme.accent)
                             }
-                            .glass()
+                            .padding(16)
+                            .glassEffect(.regular, in: .rect(cornerRadius: 20))
                         }
                         Button { showNewGoal = true } label: {
                             Label("Nuovo obiettivo", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
-                                .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                                .padding(16)
+                                .frame(maxWidth: .infinity)
+                                .glassEffect(.regular, in: .rect(cornerRadius: 14))
                         }
                     }
                     VStack(spacing: 8) {
@@ -50,13 +51,14 @@ struct GoalsListView: View {
                                         .foregroundStyle(Theme.accent).font(.title3)
                                 }
                             }
-                            .glass()
+                            .padding(16)
+                            .glassEffect(.regular, in: .rect(cornerRadius: 20))
                         }
                         Button { showNewHabit = true } label: {
                             Label("Nuova abitudine", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
-                                .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                                .padding(16)
+                                .frame(maxWidth: .infinity)
+                                .glassEffect(.regular, in: .rect(cornerRadius: 14))
                         }
                     }
                 }

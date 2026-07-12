@@ -47,9 +47,7 @@ struct WellbeingView: View {
             Text(label).font(.caption2).foregroundStyle(Theme.muted)
         }
         .frame(maxWidth: .infinity).padding(14)
-        .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+        .glassEffect(.regular, in: .rect(cornerRadius: 16))
         .scaleEffect(animateStats ? 1 : 0.8)
         .opacity(animateStats ? 1 : 0)
         .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.1), value: animateStats)
@@ -63,7 +61,8 @@ struct WellbeingView: View {
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
             }
-            .glass()
+            .padding(16)
+            .glassEffect(.regular, in: .rect(cornerRadius: 20))
         }
     }
 }
@@ -95,7 +94,8 @@ struct BreathingHistoryView: View {
                                     Spacer()
                                     Text(s.date.formatted(date: .abbreviated, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                                 }
-                                .glass()
+                                .padding(16)
+                                .glassEffect(.regular, in: .rect(cornerRadius: 20))
                             }
                         }
                     }
@@ -112,8 +112,6 @@ struct BreathingHistoryView: View {
             Text(label).font(.caption2).foregroundStyle(Theme.muted)
         }
         .frame(maxWidth: .infinity).padding(12)
-        .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+        .glassEffect(.regular, in: .rect(cornerRadius: 14))
     }
 }

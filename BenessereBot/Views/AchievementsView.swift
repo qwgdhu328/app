@@ -17,10 +17,10 @@ struct AchievementsView: View {
                             Text(a.title).font(.caption.weight(.semibold)).foregroundStyle(Theme.text).multilineTextAlignment(.center)
                             Text(a.details).font(.caption2).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
                         }
-                        .frame(maxWidth: .infinity).padding(16)
-                        .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(a.isUnlocked ? Theme.accent.opacity(0.4) : Theme.cardBorder, lineWidth: 1))
+                        .frame(maxWidth: .infinity)
+                        .padding(16)
+                        .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                        .overlay(.rect(cornerRadius: 16).stroke(a.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1))
                         .opacity(a.isUnlocked ? 1 : 0.5)
                     }
                 }

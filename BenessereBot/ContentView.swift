@@ -50,10 +50,6 @@ struct ContentView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 8)
-        .background(.ultraThinMaterial)
-        .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .overlay(RoundedRectangle(cornerRadius: 28).stroke(Theme.cardBorder, lineWidth: 1))
-        .shadow(color: .black.opacity(0.4), radius: 24, x: 0, y: 8)
+        .glassEffect(.regular, in: .rect(cornerRadius: 28))
     }
 }

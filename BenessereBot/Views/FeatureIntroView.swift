@@ -35,9 +35,7 @@ struct FeatureIntroView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var featureCards: some View {
@@ -68,9 +66,7 @@ struct FeatureIntroView: View {
             Spacer(minLength: 0)
         }
         .padding(16)
-        .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+        .glassEffect(.regular, in: .rect(cornerRadius: 16))
     }
 }
 

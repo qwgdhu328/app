@@ -32,7 +32,8 @@ struct MoodCalendarView: View {
                 }
             }
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
         .navigationTitle("Calendario umore")
     }
 

@@ -85,9 +85,10 @@ struct HomeView: View {
             }
             Spacer()
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
-
+    
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             let hour = Calendar.current.component(.hour, from: Date())
@@ -107,7 +108,8 @@ struct HomeView: View {
             Spacer()
             if streak > 0 { Image(systemName: "sparkles").foregroundStyle(Theme.accentSecondary) }
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var moodSection: some View {
@@ -127,15 +129,14 @@ struct HomeView: View {
                             Text(label).font(.caption2).foregroundStyle(Theme.muted)
                         }
                         .frame(maxWidth: .infinity).padding(12)
-                        .background(selectedMood == emoji ? Theme.accent.opacity(0.15) : Theme.surface)
-                        .background(selectedMood == emoji ? AnyShapeStyle(Theme.glassGradient) : AnyShapeStyle(Color.clear))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(selectedMood == emoji ? Theme.cardBorderHighlight : Theme.cardBorder, lineWidth: 1))
+                        .background(selectedMood == emoji ? Theme.accent.opacity(0.15) : Color.clear)
+                        .clipShape(.rect(cornerRadius: 16))
                     }
                 }
             }
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var affirmationCard: some View {
@@ -144,7 +145,8 @@ struct HomeView: View {
             Text(dailyAffirmation).font(.subheadline).italic().foregroundStyle(Theme.text).multilineTextAlignment(.center)
             Image(systemName: "quote.closing").font(.title3).foregroundStyle(Theme.accent)
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
         .transition(.scale.combined(with: .opacity))
     }
 
@@ -186,7 +188,8 @@ struct HomeView: View {
                 Image(systemName: breathingService.isActive ? "stop.circle.fill" : "play.circle.fill")
                     .font(.title2).foregroundStyle(Theme.accent)
             }
-            .glass()
+            .padding(16)
+            .glassEffect(.regular, in: .rect(cornerRadius: 20))
         }
     }
 
@@ -219,9 +222,7 @@ struct ActionCard: View {
                 Text(title).font(.callout.weight(.semibold)).foregroundStyle(Theme.text)
             }
             .frame(maxWidth: .infinity).padding(16)
-            .background(Theme.surface).background(Theme.glassGradient)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+            .glassEffect(.regular, in: .rect(cornerRadius: 16))
         }
         .scaleEffect(pressed ? 0.95 : 1)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: pressed)

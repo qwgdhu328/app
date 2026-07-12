@@ -21,7 +21,8 @@ struct WellnessScoreView: View {
             }
             Spacer()
         }
-        .glass()
+        .padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var scoreColor: Color { score >= 80 ? Theme.accent : score >= 50 ? Theme.accentSecondary : .red.opacity(0.7) }

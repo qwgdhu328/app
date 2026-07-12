@@ -74,9 +74,7 @@ struct ChatView: View {
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
             }
             .padding(12).padding(.horizontal, 4)
-            .background(Theme.surface).background(Theme.glassGradient)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+            .glassEffect(.regular, in: .rect(cornerRadius: 14))
             .padding(.horizontal, 16).padding(.vertical, 6)
         }
         .buttonStyle(.plain)
@@ -95,9 +93,7 @@ struct ChatView: View {
             TextField("Scrivi come ti senti...", text: $inputText)
                 .textFieldStyle(.plain)
                 .padding(14)
-                .background(Theme.surface).background(Theme.glassGradient)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+                .glassEffect(.regular, in: .rect(cornerRadius: 20))
                 .foregroundStyle(Theme.text)
                 .focused($isFocused)
                 .toolbar {
@@ -117,8 +113,7 @@ struct ChatView: View {
             .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding(.horizontal, 16).padding(.vertical, 10)
-        .background(Theme.surface).background(Theme.glassGradient)
-        .overlay(alignment: .top) { Rectangle().fill(Theme.cardBorder).frame(height: 1) }
+        .glassEffect(.regular, in: .rect(cornerRadius: 0))
     }
 
     private var typingIndicator: some View {
@@ -172,7 +167,7 @@ struct MessageBubble: View {
                     Text(message.content).padding(14)
                         .foregroundStyle(Theme.text)
                         .background(Theme.accent.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .clipShape(.rect(cornerRadius: 18))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.leading, 60)
@@ -180,9 +175,7 @@ struct MessageBubble: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(message.content).padding(14)
                         .foregroundStyle(Theme.text)
-                        .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.cardBorder, lineWidth: 1))
+                        .glassEffect(.regular, in: .rect(cornerRadius: 18))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.trailing, 60)

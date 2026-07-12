@@ -26,7 +26,8 @@ struct JournalView: View {
                                 Text(entry.content).font(.body).foregroundStyle(Theme.text).lineLimit(4)
                                 Text(entry.date.formatted(date: .abbreviated, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                             }
-                            .glass()
+                            .padding(16)
+                            .glassEffect(.regular, in: .rect(cornerRadius: 20))
                         }
                     }
                     .padding()
@@ -58,9 +59,7 @@ struct JournalWriteView: View {
                     Text(prompt).font(.headline).foregroundStyle(Theme.accent).multilineTextAlignment(.center).padding(.top)
                     TextEditor(text: $content)
                         .scrollContentBackground(.hidden).padding(14)
-                        .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+                        .glassEffect(.regular, in: .rect(cornerRadius: 16))
                         .foregroundStyle(Theme.text)
                     HStack {
                         Button("Salta") { prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."; content = "" }.foregroundStyle(Theme.muted).buttonStyle(.plain)

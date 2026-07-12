@@ -2,7 +2,7 @@ name: BenessereBot
 options:
   bundleIdPrefix: com.benesserebot
   deploymentTarget:
-    iOS: "18.0"
+    iOS: "26.0"
 settings:
   SWIFT_VERSION: "5.0"
 targets:

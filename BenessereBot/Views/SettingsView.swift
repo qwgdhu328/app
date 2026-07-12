@@ -38,7 +38,7 @@ struct SettingsView: View {
                                 .font(.title3.weight(.medium))
                         }
                         .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Theme.card).clipShape(RoundedRectangle(cornerRadius: 10))
+                        .background(Theme.card).clipShape(.rect(cornerRadius: 10))
                     }
                     .buttonStyle(.plain)
                 }
@@ -59,7 +59,7 @@ struct SettingsView: View {
                     Text("Messaggio").font(.subheadline).foregroundStyle(Theme.muted)
                     TextField("Testo del promemoria", text: $prefs.message)
                         .textFieldStyle(.plain).padding(10)
-                        .background(Theme.card).clipShape(RoundedRectangle(cornerRadius: 10))
+                        .background(Theme.card).clipShape(.rect(cornerRadius: 10))
                 }
             }
 

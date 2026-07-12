@@ -23,25 +23,4 @@ enum Theme {
         Color(red: 0.4, green: 0.7, blue: 1.0),
         Color(red: 0.65, green: 0.45, blue: 1.0),
     ]
-    static let glassGradient = LinearGradient(colors: [.white.opacity(0.08), .white.opacity(0.02)], startPoint: .topLeading, endPoint: .bottomTrailing)
-    static let glowGradient = LinearGradient(colors: [accent.opacity(0.3), accentTertiary.opacity(0.1)], startPoint: .top, endPoint: .bottom)
-}
-
-struct GlassCard: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .padding(16)
-            .background(Theme.surface)
-            .background(Theme.glassGradient)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
-            .shadow(color: .black.opacity(0.25), radius: 12, x: 0, y: 4)
-    }
-}
-
-extension View {
-    func glass() -> some View { modifier(GlassCard()) }
-    func glassCard<C: View>(@ViewBuilder content: () -> C) -> some View {
-        content().glass()
-    }
 }

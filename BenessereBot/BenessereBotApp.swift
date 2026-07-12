@@ -46,7 +46,6 @@ struct BenessereBotApp: App {
         }
         .modelContainer(for: [StoredMessage.self, MoodEntry.self, BreathingSession.self, JournalEntry.self, Goal.self, Habit.self, Achievement.self])
     }
-}
 
     private func requestNotificationPermission() {
         Task { try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) }

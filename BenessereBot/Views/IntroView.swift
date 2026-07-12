@@ -89,7 +89,7 @@ struct IntroView: View {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 80))
                 .foregroundStyle(AppTint)
-                .symbolEffect(.bounce, options: .repeat(3))
+                .symbolEffect(.bounce)
 
             Text("Benvenuto su\nBenessereBot")
                 .font(.largeTitle.bold())

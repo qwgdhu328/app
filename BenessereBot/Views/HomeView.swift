@@ -74,7 +74,7 @@ struct HomeView: View {
                 .foregroundStyle(.orange)
             Text("\(streakManager.streak) giorni di fila!")
                 .font(.subheadline.weight(.medium))
-                .contentTransition(.numericText())
+
             Spacer()
             if streakManager.streak > 0 {
                 Image(systemName: "sparkles")

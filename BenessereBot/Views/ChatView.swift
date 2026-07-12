@@ -170,13 +170,13 @@ struct MessageBubble: View {
                 Text(message.content)
                     .padding(14)
                     .background(AppTint.opacity(0.12))
-                    .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .padding(.leading, 60)
             } else {
                 Text(message.content)
                     .padding(14)
                     .background(.regularMaterial)
-                    .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .padding(.trailing, 60)
                 Spacer()
             }

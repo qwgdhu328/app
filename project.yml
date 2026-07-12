@@ -27,6 +27,7 @@ targets:
     platform: iOS
     sources:
       - path: BreathingWidget
+      - path: BenessereBot/Services/BreathingActivityAttributes.swift
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app.BreathingWidget
       INFOPLIST_FILE: BreathingWidget/Info.plist

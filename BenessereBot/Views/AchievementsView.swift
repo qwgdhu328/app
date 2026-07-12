@@ -39,7 +39,9 @@ private struct AchievementCell: View {
         }
         .frame(maxWidth: .infinity).padding(16)
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
-        .overlay(.rect(cornerRadius: 16).stroke(achievement.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16).stroke(achievement.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1)
+        }
         .opacity(achievement.isUnlocked ? 1 : 0.5)
     }
 }

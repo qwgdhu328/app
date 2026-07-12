@@ -11,17 +11,7 @@ struct AchievementsView: View {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                     ForEach(achievements) { a in
-                        VStack(spacing: 10) {
-                            Image(systemName: a.icon).font(.title).foregroundStyle(a.isUnlocked ? Theme.accent : Theme.muted)
-                                .symbolEffect(.bounce, value: a.isUnlocked)
-                            Text(a.title).font(.caption.weight(.semibold)).foregroundStyle(Theme.text).multilineTextAlignment(.center)
-                            Text(a.details).font(.caption2).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(16)
-                        .glassEffect(.regular, in: .rect(cornerRadius: 16))
-                        .overlay(.rect(cornerRadius: 16).stroke(a.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1))
-                        .opacity(a.isUnlocked ? 1 : 0.5)
+                        AchievementCell(achievement: a)
                     }
                 }
                 .padding()
@@ -34,5 +24,22 @@ struct AchievementsView: View {
                 try? context.save()
             }
         }
+    }
+}
+
+private struct AchievementCell: View {
+    let achievement: Achievement
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: achievement.icon).font(.title)
+                .foregroundStyle(achievement.isUnlocked ? Theme.accent : Theme.muted)
+                .symbolEffect(.bounce, value: achievement.isUnlocked)
+            Text(achievement.title).font(.caption.weight(.semibold)).foregroundStyle(Theme.text).multilineTextAlignment(.center)
+            Text(achievement.details).font(.caption2).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity).padding(16)
+        .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .overlay(.rect(cornerRadius: 16).stroke(achievement.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1))
+        .opacity(achievement.isUnlocked ? 1 : 0.5)
     }
 }

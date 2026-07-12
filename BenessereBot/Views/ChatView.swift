@@ -44,6 +44,7 @@ struct ChatView: View {
                             .padding(.top, 8)
                         }
                     }
+                    .scrollDismissesKeyboard(.immediately)
                     .scrollBounceBehavior(.basedOnSize)
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.messages.count)
                     .onChange(of: viewModel.messages.count) { _, _ in
@@ -122,6 +123,13 @@ struct ChatView: View {
                 .clipShape(.rect(cornerRadius: 20))
                 .foregroundStyle(Theme.text)
                 .focused($isFocused)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Chiudi") { isFocused = false }
+                            .foregroundStyle(Theme.accent)
+                    }
+                }
 
             Button {
                 let text = inputText

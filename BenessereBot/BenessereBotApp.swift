@@ -11,8 +11,10 @@ struct BenessereBotApp: App {
     init() {
         requestNotificationPermission()
         styleTabBar()
-        let types: [any PersistentModel.Type] = [StoredMessage.self, MoodEntry.self, BreathingSession.self, JournalEntry.self, Goal.self, Habit.self, Achievement.self]
-        guard let container = try? ModelContainer(for: types) else {
+        guard let container = try? ModelContainer(
+            for: StoredMessage.self, MoodEntry.self, BreathingSession.self,
+            JournalEntry.self, Goal.self, Habit.self, Achievement.self
+        ) else {
             fatalError("Could not initialize ModelContainer")
         }
         modelContainer = container

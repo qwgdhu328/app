@@ -1,56 +1,83 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @AppStorage("userName") private var userName = ""
-    @AppStorage("userGoal") private var userGoal = ""
-    @State private var chatCount = 0
+    @State private var showFeatures = false
+    @State private var userName: String = UserDefaults.standard.string(forKey: "userName") ?? ""
+    @State private var userGoal: String = UserDefaults.standard.string(forKey: "userGoal") ?? "Non impostato"
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    HStack(spacing: 16) {
-                        Circle()
-                            .fill(Theme.accent.opacity(0.3))
-                            .frame(width: 64, height: 64)
-                            .overlay { Image(systemName: "person.fill").font(.title).foregroundStyle(Theme.accent) }
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(userName.isEmpty ? "Utente" : userName).font(.title2.weight(.semibold)).foregroundStyle(Theme.text)
-                            Text(userGoal.isEmpty ? "Nessun obiettivo" : userGoal).font(.subheadline).foregroundStyle(Theme.muted)
-                        }
+                    VStack(spacing: 12) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 72))
+                            .foregroundStyle(Theme.accent.opacity(0.4))
+
+                        Text(userName.isEmpty ? "Il tuo profilo" : userName)
+                            .font(.title2.bold())
+
+                        Text("Obiettivo: \(userGoal)")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.muted)
                     }
-                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
                 }
-                .listRowBackground(Theme.card)
 
                 Section("Statistiche") {
-                    statCard(icon: "message.fill", label: "Messaggi scambiati", value: "\(chatCount)", color: Theme.accent)
-                    statCard(icon: "flame.fill", label: "Giorni di attività", value: "\(UserDefaults.standard.integer(forKey: "streak"))", color: .orange)
-                    statCard(icon: "heart.fill", label: "Umore registrati", value: "\(UserDefaults.standard.integer(forKey: "moodCount"))", color: .pink)
+                    HStack(spacing: 12) {
+                        statCard(value: "0", label: "Chat", icon: "message.fill")
+                        statCard(value: "0", label: "Giorni", icon: "flame.fill")
+                        statCard(value: "0", label: "Umore", icon: "face.smiling.fill")
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
                 }
 
-                Section("App") {
-                    NavigationLink(destination: FeatureIntroView()) {
-                        Label("Tutte le funzioni", systemImage: "list.bullet").foregroundStyle(Theme.text)
+                Section {
+                    Button {
+                        showFeatures = true
+                    } label: {
+                        Label("Scopri le funzioni", systemImage: "sparkles.rectangle.stack")
                     }
-                    Link(destination: URL(string: "https://github.com/qwgdhu328/app")!) {
-                        Label("Versione 1.0", systemImage: "info.circle").foregroundStyle(Theme.muted)
-                    }
+                }
+
+                Section("Info") {
+                    LabeledContent("Versione", value: "2.0.0")
+                    LabeledContent("AI Model", value: "OpenRouter")
+                    LabeledContent("Piattaforma", value: "iOS nativo")
                 }
             }
+            .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
             .background(AppBackground())
             .navigationTitle("Profilo")
-            .onAppear { chatCount = Int.random(in: 5...50) }
+            .sheet(isPresented: $showFeatures) {
+                FeatureIntroView()
+            }
         }
     }
 
-    private func statCard(icon: String, label: String, value: String, color: Color) -> some View {
-        HStack {
-            Image(systemName: icon).foregroundStyle(color).frame(width: 28)
-            Text(label).foregroundStyle(Theme.text)
-            Spacer()
-            Text(value).font(.title3.weight(.bold)).foregroundStyle(color)
+    private func statCard(value: String, label: String, icon: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundStyle(Theme.accent)
+            Text(value)
+                .font(.title2.bold())
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
         }
+        .frame(maxWidth: .infinity)
+        .padding(16)
+        .background(Theme.card)
+        .clipShape(.rect(cornerRadius: 16))
     }
 }
+
+#Preview {
+    ProfileView()
+}
+

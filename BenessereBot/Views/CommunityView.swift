@@ -4,10 +4,30 @@ struct CommunityView: View {
     var body: some View {
         NavigationStack {
             List {
-                communityCard(title: "Gruppo di Supporto", subtitle: "Condividi le tue esperienze", icon: "person.3.fill", color: Theme.accent)
-                communityCard(title: "Sfida Benessere", subtitle: "30 giorni di mindfulness", icon: "star.fill", color: .orange)
-                communityCard(title: "Articoli", subtitle: "Leggi i nostri contenuti", icon: "doc.text.fill", color: .purple)
-                communityCard(title: "Eventi", subtitle: "Workshop e incontri", icon: "calendar", color: Theme.breathing)
+                communityCard(
+                    title: "Gruppo di Supporto",
+                    subtitle: "Condividi le tue esperienze",
+                    icon: "person.3.fill",
+                    color: .blue
+                )
+                communityCard(
+                    title: "Sfida Benessere",
+                    subtitle: "30 giorni di mindfulness",
+                    icon: "star.fill",
+                    color: .orange
+                )
+                communityCard(
+                    title: "Articoli",
+                    subtitle: "Leggi i nostri contenuti",
+                    icon: "doc.text.fill",
+                    color: .purple
+                )
+                communityCard(
+                    title: "Eventi",
+                    subtitle: "Workshop e incontri",
+                    icon: "calendar",
+                    color: .green
+                )
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
@@ -23,20 +43,27 @@ struct CommunityView: View {
                 .font(.title2)
                 .foregroundStyle(color)
                 .frame(width: 44, height: 44)
-                .background(color.opacity(0.15))
+                .background(color.opacity(0.12))
                 .clipShape(.circle)
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(Theme.text)
                 Text(subtitle)
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
             }
+
             Spacer()
+
             Image(systemName: "chevron.right")
-                .foregroundStyle(Theme.muted)
+                .foregroundStyle(.tertiary)
         }
         .padding(4)
     }
 }
+
+#Preview {
+    CommunityView()
+}
+

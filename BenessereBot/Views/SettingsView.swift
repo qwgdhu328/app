@@ -7,13 +7,10 @@ struct SettingsView: View {
     @State private var notifGranted = false
 
     var body: some View {
-        List {
+        Form {
             reminderSection
             aboutSection
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(AppBackground())
         .navigationTitle("Impostazioni")
         .task {
             let settings = await UNUserNotificationCenter.current().notificationSettings()
@@ -28,25 +25,23 @@ struct SettingsView: View {
 
     private var reminderSection: some View {
         Section {
-            Toggle("Promemoria giornaliero", isOn: $prefs.isEnabled).foregroundStyle(Theme.text)
-                .listRowBackground(Theme.card)
+            Toggle("Promemoria giornaliero", isOn: $prefs.isEnabled)
 
             if prefs.isEnabled {
                 HStack {
-                    Text("Ora").foregroundStyle(Theme.text)
+                    Text("Ora")
                     Spacer()
                     Button(action: { showTimePicker.toggle() }) {
                         HStack {
-                            Image(systemName: "clock.fill").foregroundStyle(Theme.accent)
+                            Image(systemName: "clock.fill").foregroundStyle(.tint)
                             Text(String(format: "%02d:%02d", prefs.hour, prefs.minute))
-                                .font(.title3.weight(.medium)).foregroundStyle(Theme.text)
+                                .font(.title3.weight(.medium))
                         }
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .background(Theme.card).clipShape(.rect(cornerRadius: 10))
                     }
                     .buttonStyle(.plain)
                 }
-                .listRowBackground(Theme.card)
 
                 if showTimePicker {
                     DatePicker("Seleziona ora",
@@ -55,27 +50,23 @@ struct SettingsView: View {
                             set: { let c = Calendar.current.dateComponents([.hour, .minute], from: $0); prefs.hour = c.hour ?? 9; prefs.minute = c.minute ?? 0; showTimePicker = false }
                         ),
                         displayedComponents: .hourAndMinute
-                    ).datePickerStyle(.wheel).colorScheme(.dark)
-                    .listRowBackground(Theme.card)
+                    ).datePickerStyle(.wheel)
                 }
 
-                Toggle("Ripeti ogni giorno", isOn: $prefs.repeatDaily).foregroundStyle(Theme.text)
-                    .listRowBackground(Theme.card)
+                Toggle("Ripeti ogni giorno", isOn: $prefs.repeatDaily)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Messaggio").font(.subheadline).foregroundStyle(Theme.muted)
                     TextField("Testo del promemoria", text: $prefs.message)
-                        .textFieldStyle(.plain).padding(10).foregroundStyle(Theme.text)
+                        .textFieldStyle(.plain).padding(10)
                         .background(Theme.card).clipShape(.rect(cornerRadius: 10))
                 }
-                .listRowBackground(Theme.card)
             }
 
             if !notifGranted && prefs.isEnabled {
                 Button("Abilita notifiche") {
                     Task { notifGranted = await ReminderManager.shared.requestPermission() }
-                }.font(.subheadline).foregroundStyle(Theme.accent)
-                .listRowBackground(Theme.card)
+                }.font(.subheadline).foregroundStyle(.tint)
             }
 
             Button("Test promemoria") {
@@ -83,10 +74,8 @@ struct SettingsView: View {
                 UNUserNotificationCenter.current().add(
                     UNNotificationRequest(identifier: "testReminder", content: c, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))
                 )
-            }.font(.subheadline).foregroundStyle(Theme.accent)
-            .listRowBackground(Theme.card)
-
-        } header: { Label("Promemoria", systemImage: "bell.fill").foregroundStyle(Theme.text) }
+            }.font(.subheadline).foregroundStyle(.tint)
+        } header: { Label("Promemoria", systemImage: "bell.fill") }
     }
 
     private var aboutSection: some View {
@@ -95,14 +84,13 @@ struct SettingsView: View {
             aboutRow("AI Model", "OpenRouter GPT-4o")
             aboutRow("Piattaforma", "iOS nativo")
             Link(destination: URL(string: "https://github.com/qwgdhu328/app")!) {
-                HStack { Text("Codice sorgente").foregroundStyle(Theme.text); Spacer(); Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(Theme.muted) }
+                HStack { Text("Codice sorgente"); Spacer(); Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary) }
             }
-        } header: { Label("Informazioni", systemImage: "info.circle.fill").foregroundStyle(Theme.text) }
-        .listRowBackground(Theme.card)
+        } header: { Label("Informazioni", systemImage: "info.circle.fill") }
     }
 
     private func aboutRow(_ label: String, _ value: String) -> some View {
-        HStack { Text(label).foregroundStyle(Theme.muted); Spacer(); Text(value).foregroundStyle(Theme.text) }
+        HStack { Text(label).foregroundStyle(Theme.muted); Spacer(); Text(value) }
     }
 
     private func apply() {
@@ -110,3 +98,8 @@ struct SettingsView: View {
         ReminderManager.shared.schedule()
     }
 }
+
+#Preview {
+    NavigationStack { SettingsView() }
+}
+

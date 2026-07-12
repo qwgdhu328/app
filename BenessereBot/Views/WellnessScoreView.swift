@@ -27,9 +27,3 @@ struct WellnessScoreView: View {
 
     private var scoreColor: Color { score >= 80 ? Theme.accent : score >= 50 ? Theme.accentSecondary : .red.opacity(0.7) }
 }
-
-func computeWellnessScore(moods: Int, streak: Int, sessions: Int, entries: Int) -> Int {
-    let m = min(moods * 10, 30); let s = min(streak * 5, 30)
-    let b = min(sessions * 15, 25); let j = min(entries * 10, 25)
-    return min(m + s + b + j, 100)
-}

@@ -34,9 +34,20 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             SYMROOT="$PWD/build" 2>&1 | tee build_device.log
+          exit ${PIPESTATUS[0]}
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+
+      - name: Show Xcode errors
+        if: failure()
+        run: |
+          echo "### Build Errors (Device)" >> $GITHUB_STEP_SUMMARY
+          grep -n "error:" build_device.log 2>/dev/null | head -30 >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -20 build_device.log 2>/dev/null >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload build log (Device)
         if: always()
@@ -85,9 +96,21 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             SYMROOT="$PWD/build-sim" 2>&1 | tee build_sim.log
+          # Exit with xcodebuild status (tee hides it)
+          exit ${PIPESTATUS[0]}
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+
+      - name: Show Xcode errors
+        if: failure()
+        run: |
+          echo "### Build Errors (Simulator)" >> $GITHUB_STEP_SUMMARY
+          grep -n "error:" build_sim.log 2>/dev/null | head -30 >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -20 build_sim.log 2>/dev/null >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload build log (Simulator)
         if: always()

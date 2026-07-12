@@ -33,8 +33,8 @@ struct GlassCard: ViewModifier {
             .padding(16)
             .background(Theme.surface)
             .background(Theme.glassGradient)
-            .clipShape(.rect(cornerRadius: 20))
-            .overlay(.rect(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
             .shadow(color: .black.opacity(0.25), radius: 12, x: 0, y: 4)
     }
 }

@@ -19,8 +19,8 @@ struct AchievementsView: View {
                         }
                         .frame(maxWidth: .infinity).padding(16)
                         .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(.rect(cornerRadius: 16))
-                        .overlay(.rect(cornerRadius: 16).stroke(a.isUnlocked ? Theme.accent.opacity(0.4) : Theme.cardBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(a.isUnlocked ? Theme.accent.opacity(0.4) : Theme.cardBorder, lineWidth: 1))
                         .opacity(a.isUnlocked ? 1 : 0.5)
                     }
                 }

@@ -31,8 +31,8 @@ struct GoalsListView: View {
                         Button { showNewGoal = true } label: {
                             Label("Nuovo obiettivo", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
                                 .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
-                                .clipShape(.rect(cornerRadius: 14))
-                                .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
                         }
                     }
                     VStack(spacing: 8) {
@@ -55,8 +55,8 @@ struct GoalsListView: View {
                         Button { showNewHabit = true } label: {
                             Label("Nuova abitudine", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
                                 .padding(12).frame(maxWidth: .infinity).background(Theme.surface).background(Theme.glassGradient)
-                                .clipShape(.rect(cornerRadius: 14))
-                                .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
                         }
                     }
                 }

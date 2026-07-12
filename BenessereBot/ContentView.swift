@@ -52,8 +52,8 @@ struct ContentView: View {
         .padding(.horizontal, 8)
         .background(.ultraThinMaterial)
         .background(Theme.surface)
-        .clipShape(.rect(cornerRadius: 28))
-        .overlay(.rect(cornerRadius: 28).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 28))
+        .overlay(RoundedRectangle(cornerRadius: 28).stroke(Theme.cardBorder, lineWidth: 1))
         .shadow(color: .black.opacity(0.4), radius: 24, x: 0, y: 8)
     }
 }

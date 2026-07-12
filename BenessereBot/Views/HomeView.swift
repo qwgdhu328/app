@@ -129,8 +129,8 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity).padding(12)
                         .background(selectedMood == emoji ? Theme.accent.opacity(0.15) : Theme.surface)
                         .background(selectedMood == emoji ? Theme.glassGradient : Color.clear)
-                        .clipShape(.rect(cornerRadius: 16))
-                        .overlay(.rect(cornerRadius: 16).stroke(selectedMood == emoji ? Theme.cardBorderHighlight : Theme.cardBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(selectedMood == emoji ? Theme.cardBorderHighlight : Theme.cardBorder, lineWidth: 1))
                     }
                 }
             }
@@ -220,8 +220,8 @@ struct ActionCard: View {
             }
             .frame(maxWidth: .infinity).padding(16)
             .background(Theme.surface).background(Theme.glassGradient)
-            .clipShape(.rect(cornerRadius: 16))
-            .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
         }
         .scaleEffect(pressed ? 0.95 : 1)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: pressed)

@@ -29,22 +29,22 @@ struct BreathingTimerView: View {
                     Label("Stop", systemImage: "stop.circle.fill").font(.subheadline.weight(.semibold))
                         .foregroundStyle(Theme.muted).padding(.horizontal, 28).padding(.vertical, 12)
                         .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(.capsule).overlay(.capsule.stroke(Theme.cardBorder, lineWidth: 1))
+                        .clipShape(Capsule()).overlay(Capsule().stroke(Theme.cardBorder, lineWidth: 1))
                 }
                 if !service.isActive {
                     Button { service.start() } label: {
                         Label("Avvia", systemImage: "play.circle.fill").font(.subheadline.weight(.semibold))
                             .foregroundStyle(Theme.text).padding(.horizontal, 28).padding(.vertical, 12)
                             .background(Theme.surface).background(Theme.glassGradient)
-                            .clipShape(.capsule).overlay(.capsule.stroke(Theme.cardBorder, lineWidth: 1))
+                            .clipShape(Capsule()).overlay(Capsule().stroke(Theme.cardBorder, lineWidth: 1))
                     }
                 }
             }
         }
         .padding(24)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 24))
-        .overlay(.rect(cornerRadius: 24).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Theme.cardBorder, lineWidth: 1))
         .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 8)
         .padding(.horizontal, 20).padding(.bottom, 12)
         .transition(.move(edge: .bottom).combined(with: .opacity))

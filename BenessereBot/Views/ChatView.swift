@@ -75,8 +75,8 @@ struct ChatView: View {
             }
             .padding(12).padding(.horizontal, 4)
             .background(Theme.surface).background(Theme.glassGradient)
-            .clipShape(.rect(cornerRadius: 14))
-            .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
             .padding(.horizontal, 16).padding(.vertical, 6)
         }
         .buttonStyle(.plain)
@@ -96,8 +96,8 @@ struct ChatView: View {
                 .textFieldStyle(.plain)
                 .padding(14)
                 .background(Theme.surface).background(Theme.glassGradient)
-                .clipShape(.rect(cornerRadius: 20))
-                .overlay(.rect(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
                 .foregroundStyle(Theme.text)
                 .focused($isFocused)
                 .toolbar {
@@ -172,7 +172,7 @@ struct MessageBubble: View {
                     Text(message.content).padding(14)
                         .foregroundStyle(Theme.text)
                         .background(Theme.accent.opacity(0.15))
-                        .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.leading, 60)
@@ -181,8 +181,8 @@ struct MessageBubble: View {
                     Text(message.content).padding(14)
                         .foregroundStyle(Theme.text)
                         .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(.rect(cornerRadius: 18, style: .continuous))
-                        .overlay(.rect(cornerRadius: 18, style: .continuous).stroke(Theme.cardBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Theme.cardBorder, lineWidth: 1))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.trailing, 60)

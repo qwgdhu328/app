@@ -170,7 +170,7 @@ struct IntroView: View {
                         .padding(16)
                         .background(selectedGoal == goal ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.card))
                         .foregroundStyle(selectedGoal == goal ? Theme.text : Theme.text)
-                        .clipShape(.rect(cornerRadius: 16))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
                 }
             }
@@ -242,7 +242,7 @@ struct IntroView: View {
             .font(.subheadline)
             .padding()
             .background(Theme.card)
-            .clipShape(.rect(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
 
             Text("Ora puoi iniziare il tuo percorso di benessere.\nParla con BenessereBot, traccia il tuo umore,\nesplora le funzioni.")
                 .multilineTextAlignment(.center)
@@ -267,8 +267,8 @@ struct IntroView: View {
                     .padding()
                     .background(Theme.surface)
                     .background(Theme.glassGradient)
-                    .clipShape(.rect(cornerRadius: 16))
-                    .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
             }
             .padding(.horizontal, 40)
         }

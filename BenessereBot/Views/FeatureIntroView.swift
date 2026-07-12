@@ -36,8 +36,8 @@ struct FeatureIntroView: View {
         .frame(maxWidth: .infinity)
         .padding(24)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 20))
-        .overlay(.rect(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private var featureCards: some View {
@@ -69,8 +69,8 @@ struct FeatureIntroView: View {
         }
         .padding(16)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
     }
 }
 

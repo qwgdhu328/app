@@ -81,8 +81,8 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity).padding(14)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private func navLink<D: View>(icon: String, title: String, destination: D) -> some View {

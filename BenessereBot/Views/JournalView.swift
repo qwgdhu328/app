@@ -59,8 +59,8 @@ struct JournalWriteView: View {
                     TextEditor(text: $content)
                         .scrollContentBackground(.hidden).padding(14)
                         .background(Theme.surface).background(Theme.glassGradient)
-                        .clipShape(.rect(cornerRadius: 16))
-                        .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
                         .foregroundStyle(Theme.text)
                     HStack {
                         Button("Salta") { prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."; content = "" }.foregroundStyle(Theme.muted).buttonStyle(.plain)

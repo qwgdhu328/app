@@ -48,8 +48,8 @@ struct WellbeingView: View {
         }
         .frame(maxWidth: .infinity).padding(14)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay(.rect(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
         .scaleEffect(animateStats ? 1 : 0.8)
         .opacity(animateStats ? 1 : 0)
         .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.1), value: animateStats)
@@ -113,7 +113,7 @@ struct BreathingHistoryView: View {
         }
         .frame(maxWidth: .infinity).padding(12)
         .background(Theme.surface).background(Theme.glassGradient)
-        .clipShape(.rect(cornerRadius: 14))
-        .overlay(.rect(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
     }
 }

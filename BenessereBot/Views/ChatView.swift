@@ -28,7 +28,7 @@ struct ChatView: View {
                                             .scaleEffect(0.8)
                                         Text("Sta riflettendo...")
                                             .font(.subheadline)
-                                            .foregroundStyle(AppColors.textSecondary)
+                                            .foregroundStyle(Theme.muted)
                                         Spacer()
                                     }
                                     .padding(.horizontal)
@@ -72,13 +72,13 @@ struct ChatView: View {
             Spacer()
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 60))
-                .foregroundStyle(AppColors.breathingAccent)
+                .foregroundStyle(Theme.breathing)
                 .symbolEffect(.bounce, options: .repeat(3))
             Text("Parla con BenessereBot")
                 .font(.title2.bold())
             Text("Uno psicologo virtuale sempre pronto ad ascoltarti.\nCondividi ciò che senti, senza giudizio.")
                 .multilineTextAlignment(.center)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(Theme.muted)
                 .padding(.horizontal, 40)
             Spacer()
         }
@@ -112,15 +112,15 @@ struct ChatView: View {
             } label: {
                 Image(systemName: speechRecognizer?.isListening == true ? "mic.fill" : "mic")
                     .font(.title2)
-                    .foregroundStyle(speechRecognizer?.isListening == true ? .red : AppColors.textSecondary)
+                    .foregroundStyle(speechRecognizer?.isListening == true ? .red : Theme.muted)
             }
 
             TextField("Scrivi come ti senti...", text: $inputText)
                 .textFieldStyle(.plain)
                 .padding(12)
-                .background(AppColors.cardBg)
+                .background(Theme.card)
                 .clipShape(.rect(cornerRadius: 20))
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(Theme.text)
                 .focused($isFocused)
 
             Button {
@@ -130,13 +130,13 @@ struct ChatView: View {
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 32))
-                    .foregroundStyle(AppColors.breathingAccent)
+                    .foregroundStyle(Theme.breathing)
             }
             .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(AppColors.cardBg)
+        .background(Theme.card)
     }
 
     private func handleMicTap() {
@@ -171,14 +171,14 @@ struct MessageBubble: View {
                 Text(message.content)
                     .padding(14)
                     .foregroundStyle(.white)
-                    .background(AppColors.breathingAccent.opacity(0.25))
+                    .background(Theme.breathing.opacity(0.25))
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .padding(.leading, 60)
             } else {
                 Text(message.content)
                     .padding(14)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .background(AppColors.cardBg)
+                    .foregroundStyle(Theme.text)
+                    .background(Theme.card)
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .padding(.trailing, 60)
                 Spacer()

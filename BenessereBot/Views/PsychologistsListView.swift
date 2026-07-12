@@ -1,75 +1,36 @@
 import SwiftUI
 
 struct PsychologistsListView: View {
-    let city: String
-    @Environment(\.dismiss) var dismiss
+    let psychologists = Psychologist.samplePsychologists
+    @State private var searchCity = ""
 
-    private var filtered: [Psychologist] {
-        samplePsychologists.filter { $0.city.localizedCaseInsensitiveContains(city) }
+    var filtered: [Psychologist] {
+        guard !searchCity.isEmpty else { return psychologists }
+        return psychologists.filter { $0.city.lowercased().contains(searchCity.lowercased()) }
     }
 
     var body: some View {
         NavigationStack {
-            List(filtered.isEmpty ? samplePsychologists : filtered) { psychologist in
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 12) {
-                        Image(systemName: psychologist.imageSystemName)
-                            .font(.title)
-                            .foregroundStyle(AppTint)
-                            .frame(width: 44, height: 44)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(psychologist.name)
-                                .font(.headline)
-                            Text(psychologist.specialty)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Label(psychologist.city, systemImage: "mappin.circle.fill")
-                                .font(.caption2)
-                                .foregroundStyle(.blue)
-                        }
-                    }
-
-                    Text(psychologist.description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
+            List(filtered) { p in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(p.name).font(.headline).foregroundStyle(Theme.text)
+                    Text(p.specialization).font(.subheadline).foregroundStyle(Theme.muted)
+                    Text(p.city).font(.caption).foregroundStyle(Theme.accent)
                     HStack(spacing: 16) {
-                        Button {
-                            let tel = psychologist.phone.replacingOccurrences(of: " ", with: "")
-                            if let url = URL(string: "tel://\(tel)") {
-                                UIApplication.shared.open(url)
-                            }
-                        } label: {
-                            Label("Chiama", systemImage: "phone.fill")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.green)
-
-                        Button {
-                            if let url = URL(string: "mailto:\(psychologist.email)") {
-                                UIApplication.shared.open(url)
-                            }
-                        } label: {
-                            Label("Email", systemImage: "envelope.fill")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.blue)
+                        Link("Chiama", destination: URL(string: "tel:\(p.phone)")!)
+                            .font(.callout)
+                        Link("Email", destination: URL(string: "mailto:\(p.email)")!)
+                            .font(.callout)
                     }
+                    .padding(.top, 4)
                 }
                 .padding(.vertical, 4)
             }
+            .searchable(text: $searchCity, prompt: "Cerca per città")
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(AppBackground())
-            .navigationTitle("Psicologi a \(city)")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Chiudi") { dismiss() }
-                }
-            }
+            .navigationTitle("Psicologi")
         }
     }
 }

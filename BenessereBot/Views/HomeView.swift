@@ -65,7 +65,7 @@ struct HomeView: View {
                 .font(.largeTitle.bold())
             Text("Come stai oggi?")
                 .font(.title3)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(Theme.muted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -83,7 +83,7 @@ struct HomeView: View {
             }
         }
         .padding(12)
-        .background(AppColors.cardBg)
+        .background(Theme.card)
         .clipShape(.rect(cornerRadius: 12))
     }
 
@@ -108,15 +108,15 @@ struct HomeView: View {
                                 .scaleEffect(selectedMood == emoji ? 1.3 : 1.0)
                             Text(label)
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(Theme.muted)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.15)) : AnyShapeStyle(AppColors.cardBg))
+                        .background(selectedMood == emoji ? AnyShapeStyle(Theme.accent.opacity(0.15)) : AnyShapeStyle(Theme.card))
                         .clipShape(.rect(cornerRadius: 16))
                         .overlay(
                             selectedMood == emoji ?
-                            RoundedRectangle(cornerRadius: 16).stroke(AppTint, lineWidth: 2) : nil
+                            RoundedRectangle(cornerRadius: 16).stroke(Theme.accent, lineWidth: 2) : nil
                         )
                     }
                 }
@@ -127,22 +127,22 @@ struct HomeView: View {
     private var affirmationCard: some View {
         HStack {
             Image(systemName: "quote.opening")
-                .foregroundStyle(AppColors.breathingAccent)
+                .foregroundStyle(Theme.breathing)
             Text(dailyAffirmation)
                 .font(.subheadline).italic()
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(Theme.text)
                 .multilineTextAlignment(.center)
             Image(systemName: "quote.closing")
-                .foregroundStyle(AppColors.breathingAccent)
+                .foregroundStyle(Theme.breathing)
         }
-        .cardBg()
+        .card()
     }
 
     private var quickActionsSection: some View {
         VStack(spacing: 12) {
             Text("Esplora")
                 .font(.headline)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(Theme.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
@@ -174,11 +174,11 @@ struct HomeView: View {
                     .foregroundStyle(color)
                 Text(title)
                     .font(.callout.weight(.medium))
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(Theme.text)
             }
             .frame(maxWidth: .infinity)
             .padding(16)
-            .background(AppColors.cardBg)
+            .background(Theme.card)
             .clipShape(.rect(cornerRadius: 16))
         }
     }
@@ -192,21 +192,21 @@ struct HomeView: View {
             HStack {
                 Image(systemName: "wind")
                     .font(.title2)
-                    .foregroundStyle(AppColors.breathingAccent)
+                    .foregroundStyle(Theme.breathing)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Respiro guidato")
                         .font(.callout.weight(.medium))
-                        .foregroundStyle(AppColors.textPrimary)
+                        .foregroundStyle(Theme.text)
                     Text(breathingService.isActive ? "In corso..." : "Scegli pattern e durata")
                         .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(Theme.muted)
                 }
                 Spacer()
                 Image(systemName: breathingService.isActive ? "stop.circle.fill" : "play.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(AppColors.breathingAccent)
+                    .foregroundStyle(Theme.breathing)
             }
-            .cardBg()
+            .card()
         }
     }
 

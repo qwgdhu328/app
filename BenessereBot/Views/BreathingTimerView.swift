@@ -12,16 +12,16 @@ struct BreathingTimerView: View {
             VStack(spacing: 6) {
                 Text(service.phase)
                     .font(.title3.weight(.medium))
-                    .foregroundStyle(AppColors.breathingAccent)
+                    .foregroundStyle(Theme.breathing)
                     .contentTransition(.numericText())
                 Text("\(formattedTime(service.secondsLeft))")
                     .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(Theme.text)
                     .monospacedDigit()
                     .contentTransition(.numericText())
             }
             ProgressView(value: service.progress)
-                .tint(AppColors.breathingAccent)
+                .tint(Theme.breathing)
             HStack(spacing: 20) {
                 Button { service.stop() } label: {
                     Label("Stop", systemImage: "stop.circle.fill")
@@ -39,14 +39,14 @@ struct BreathingTimerView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 28)
                             .padding(.vertical, 12)
-                            .background(AppColors.breathingAccent)
+                            .background(Theme.breathing)
                             .clipShape(.capsule)
                     }
                 }
             }
         }
         .padding(24)
-        .background(Color(red: 0.12, green: 0.14, blue: 0.22))
+        .background(Theme.card)
         .clipShape(.rect(cornerRadius: 24))
         .shadow(color: .black.opacity(0.3), radius: 20)
         .padding(.horizontal, 20)
@@ -64,30 +64,30 @@ struct BreathingTimerView: View {
             .pickerStyle(.segmented)
             HStack {
                 Text("Cicli:")
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(Theme.muted)
                 Stepper("\(service.rounds)", value: $service.rounds, in: 1...10)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(Theme.text)
             }
             Text("Durata: \(service.totalDuration / 60) min \(service.totalDuration % 60)s")
                 .font(.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(Theme.muted)
         }
     }
 
     private var animatedCircle: some View {
         ZStack {
             Circle()
-                .stroke(AppColors.breathingAccent.opacity(0.15), lineWidth: 4)
+                .stroke(Theme.breathing.opacity(0.15), lineWidth: 4)
                 .frame(width: 100, height: 100)
             Circle()
                 .trim(from: 0, to: service.progress)
-                .stroke(AppColors.breathingAccent, style: .init(lineWidth: 4, lineCap: .round))
+                .stroke(Theme.breathing, style: .init(lineWidth: 4, lineCap: .round))
                 .frame(width: 100, height: 100)
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut(duration: 0.3), value: service.progress)
             Image(systemName: "wind")
                 .font(.title)
-                .foregroundStyle(AppColors.breathingAccent)
+                .foregroundStyle(Theme.breathing)
                 .symbolEffect(.pulse, isActive: service.isActive)
         }
     }

@@ -109,7 +109,7 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(selectedMood == emoji ? AppTint.opacity(0.15) : .regularMaterial)
+                        .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.15)) : AnyShapeStyle(.regularMaterial))
                         .clipShape(.rect(cornerRadius: 16))
                         .overlay(
                             selectedMood == emoji ?
@@ -126,7 +126,7 @@ struct HomeView: View {
             Image(systemName: "quote.opening")
                 .foregroundStyle(AppTint)
             Text(dailyAffirmation)
-                .font(.subheadline.italic)
+                .font(.subheadline).italic()
                 .multilineTextAlignment(.center)
             Image(systemName: "quote.closing")
                 .foregroundStyle(AppTint)

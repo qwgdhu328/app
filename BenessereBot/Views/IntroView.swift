@@ -168,7 +168,7 @@ struct IntroView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(16)
-                        .background(selectedGoal == goal ? AppTint : .regularMaterial)
+                        .background(selectedGoal == goal ? AnyShapeStyle(AppTint) : AnyShapeStyle(.regularMaterial))
                         .foregroundStyle(selectedGoal == goal ? .white : .primary)
                         .clipShape(.rect(cornerRadius: 16))
                     }
@@ -203,7 +203,7 @@ struct IntroView: View {
                         Text(emoji)
                             .font(.system(size: 44))
                             .padding(12)
-                            .background(selectedMood == emoji ? AppTint.opacity(0.2) : .regularMaterial)
+                            .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.2)) : AnyShapeStyle(.regularMaterial))
                             .clipShape(.circle)
                             .overlay(
                                 selectedMood == emoji ?

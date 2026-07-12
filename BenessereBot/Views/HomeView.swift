@@ -128,7 +128,7 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity).padding(12)
                         .background(selectedMood == emoji ? Theme.accent.opacity(0.15) : Theme.surface)
-                        .background(selectedMood == emoji ? Theme.glassGradient : Color.clear)
+                        .background(selectedMood == emoji ? AnyShapeStyle(Theme.glassGradient) : AnyShapeStyle(Color.clear))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                         .overlay(RoundedRectangle(cornerRadius: 16).stroke(selectedMood == emoji ? Theme.cardBorderHighlight : Theme.cardBorder, lineWidth: 1))
                     }

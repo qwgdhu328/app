@@ -89,7 +89,7 @@ struct IntroView: View {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 80))
                 .foregroundStyle(AppTint)
-                .symbolEffect(.bounce)
+                
 
             Text("Benvenuto su\nBenessereBot")
                 .font(.largeTitle.bold())
@@ -115,7 +115,7 @@ struct IntroView: View {
             Image(systemName: "person.crop.circle.badge.plus")
                 .font(.system(size: 60))
                 .foregroundStyle(AppTint)
-                .symbolEffect(.pulse)
+                
 
             Text("Come ti chiami?")
                 .font(.title.bold())
@@ -223,7 +223,7 @@ struct IntroView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: 70))
                 .foregroundStyle(AppTint)
-                .symbolEffect(.pulse)
+                
 
             Text("Tutto pronto! 🎉")
                 .font(.largeTitle.bold())

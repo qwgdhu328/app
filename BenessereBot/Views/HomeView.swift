@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var streakManager = StreakManager()
     @State private var selectedMood: String? = nil
     @State private var showAffirmation = false
-    @State private var dailyAffirmation = ""
+    @State private var streak = 0
+    @AppStorage("lastActiveDate") private var lastActiveDate: String = ""
 
     private let moods = [
         ("😊", "Felice"), ("😐", "Neutro"), ("😢", "Triste"),
@@ -20,6 +20,8 @@ struct HomeView: View {
         "Hai già superato tante cose. Continua."
     ]
 
+    @State private var dailyAffirmation: String = ""
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -29,20 +31,18 @@ struct HomeView: View {
                     moodSection
                     if showAffirmation {
                         affirmationCard
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                     quickActionsSection
-                    breathingSection
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
-                .padding(.bottom, 80)
             }
             .scrollBounceBehavior(.basedOnSize)
             .background(AppBackground())
             .navigationTitle("BenessereBot")
             .toolbarBackground(.hidden, for: .navigationBar)
             .onAppear {
+                checkStreak()
                 dailyAffirmation = affirmations.randomElement() ?? affirmations[0]
             }
         }
@@ -65,18 +65,16 @@ struct HomeView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 8)
     }
 
     private var streakSection: some View {
         HStack {
             Image(systemName: "flame.fill")
                 .foregroundStyle(.orange)
-            Text("\(streakManager.streak) giorni di fila!")
+            Text("\(streak) giorni di fila!")
                 .font(.subheadline.weight(.medium))
-
             Spacer()
-            if streakManager.streak > 0 {
+            if streak > 0 {
                 Image(systemName: "sparkles")
                     .foregroundStyle(.yellow)
             }
@@ -98,21 +96,20 @@ struct HomeView: View {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                             selectedMood = emoji
                             showAffirmation = true
-                            streakManager.updateStreak()
+                            updateStreak()
                         }
                     } label: {
                         VStack(spacing: 4) {
                             Text(emoji)
                                 .font(.system(size: 32))
-                                .scaleEffect(selectedMood == emoji ? 1.4 : 1.0)
-                                .opacity(selectedMood == emoji ? 1.0 : 0.8)
+                                .scaleEffect(selectedMood == emoji ? 1.3 : 1.0)
                             Text(label)
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(selectedMood == emoji ? AppTint.opacity(0.2) : .regularMaterial)
+                        .background(selectedMood == emoji ? AppTint.opacity(0.15) : .regularMaterial)
                         .clipShape(.rect(cornerRadius: 16))
                         .overlay(
                             selectedMood == emoji ?
@@ -152,7 +149,7 @@ struct HomeView: View {
                     withAnimation { showAffirmation = true }
                 }
                 actionCard(icon: "figure.walk", title: "Passeggiata", color: .green) {
-                    dailyAffirmation = "Immagina di camminare in una foresta. Senti l'aria fresca. 🚶"
+                    dailyAffirmation = "Immagina di camminare in una foresta. 🚶"
                     withAnimation { showAffirmation = true }
                 }
                 actionCard(icon: "book.closed", title: "Diario rapido", color: .orange) {
@@ -184,42 +181,38 @@ struct HomeView: View {
         }
     }
 
-    private var breathingSection: some View {
-        VStack(spacing: 12) {
-            Text("Respiro guidato")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Button {
-                startBreathing()
-            } label: {
-                HStack {
-                    Image(systemName: "wind")
-                        .font(.title2)
-                        .foregroundStyle(.teal)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Timer di respiro")
-                            .font(.callout.weight(.medium))
-                            .foregroundStyle(.primary)
-                        Text("1 minuto di respiro consapevole")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Image(systemName: "play.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.teal)
-                }
-                .padding(16)
-                .background(.regularMaterial)
-                .clipShape(.rect(cornerRadius: 16))
+    private func checkStreak() {
+        let today = formattedDate(Date())
+        if lastActiveDate != today {
+            let cal = Calendar.current
+            if let last = dateFromString(lastActiveDate),
+               let diff = cal.dateComponents([.day], from: last, to: Date()).day {
+                streak = diff <= 1 ? streak + 1 : 0
+            } else {
+                streak = 1
             }
+            lastActiveDate = today
         }
     }
 
-    private func startBreathing() {
-        dailyAffirmation = "Inspira...  🌬️\nEspira...  🌬️\nRipeti per 1 minuto."
-        withAnimation { showAffirmation = true }
+    private func updateStreak() {
+        let today = formattedDate(Date())
+        if lastActiveDate != today {
+            streak += 1
+            lastActiveDate = today
+        }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
+    }
+
+    private func dateFromString(_ string: String) -> Date? {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.date(from: string)
     }
 }
 

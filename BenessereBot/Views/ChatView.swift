@@ -5,11 +5,15 @@ struct ChatView: View {
     @State private var inputText = ""
     @State private var showPsychologists = false
     @State private var speechRecognizer: SpeechRecognizer?
+    @State private var aiPersona: AIPersona = .therapist
     @FocusState private var isFocused: Bool
+    @Environment(\.modelContext) var context
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                PersonaPickerView(selected: $aiPersona)
+                    .padding(.horizontal).padding(.vertical, 6)
                 ScrollViewReader { proxy in
                     ScrollView {
                         if viewModel.messages.isEmpty {
@@ -134,7 +138,10 @@ struct ChatView: View {
             Button {
                 let text = inputText
                 inputText = ""
-                viewModel.send(text)
+                viewModel.send(text, persona: aiPersona)
+                let sm = StoredMessage(role: "user", content: text)
+                context.insert(sm)
+                try? context.save()
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 32))

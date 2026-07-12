@@ -10,7 +10,7 @@ class ChatViewModel {
     var showPsychologists = false
     var suggestedCity = "Milano"
 
-    func send(_ text: String) {
+    func send(_ text: String, persona: AIPersona = .therapist) {
         guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         let userMsg = Message(role: "user", content: text)
         messages.append(userMsg)
@@ -20,6 +20,7 @@ class ChatViewModel {
 
         Task {
             do {
+                OpenRouterService.shared.systemPrompt = persona.systemPrompt
                 var reply = try await OpenRouterService.shared.sendMessage(text, history: messages)
                 await MainActor.run {
                     if reply.contains("CONTATTA_UN_PSICOLOGO") {

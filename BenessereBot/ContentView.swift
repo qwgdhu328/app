@@ -11,9 +11,9 @@ struct ContentView: View {
             ChatView()
                 .tag(Tab.chat)
                 .tabItem { Label(Tab.chat.rawValue, systemImage: Tab.chat.icon) }
-            CommunityView()
-                .tag(Tab.community)
-                .tabItem { Label(Tab.community.rawValue, systemImage: Tab.community.icon) }
+            WellbeingView()
+                .tag(Tab.wellbeing)
+                .tabItem { Label(Tab.wellbeing.rawValue, systemImage: Tab.wellbeing.icon) }
             ProfileView()
                 .tag(Tab.profile)
                 .tabItem { Label(Tab.profile.rawValue, systemImage: Tab.profile.icon) }

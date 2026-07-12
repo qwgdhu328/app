@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import SwiftData
 
 @main
 struct BenessereBotApp: App {
@@ -22,7 +23,6 @@ struct BenessereBotApp: App {
                     ContentView()
                         .transition(.opacity)
                 }
-
                 if breathingService.isActive {
                     VStack {
                         Spacer()
@@ -34,13 +34,22 @@ struct BenessereBotApp: App {
                 }
             }
             .environmentObject(breathingService)
+            .onChange(of: breathingService.isActive) { _, active in
+                if !active, let ctx = try? ModelContext(.init(for: BreathingSession.self)) {
+                    let s = breathingService
+                    if s.secondsLeft <= 0 {
+                        let session = BreathingSession(pattern: s.pattern.rawValue, duration: s.totalDuration, rounds: s.rounds)
+                        ctx.insert(session); try? ctx.save()
+                    }
+                }
+            }
         }
+        .modelContainer(for: [StoredMessage.self, MoodEntry.self, BreathingSession.self, JournalEntry.self, Goal.self, Habit.self, Achievement.self])
     }
+}
 
     private func requestNotificationPermission() {
-        Task {
-            try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
-        }
+        Task { try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) }
     }
 
     private func styleTabBar() {
@@ -68,14 +77,14 @@ struct BenessereBotApp: App {
 enum Tab: String, CaseIterable {
     case home = "Home"
     case chat = "Chat"
-    case community = "Spazio"
+    case wellbeing = "Benessere"
     case profile = "Profilo"
 
     var icon: String {
         switch self {
         case .home: return "house.fill"
         case .chat: return "message.fill"
-        case .community: return "globe"
+        case .wellbeing: return "heart.circle.fill"
         case .profile: return "person.crop.circle.fill"
         }
     }

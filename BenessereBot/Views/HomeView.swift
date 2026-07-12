@@ -47,7 +47,7 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
-                .padding(.bottom, 100)
+                .padding(.bottom, 8)
             }
             .scrollBounceBehavior(.basedOnSize)
             .background(AppBackground())

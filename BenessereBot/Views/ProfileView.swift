@@ -38,7 +38,7 @@ struct ProfileView: View {
                         }
                     }
                     .padding()
-                    .padding(.bottom, 100)
+                    .padding(.bottom, 8)
                 }
             }
             .navigationTitle("")

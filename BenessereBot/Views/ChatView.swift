@@ -49,7 +49,6 @@ struct ChatView: View {
             .background(AppBackground())
             .navigationTitle("")
             .toolbarBackground(.hidden, for: .navigationBar)
-            .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 8) }
             .sheet(isPresented: $showPsychologists) { PsychologistsListView(city: viewModel.suggestedCity) }
         }
     }

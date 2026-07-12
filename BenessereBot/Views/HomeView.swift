@@ -79,7 +79,7 @@ struct HomeView: View {
                 Circle().stroke(Theme.cardBorder, lineWidth: 8).frame(width: 72, height: 72)
                 Circle()
                     .trim(from: 0, to: 0.01 * Double(streak > 0 ? min(streak * 10 + 20, 100) : 20))
-                    .stroke(moodEntries.last.map { moodColor(for: $0.emoji) } ?? Theme.accent, style: .init(lineWidth: 8, lineCap: .round))
+                    .stroke(moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent, style: .init(lineWidth: 8, lineCap: .round))
                     .frame(width: 72, height: 72).rotationEffect(.degrees(-90))
             }
             VStack(alignment: .leading, spacing: 4) {
@@ -270,7 +270,7 @@ struct HomeView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) { ripples.removeAll { $0.id == ripple.id } }
     }
 
-    private func moodColor(for emoji: String) -> Color {
+    private func moodColor(_ emoji: String) -> Color {
         moodGrid.first(where: { $0.0 == emoji }).map { $0.2 } ?? Theme.accent
     }
 
@@ -279,7 +279,7 @@ struct HomeView: View {
         guard !recent.isEmpty else { return Theme.accent }
         var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0; var count = 0
         for entry in recent {
-            let c = UIColor(moodColor(for: entry.emoji))
+            let c = UIColor(moodColor(entry.emoji))
             var cr: CGFloat = 0; var cg: CGFloat = 0; var cb: CGFloat = 0; var ca: CGFloat = 0
             if c.getRed(&cr, green: &cg, blue: &cb, alpha: &ca) {
                 r += cr; g += cg; b += cb; count += 1

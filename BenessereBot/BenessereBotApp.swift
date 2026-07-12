@@ -3,6 +3,17 @@ import SwiftUI
 @main
 struct BenessereBotApp: App {
     @State private var showIntro = !UserDefaults.standard.bool(forKey: "hasSeenIntro")
+    @StateObject private var breathingService = BreathingService()
+
+    init() {
+        requestNotificationPermission()
+    }
+
+    private func requestNotificationPermission() {
+        Task {
+            try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -15,7 +26,18 @@ struct BenessereBotApp: App {
                     ContentView()
                         .transition(.opacity)
                 }
+
+                if breathingService.isActive {
+                    VStack {
+                        Spacer()
+                        BreathingTimerView(service: breathingService)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring, value: breathingService.isActive)
+                    .ignoresSafeArea(.keyboard)
+                }
             }
+            .environmentObject(breathingService)
         }
     }
 }

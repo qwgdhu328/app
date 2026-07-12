@@ -22,6 +22,8 @@ struct HomeView: View {
 
     @State private var dailyAffirmation: String = ""
 
+    @EnvironmentObject var breathingService: BreathingService
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -33,6 +35,7 @@ struct HomeView: View {
                         affirmationCard
                     }
                     quickActionsSection
+                    breathingSection
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -179,6 +182,45 @@ struct HomeView: View {
             .background(.regularMaterial)
             .clipShape(.rect(cornerRadius: 16))
         }
+    }
+
+    private var breathingSection: some View {
+        VStack(spacing: 12) {
+            Text("Respiro guidato")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                startBreathing()
+            } label: {
+                HStack {
+                    Image(systemName: "wind")
+                        .font(.title2)
+                        .foregroundStyle(.teal)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Timer di respiro")
+                            .font(.callout.weight(.medium))
+                            .foregroundStyle(.primary)
+                        Text(breathingService.isActive ? "In corso..." : "1 minuto di respiro consapevole")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: breathingService.isActive ? "stop.circle.fill" : "play.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.teal)
+                }
+                .padding(16)
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 16))
+            }
+        }
+    }
+
+    private func startBreathing() {
+        breathingService.start()
+        dailyAffirmation = "Respiro guidato iniziato. Segui il timer qui sotto. 🌬️"
+        withAnimation { showAffirmation = true }
     }
 
     private func checkStreak() {

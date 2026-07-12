@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct ChatView: View {
     @State private var viewModel = ChatViewModel()

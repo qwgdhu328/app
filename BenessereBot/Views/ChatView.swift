@@ -41,7 +41,7 @@ struct ChatView: View {
                                 if let error = viewModel.errorMessage {
                                     Text(error)
                                         .font(.caption)
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(Theme.accent)
                                         .padding()
                                 }
                             }
@@ -103,7 +103,7 @@ struct ChatView: View {
                 Image(systemName: "chevron.right")
             }
             .padding(12)
-            .background(.blue.opacity(0.1))
+            .background(Theme.accent.opacity(0.1))
             .clipShape(.rect(cornerRadius: 12))
             .padding(.horizontal)
             .padding(.vertical, 4)
@@ -118,7 +118,7 @@ struct ChatView: View {
             } label: {
                 Image(systemName: speechRecognizer?.isListening == true ? "mic.fill" : "mic")
                     .font(.title2)
-                    .foregroundStyle(speechRecognizer?.isListening == true ? .red : Theme.muted)
+                    .foregroundStyle(speechRecognizer?.isListening == true ? Theme.accent : Theme.muted)
             }
 
             TextField("Scrivi come ti senti...", text: $inputText)

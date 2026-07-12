@@ -26,21 +26,21 @@ struct BreathingTimerView: View {
                 Button { service.stop() } label: {
                     Label("Stop", systemImage: "stop.circle.fill")
                         .font(.callout.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                         .padding(.horizontal, 28)
                         .padding(.vertical, 12)
-                        .background(Color.red.opacity(0.7))
+                        .background(Theme.card)
                         .clipShape(.capsule)
                 }
                 if !service.isActive {
                     Button { service.start() } label: {
                         Label("Avvia", systemImage: "play.circle.fill")
-                            .font(.callout.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 12)
-                            .background(Theme.breathing)
-                            .clipShape(.capsule)
+                                .font(.callout.weight(.semibold))
+                                .foregroundStyle(Theme.text)
+                                .padding(.horizontal, 28)
+                                .padding(.vertical, 12)
+                                .background(Theme.card)
+                                .clipShape(.capsule)
                     }
                 }
             }

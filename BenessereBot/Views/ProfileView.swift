@@ -53,12 +53,7 @@ struct ProfileView: View {
                     }
                 }
 
-                Section("Info") {
-                    LabeledContent("Versione", value: "2.0.0")
-                    LabeledContent("AI Model", value: "OpenRouter GPT-4o")
-                    LabeledContent("Piattaforma", value: "iOS nativo")
-                    Link("Codice sorgente", destination: URL(string: "https://github.com/qwgdhu328/app")!)
-                }
+
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)

@@ -15,7 +15,7 @@ struct AchievementsView: View {
                             VStack(spacing: 10) {
                                 Image(systemName: a.icon)
                                     .font(.title)
-                                    .foregroundStyle(a.isUnlocked ? .yellow : Theme.muted)
+                                    .foregroundStyle(a.isUnlocked ? Theme.accent : Theme.muted)
                                     .symbolEffect(.bounce, value: a.isUnlocked)
                                 Text(a.title).font(.caption.weight(.medium)).foregroundStyle(Theme.text).multilineTextAlignment(.center)
                                 Text(a.details).font(.caption2).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
@@ -24,7 +24,7 @@ struct AchievementsView: View {
                             .padding(16)
                             .background(Theme.card)
                             .clipShape(.rect(cornerRadius: 16))
-                            .overlay(a.isUnlocked ? RoundedRectangle(cornerRadius: 16).stroke(.yellow.opacity(0.5), lineWidth: 1) : nil)
+                            .overlay(a.isUnlocked ? RoundedRectangle(cornerRadius: 16).stroke(Theme.accent.opacity(0.5), lineWidth: 1) : nil)
                             .opacity(a.isUnlocked ? 1 : 0.5)
                         }
                     }

@@ -41,7 +41,7 @@ struct GoalsListView: View {
                                 Image(systemName: h.icon).foregroundStyle(Theme.breathing)
                                 Text(h.title).foregroundStyle(Theme.text)
                                 Spacer()
-                                Text("\(h.streak) gg").font(.caption).foregroundStyle(.orange)
+                                Text("\(h.streak) gg").font(.caption).foregroundStyle(Theme.accent)
                                 Button { toggleHabit(h) } label: {
                                     Image(systemName: "checkmark.circle\(h.lastCompleted.map { Calendar.current.isDateInToday($0) ? ".fill" : "" } ?? "")").foregroundStyle(Theme.breathing)
                                 }

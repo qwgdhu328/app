@@ -17,13 +17,13 @@ struct WellbeingView: View {
                             HStack { Image(systemName: "calendar").foregroundStyle(Theme.accent); Text("Calendario umore").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
                         }
                         NavigationLink(destination: JournalView()) {
-                            HStack { Image(systemName: "book.fill").foregroundStyle(.orange); Text("Diario dei pensieri").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
+                            HStack { Image(systemName: "book.fill").foregroundStyle(Theme.accent); Text("Diario dei pensieri").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
                         }
                         NavigationLink(destination: GoalsListView()) {
-                            HStack { Image(systemName: "target").foregroundStyle(.pink); Text("Obiettivi e abitudini").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
+                            HStack { Image(systemName: "target").foregroundStyle(Theme.accent); Text("Obiettivi e abitudini").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
                         }
                         NavigationLink(destination: AchievementsView()) {
-                            HStack { Image(systemName: "trophy.fill").foregroundStyle(.yellow); Text("Trofei").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
+                            HStack { Image(systemName: "trophy.fill").foregroundStyle(Theme.accent); Text("Trofei").foregroundStyle(Theme.text); Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.muted) }.card()
                         }
                         if !sessions.isEmpty {
                             NavigationLink(destination: BreathingHistoryView()) {
@@ -40,9 +40,9 @@ struct WellbeingView: View {
 
     private var statsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            statBox(value: "\(moods.count)", label: "Umore", icon: "heart.fill", color: .pink)
-            statBox(value: "\(entries.count)", label: "Pensieri", icon: "book.fill", color: .orange)
-            statBox(value: "\(sessions.count)", label: "Respiri", icon: "wind", color: Theme.breathing)
+            statBox(value: "\(moods.count)", label: "Umore", icon: "heart.fill", color: Theme.accent)
+            statBox(value: "\(entries.count)", label: "Pensieri", icon: "book.fill", color: Theme.accent)
+            statBox(value: "\(sessions.count)", label: "Respiri", icon: "wind", color: Theme.accent)
         }
     }
 

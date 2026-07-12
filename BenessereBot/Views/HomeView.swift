@@ -83,13 +83,13 @@ struct HomeView: View {
     private var streakSection: some View {
         HStack {
             Image(systemName: "flame.fill")
-                .foregroundStyle(.orange)
+                .foregroundStyle(Theme.accent)
             Text("\(streak) giorni di fila!")
                 .font(.subheadline.weight(.medium))
             Spacer()
             if streak > 0 {
                 Image(systemName: "sparkles")
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(Theme.accent)
             }
         }
         .padding(12)
@@ -159,19 +159,19 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                actionCard(icon: "brain.head.profile", title: "Mindfulness", color: Color(red: 0.5, green: 0.7, blue: 1.0)) {
+                actionCard(icon: "brain.head.profile", title: "Mindfulness") {
                     dailyAffirmation = "Chiudi gli occhi. Respira. Sii presente. 🌿"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "figure.walk", title: "Passeggiata", color: Color(red: 0.4, green: 0.85, blue: 0.6)) {
+                actionCard(icon: "figure.walk", title: "Passeggiata") {
                     dailyAffirmation = "Immagina di camminare in una foresta. 🚶"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "book.closed", title: "Diario rapido", color: Color(red: 1.0, green: 0.7, blue: 0.4)) {
+                actionCard(icon: "book.closed", title: "Diario rapido") {
                     dailyAffirmation = "Scrivi 3 cose positive della tua giornata. 📝"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "music.note", title: "Musica rilassante", color: Color(red: 0.7, green: 0.4, blue: 1.0)) {
+                actionCard(icon: "music.note", title: "Musica rilassante") {
                     dailyAffirmation = "Ascolta un brano che ami. 🎵"
                     withAnimation { showAffirmation = true }
                 }
@@ -179,12 +179,12 @@ struct HomeView: View {
         }
     }
 
-    private func actionCard(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func actionCard(icon: String, title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(color)
+                    .foregroundStyle(Theme.accent)
                 Text(title)
                     .font(.callout.weight(.medium))
                     .foregroundStyle(Theme.text)

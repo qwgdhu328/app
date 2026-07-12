@@ -15,7 +15,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.0</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -30,17 +30,9 @@
 	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>BenessereBot</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
-	<true/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>BenessereBot usa il riconoscimento vocale per trascrivere ciò che dici durante le sessioni di chat vocale.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BenessereBot usa il microfono per catturare la tua voce e trasformarla in testo.</string>
 </dict>
 </plist>

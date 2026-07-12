@@ -4,6 +4,7 @@ struct ChatView: View {
     @State private var viewModel = ChatViewModel()
     @State private var inputText = ""
     @State private var showPsychologists = false
+    @State private var speechRecognizer: SpeechRecognizer?
     @FocusState private var isFocused: Bool
 
     var body: some View {
@@ -13,11 +14,13 @@ struct ChatView: View {
                     ScrollView {
                         if viewModel.messages.isEmpty {
                             emptyState
+                                .transition(.opacity)
                         } else {
                             LazyVStack(spacing: 12) {
                                 ForEach(viewModel.messages) { msg in
                                     MessageBubble(message: msg)
                                         .id(msg.id)
+                                        .transition(.move(edge: .bottom).combined(with: .opacity))
                                 }
                                 if viewModel.isLoading {
                                     HStack {
@@ -42,6 +45,7 @@ struct ChatView: View {
                         }
                     }
                     .scrollBounceBehavior(.basedOnSize)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.messages.count)
                     .onChange(of: viewModel.messages.count) { _, _ in
                         withAnimation {
                             proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
@@ -55,7 +59,7 @@ struct ChatView: View {
 
                 inputBar
             }
-            .background(Color(.systemGroupedBackground))
+            .background(AppBackground())
             .navigationTitle("BenessereBot")
             .sheet(isPresented: $showPsychologists) {
                 PsychologistsListView(city: viewModel.suggestedCity)
@@ -68,7 +72,8 @@ struct ChatView: View {
             Spacer()
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 60))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
+                .symbolEffect(.bounce, options: .repeat(3))
             Text("Parla con BenessereBot")
                 .font(.title2.bold())
             Text("Uno psicologo virtuale sempre pronto ad ascoltarti.\nCondividi ciò che senti, senza giudizio.")
@@ -77,6 +82,7 @@ struct ChatView: View {
                 .padding(.horizontal, 40)
             Spacer()
         }
+        .transition(.opacity)
     }
 
     private var psychologistBanner: some View {
@@ -101,6 +107,14 @@ struct ChatView: View {
 
     private var inputBar: some View {
         HStack(spacing: 8) {
+            Button {
+                handleMicTap()
+            } label: {
+                Image(systemName: speechRecognizer?.isListening == true ? "mic.fill" : "mic")
+                    .font(.title2)
+                    .foregroundStyle(speechRecognizer?.isListening == true ? .red : .secondary)
+            }
+
             TextField("Scrivi come ti senti...", text: $inputText)
                 .textFieldStyle(.plain)
                 .padding(12)
@@ -115,13 +129,34 @@ struct ChatView: View {
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 32))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(AppTint)
             }
             .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
         .background(.regularMaterial)
+    }
+
+    private func handleMicTap() {
+        if let sr = speechRecognizer, sr.isListening {
+            sr.stop()
+            return
+        }
+
+        let sr = SpeechRecognizer()
+        speechRecognizer = sr
+
+        Task {
+            guard await sr.requestAuthorization() else { return }
+            sr.start { text in
+                Task { @MainActor in
+                    guard !text.isEmpty else { return }
+                    self.inputText = text
+                    self.viewModel.send(text)
+                }
+            }
+        }
     }
 }
 
@@ -135,13 +170,13 @@ struct MessageBubble: View {
                 Text(message.content)
                     .padding(14)
                     .background(AppTint.opacity(0.12))
-                    .clipShape(.rect(cornerRadius: 18))
+                    .clipShape(.rect(cornerRadius: 18, style: .continuous))
                     .padding(.leading, 60)
             } else {
                 Text(message.content)
                     .padding(14)
                     .background(.regularMaterial)
-                    .clipShape(.rect(cornerRadius: 18))
+                    .clipShape(.rect(cornerRadius: 18, style: .continuous))
                     .padding(.trailing, 60)
                 Spacer()
             }

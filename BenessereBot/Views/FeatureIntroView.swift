@@ -12,7 +12,8 @@ struct FeatureIntroView: View {
                 }
                 .padding(20)
             }
-            .background(Color(.systemGroupedBackground))
+            .scrollBounceBehavior(.basedOnSize)
+            .background(AppBackground())
             .navigationTitle("Scopri l'App")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -26,7 +27,7 @@ struct FeatureIntroView: View {
         VStack(spacing: 8) {
             Image(systemName: "sparkles.rectangle.stack.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
             Text("Tutto ciò che puoi fare")
                 .font(.title2.bold())
             Text("Esplora le funzioni di BenessereBot")
@@ -74,6 +75,18 @@ struct FeatureIntroView: View {
                 icon: "globe",
                 title: "Spazio community",
                 description: "Esplora gruppi di supporto, articoli sul benessere, eventi e sfide per crescere insieme.",
+                color: .teal
+            )
+            featureCard(
+                icon: "mic.fill",
+                title: "Chat vocale",
+                description: "Usa il microfono per parlare con BenessereBot. Il riconoscimento vocale trasforma la tua voce in testo.",
+                color: .pink
+            )
+            featureCard(
+                icon: "wind",
+                title: "Respiro guidato",
+                description: "Timer di respiro consapevole con supporto Dynamic Island. Respira con calma e ritrova il centro.",
                 color: .teal
             )
         }

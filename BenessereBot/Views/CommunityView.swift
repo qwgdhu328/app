@@ -30,7 +30,9 @@ struct CommunityView: View {
                 )
             }
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .scrollBounceBehavior(.basedOnSize)
+            .background(AppBackground())
             .navigationTitle("Spazio")
         }
     }

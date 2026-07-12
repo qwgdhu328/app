@@ -1,14 +1,5 @@
 import SwiftUI
 
-private struct FadeSlideModifier: ViewModifier {
-    let animate: Bool
-    func body(content: Content) -> some View {
-        content
-            .opacity(animate ? 1 : 0)
-            .offset(y: animate ? 0 : 20)
-    }
-}
-
 struct IntroView: View {
     @Binding var showIntro: Bool
     @State private var currentPage = 0
@@ -16,7 +7,6 @@ struct IntroView: View {
     @State private var name = ""
     @State private var selectedGoal: String? = nil
     @State private var selectedMood: String? = nil
-    @State private var showConfetti = false
 
     private let goals = [
         ("Gestire l'ansia", "brain.head.profile"),
@@ -30,7 +20,7 @@ struct IntroView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(.systemBackground), AppTint.opacity(0.08)],
+                colors: [Color(.systemBackground), AppTint.opacity(0.08), Color(.systemBackground).opacity(0.95)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -39,17 +29,14 @@ struct IntroView: View {
             VStack {
                 Spacer()
 
-                Group {
-                    switch currentPage {
-                    case 0: welcomePage
-                    case 1: namePage
-                    case 2: goalPage
-                    case 3: moodPage
-                    case 4: finalPage
-                    default: welcomePage
-                    }
+                switch currentPage {
+                case 0: welcomePage
+                case 1: namePage
+                case 2: goalPage
+                case 3: moodPage
+                case 4: finalPage
+                default: welcomePage
                 }
-                .transition(.slide)
 
                 Spacer()
 
@@ -101,8 +88,8 @@ struct IntroView: View {
         VStack(spacing: 24) {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 80))
-                .foregroundStyle(.tint)
-                .symbolEffect(.bounce)
+                .foregroundStyle(AppTint)
+                .symbolEffect(.bounce, options: .repeat(3))
 
             Text("Benvenuto su\nBenessereBot")
                 .font(.largeTitle.bold())
@@ -111,6 +98,7 @@ struct IntroView: View {
             Text("Il tuo compagno per il benessere mentale.\nParla, esplora, cresci.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
+                .font(.body)
 
             Text("Swipe per iniziare →")
                 .font(.caption)
@@ -118,14 +106,16 @@ struct IntroView: View {
                 .padding(.top, 20)
         }
         .padding(30)
-        .modifier(FadeSlideModifier(animate: animateContent))
+        .opacity(animateContent ? 1 : 0)
+        .offset(y: animateContent ? 0 : 20)
     }
 
     private var namePage: some View {
         VStack(spacing: 24) {
             Image(systemName: "person.crop.circle.badge.plus")
                 .font(.system(size: 60))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
+                .symbolEffect(.pulse)
 
             Text("Come ti chiami?")
                 .font(.title.bold())
@@ -142,25 +132,20 @@ struct IntroView: View {
             if !name.isEmpty {
                 Text("Piacere di conoscerti, \(name)! ✨")
                     .font(.headline)
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(AppTint)
                     .transition(.scale.combined(with: .opacity))
             }
         }
         .padding(30)
-        .modifier(FadeSlideModifier(animate: animateContent))
+        .opacity(animateContent ? 1 : 0)
+        .offset(y: animateContent ? 0 : 20)
     }
 
     private var goalPage: some View {
-        goalPageContent
-            .padding(30)
-            .modifier(FadeSlideModifier(animate: animateContent))
-    }
-
-    private var goalPageContent: some View {
         VStack(spacing: 20) {
             Image(systemName: "target")
                 .font(.system(size: 50))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
 
             Text("Cosa cerchi?")
                 .font(.title.bold())
@@ -168,68 +153,39 @@ struct IntroView: View {
             Text("Scegli il tuo obiettivo principale.")
                 .foregroundStyle(.secondary)
 
-            goalGrid
-                .padding(.horizontal, 20)
-        }
-    }
-
-    private var goalGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            ForEach(goals, id: \.0) { goal, icon in
-                goalButton(goal: goal, icon: icon)
-            }
-        }
-    }
-
-    private func moodEmojiButton(emoji: String) -> some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            withAnimation(.spring) {
-                selectedMood = emoji
-                showConfetti = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showConfetti = false
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                ForEach(goals, id: \.0) { goal, icon in
+                    Button {
+                        withAnimation(.spring) {
+                            selectedGoal = goal
+                        }
+                    } label: {
+                        VStack(spacing: 8) {
+                            Image(systemName: icon)
+                                .font(.title3)
+                            Text(goal)
+                                .font(.caption.weight(.medium))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(16)
+                        .background(selectedGoal == goal ? AppTint : .regularMaterial)
+                        .foregroundStyle(selectedGoal == goal ? .white : .primary)
+                        .clipShape(.rect(cornerRadius: 16))
+                    }
                 }
             }
-        } label: {
-            Text(emoji)
-                .font(.system(size: 40))
-                .padding(12)
-                .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.2)) : AnyShapeStyle(.regularMaterial))
-                .clipShape(.circle)
-                .overlay(
-                    selectedMood == emoji ?
-                    Circle().stroke(AppTint, lineWidth: 2) : nil
-                )
+            .padding(.horizontal, 20)
         }
-    }
-
-    private func goalButton(goal: String, icon: String) -> some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            withAnimation(.spring) {
-                selectedGoal = goal
-            }
-        } label: {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title3)
-                Text(goal)
-                    .font(.caption.weight(.medium))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .background(selectedGoal == goal ? AnyShapeStyle(AppTint) : AnyShapeStyle(.regularMaterial))
-            .foregroundStyle(selectedGoal == goal ? .white : .primary)
-            .clipShape(.rect(cornerRadius: 16))
-        }
+        .padding(30)
+        .opacity(animateContent ? 1 : 0)
+        .offset(y: animateContent ? 0 : 20)
     }
 
     private var moodPage: some View {
         VStack(spacing: 24) {
             Image(systemName: "face.smiling")
                 .font(.system(size: 60))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
 
             Text("Come ti senti ora?")
                 .font(.title.bold())
@@ -239,19 +195,34 @@ struct IntroView: View {
 
             HStack(spacing: 16) {
                 ForEach(["😊", "😐", "😢", "😡", "😴"], id: \.self) { emoji in
-                    moodEmojiButton(emoji: emoji)
+                    Button {
+                        withAnimation(.spring) {
+                            selectedMood = emoji
+                        }
+                    } label: {
+                        Text(emoji)
+                            .font(.system(size: 44))
+                            .padding(12)
+                            .background(selectedMood == emoji ? AppTint.opacity(0.2) : .regularMaterial)
+                            .clipShape(.circle)
+                            .overlay(
+                                selectedMood == emoji ?
+                                Circle().stroke(AppTint, lineWidth: 2) : nil
+                            )
+                    }
                 }
             }
         }
         .padding(30)
-        .modifier(FadeSlideModifier(animate: animateContent))
+        .opacity(animateContent ? 1 : 0)
+        .offset(y: animateContent ? 0 : 20)
     }
 
     private var finalPage: some View {
         VStack(spacing: 24) {
             Image(systemName: "sparkles")
                 .font(.system(size: 70))
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
                 .symbolEffect(.pulse)
 
             Text("Tutto pronto! 🎉")
@@ -300,7 +271,8 @@ struct IntroView: View {
             .padding(.horizontal, 40)
         }
         .padding(30)
-        .modifier(FadeSlideModifier(animate: animateContent))
+        .opacity(animateContent ? 1 : 0)
+        .offset(y: animateContent ? 0 : 20)
     }
 }
 

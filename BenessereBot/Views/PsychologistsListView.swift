@@ -15,7 +15,7 @@ struct PsychologistsListView: View {
                     HStack(spacing: 12) {
                         Image(systemName: psychologist.imageSystemName)
                             .font(.title)
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(AppTint)
                             .frame(width: 44, height: 44)
 
                         VStack(alignment: .leading, spacing: 2) {
@@ -62,6 +62,8 @@ struct PsychologistsListView: View {
                 .padding(.vertical, 4)
             }
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(AppBackground())
             .navigationTitle("Psicologi a \(city)")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

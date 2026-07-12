@@ -12,7 +12,7 @@ struct ProfileView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "person.crop.circle.fill")
                             .font(.system(size: 72))
-                            .foregroundStyle(.tint.opacity(0.4))
+                            .foregroundStyle(AppTint.opacity(0.4))
 
                         Text(userName.isEmpty ? "Il tuo profilo" : userName)
                             .font(.title2.bold())
@@ -50,7 +50,9 @@ struct ProfileView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .scrollBounceBehavior(.basedOnSize)
+            .background(AppBackground())
             .navigationTitle("Profilo")
             .sheet(isPresented: $showFeatures) {
                 FeatureIntroView()
@@ -61,7 +63,7 @@ struct ProfileView: View {
     private func statCard(value: String, label: String, icon: String) -> some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
-                .foregroundStyle(.tint)
+                .foregroundStyle(AppTint)
             Text(value)
                 .font(.title2.bold())
             Text(label)

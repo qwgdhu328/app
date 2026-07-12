@@ -6,12 +6,15 @@ struct BenessereBotApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if showIntro {
-                IntroView(showIntro: $showIntro)
-                    .transition(.opacity)
-            } else {
-                ContentView()
-                    .transition(.opacity)
+            ZStack {
+                AppBackground()
+                if showIntro {
+                    IntroView(showIntro: $showIntro)
+                        .transition(.opacity)
+                } else {
+                    ContentView()
+                        .transition(.opacity)
+                }
             }
         }
     }

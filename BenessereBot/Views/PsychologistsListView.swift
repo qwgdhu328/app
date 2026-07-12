@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PsychologistsListView: View {
-    let psychologists = Psychologist.samplePsychologists
+    let psychologists = samplePsychologists
     @State private var searchCity = ""
 
     var filtered: [Psychologist] {
@@ -14,7 +14,7 @@ struct PsychologistsListView: View {
             List(filtered) { p in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(p.name).font(.headline).foregroundStyle(Theme.text)
-                    Text(p.specialization).font(.subheadline).foregroundStyle(Theme.muted)
+                    Text(p.specialty).font(.subheadline).foregroundStyle(Theme.muted)
                     Text(p.city).font(.caption).foregroundStyle(Theme.accent)
                     HStack(spacing: 16) {
                         Link("Chiama", destination: URL(string: "tel:\(p.phone)")!)

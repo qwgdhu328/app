@@ -9,14 +9,20 @@ struct BreathingLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Label(context.state.phase, systemImage: "wind")
-                        .font(.headline)
-                        .foregroundStyle(.teal)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Label(context.state.phase, systemImage: "wind")
+                            .font(.callout.weight(.medium))
+                            .foregroundStyle(.teal)
+                        Text(context.attributes.pattern)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     Text("\(context.state.secondsLeft)s")
-                        .font(.title2.weight(.bold))
+                        .font(.title.weight(.bold))
                         .monospacedDigit()
+                        .foregroundStyle(.white)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     ProgressView(value: context.state.progress)
@@ -25,10 +31,12 @@ struct BreathingLiveActivity: Widget {
             } compactLeading: {
                 Image(systemName: "wind")
                     .foregroundStyle(.teal)
+                    .symbolEffect(.pulse)
             } compactTrailing: {
                 Text("\(context.state.secondsLeft)s")
                     .font(.caption2.weight(.bold))
                     .monospacedDigit()
+                    .foregroundStyle(.white)
             } minimal: {
                 Image(systemName: "wind")
                     .foregroundStyle(.teal)
@@ -48,18 +56,30 @@ private struct BreathingLockScreenView: View {
                 .symbolEffect(.pulse)
 
             VStack(alignment: .leading, spacing: 4) {
+                Text(context.attributes.pattern)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
                 Text(context.state.phase)
                     .font(.headline)
+                    .foregroundStyle(.white)
                 ProgressView(value: context.state.progress)
                     .tint(.teal)
             }
 
-            Text("\(context.state.secondsLeft)s")
-                .font(.title2.weight(.bold))
-                .monospacedDigit()
+            Spacer()
+
+            VStack(alignment: .trailing) {
+                Text("\(context.state.secondsLeft)s")
+                    .font(.title2.weight(.bold))
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+                Text("\(context.attributes.totalMinutes) min")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
-        .activityBackgroundTint(.black.opacity(0.2))
+        .activityBackgroundTint(Color(red: 0.08, green: 0.09, blue: 0.15))
         .activitySystemActionForegroundColor(.teal)
     }
 }

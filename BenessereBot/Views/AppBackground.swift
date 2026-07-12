@@ -2,29 +2,22 @@ import SwiftUI
 
 struct AppBackground: View {
     var body: some View {
-        LinearGradient(
-            colors: [
-                Color(.systemBackground),
-                AppTint.opacity(0.06),
-                Color(.systemBackground).opacity(0.9)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
+        LinearGradient(colors: [Color(red: 0.08, green: 0.09, blue: 0.15), Color(red: 0.15, green: 0.12, blue: 0.25)], startPoint: .top, endPoint: .bottom)
+            .ignoresSafeArea()
     }
 }
 
 struct CardBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .background(.regularMaterial)
+            .padding(16)
+            .background(Color(red: 0.15, green: 0.17, blue: 0.27))
             .clipShape(.rect(cornerRadius: 16))
     }
 }
 
 extension View {
-    func cardStyle() -> some View {
+    func cardBg() -> some View {
         modifier(CardBackground())
     }
 }

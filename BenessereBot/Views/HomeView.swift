@@ -27,7 +27,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 16) {
                     greetingSection
                     streakSection
                     moodSection
@@ -65,7 +65,7 @@ struct HomeView: View {
                 .font(.largeTitle.bold())
             Text("Come stai oggi?")
                 .font(.title3)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -83,7 +83,7 @@ struct HomeView: View {
             }
         }
         .padding(12)
-        .background(.regularMaterial)
+        .background(AppColors.cardBg)
         .clipShape(.rect(cornerRadius: 12))
     }
 
@@ -108,11 +108,11 @@ struct HomeView: View {
                                 .scaleEffect(selectedMood == emoji ? 1.3 : 1.0)
                             Text(label)
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.textSecondary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.15)) : AnyShapeStyle(.regularMaterial))
+                        .background(selectedMood == emoji ? AnyShapeStyle(AppTint.opacity(0.15)) : AnyShapeStyle(AppColors.cardBg))
                         .clipShape(.rect(cornerRadius: 16))
                         .overlay(
                             selectedMood == emoji ?
@@ -127,39 +127,38 @@ struct HomeView: View {
     private var affirmationCard: some View {
         HStack {
             Image(systemName: "quote.opening")
-                .foregroundStyle(AppTint)
+                .foregroundStyle(AppColors.breathingAccent)
             Text(dailyAffirmation)
                 .font(.subheadline).italic()
+                .foregroundStyle(AppColors.textPrimary)
                 .multilineTextAlignment(.center)
             Image(systemName: "quote.closing")
-                .foregroundStyle(AppTint)
+                .foregroundStyle(AppColors.breathingAccent)
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(.regularMaterial)
-        .clipShape(.rect(cornerRadius: 16))
+        .cardBg()
     }
 
     private var quickActionsSection: some View {
         VStack(spacing: 12) {
             Text("Esplora")
                 .font(.headline)
+                .foregroundStyle(AppColors.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                actionCard(icon: "brain.head.profile", title: "Mindfulness", color: .blue) {
+                actionCard(icon: "brain.head.profile", title: "Mindfulness", color: Color(red: 0.5, green: 0.7, blue: 1.0)) {
                     dailyAffirmation = "Chiudi gli occhi. Respira. Sii presente. 🌿"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "figure.walk", title: "Passeggiata", color: .green) {
+                actionCard(icon: "figure.walk", title: "Passeggiata", color: Color(red: 0.4, green: 0.85, blue: 0.6)) {
                     dailyAffirmation = "Immagina di camminare in una foresta. 🚶"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "book.closed", title: "Diario rapido", color: .orange) {
+                actionCard(icon: "book.closed", title: "Diario rapido", color: Color(red: 1.0, green: 0.7, blue: 0.4)) {
                     dailyAffirmation = "Scrivi 3 cose positive della tua giornata. 📝"
                     withAnimation { showAffirmation = true }
                 }
-                actionCard(icon: "music.note", title: "Musica rilassante", color: .purple) {
+                actionCard(icon: "music.note", title: "Musica rilassante", color: Color(red: 0.7, green: 0.4, blue: 1.0)) {
                     dailyAffirmation = "Ascolta un brano che ami. 🎵"
                     withAnimation { showAffirmation = true }
                 }
@@ -175,52 +174,40 @@ struct HomeView: View {
                     .foregroundStyle(color)
                 Text(title)
                     .font(.callout.weight(.medium))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppColors.textPrimary)
             }
             .frame(maxWidth: .infinity)
             .padding(16)
-            .background(.regularMaterial)
+            .background(AppColors.cardBg)
             .clipShape(.rect(cornerRadius: 16))
         }
     }
 
     private var breathingSection: some View {
-        VStack(spacing: 12) {
-            Text("Respiro guidato")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Button {
-                startBreathing()
-            } label: {
-                HStack {
-                    Image(systemName: "wind")
-                        .font(.title2)
-                        .foregroundStyle(.teal)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Timer di respiro")
-                            .font(.callout.weight(.medium))
-                            .foregroundStyle(.primary)
-                        Text(breathingService.isActive ? "In corso..." : "1 minuto di respiro consapevole")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Image(systemName: breathingService.isActive ? "stop.circle.fill" : "play.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.teal)
+        Button {
+            breathingService.pattern = .simple
+            breathingService.rounds = 3
+            breathingService.start()
+        } label: {
+            HStack {
+                Image(systemName: "wind")
+                    .font(.title2)
+                    .foregroundStyle(AppColors.breathingAccent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Respiro guidato")
+                        .font(.callout.weight(.medium))
+                        .foregroundStyle(AppColors.textPrimary)
+                    Text(breathingService.isActive ? "In corso..." : "Scegli pattern e durata")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
-                .padding(16)
-                .background(.regularMaterial)
-                .clipShape(.rect(cornerRadius: 16))
+                Spacer()
+                Image(systemName: breathingService.isActive ? "stop.circle.fill" : "play.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(AppColors.breathingAccent)
             }
+            .cardBg()
         }
-    }
-
-    private func startBreathing() {
-        breathingService.start()
-        dailyAffirmation = "Respiro guidato iniziato. Segui il timer qui sotto. 🌬️"
-        withAnimation { showAffirmation = true }
     }
 
     private func checkStreak() {

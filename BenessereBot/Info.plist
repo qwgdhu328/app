@@ -34,5 +34,7 @@
 	<string>BenessereBot usa il riconoscimento vocale per trascrivere ciò che dici durante le sessioni di chat vocale.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>BenessereBot usa il microfono per catturare la tua voce e trasformarla in testo.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

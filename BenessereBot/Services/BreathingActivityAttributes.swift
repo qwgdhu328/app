@@ -9,4 +9,6 @@ struct BreathingActivityAttributes: ActivityAttributes {
     }
 
     var startedAt: Date
+    var pattern: String
+    var totalMinutes: Int
 }

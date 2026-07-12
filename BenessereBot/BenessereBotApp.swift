@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 @main
 struct BenessereBotApp: App {
@@ -7,12 +8,7 @@ struct BenessereBotApp: App {
 
     init() {
         requestNotificationPermission()
-    }
-
-    private func requestNotificationPermission() {
-        Task {
-            try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
-        }
+        styleTabBar()
     }
 
     var body: some Scene {
@@ -39,6 +35,24 @@ struct BenessereBotApp: App {
             }
             .environmentObject(breathingService)
         }
+    }
+
+    private func requestNotificationPermission() {
+        Task {
+            try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
+        }
+    }
+
+    private func styleTabBar() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(Color(red: 0.08, green: 0.09, blue: 0.15))
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.breathingAccent)
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.breathingAccent)]
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

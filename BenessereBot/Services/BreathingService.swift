@@ -1,6 +1,7 @@
 import Foundation
 import UserNotifications
 import Combine
+import ActivityKit
 
 @MainActor
 class BreathingService: ObservableObject {
@@ -12,6 +13,7 @@ class BreathingService: ObservableObject {
     private let totalSeconds = 60
     private var timer: AnyCancellable?
     private var elapsed = 0
+    private var activity: Activity<BreathingActivityAttributes>?
 
     func start() {
         elapsed = 0
@@ -19,6 +21,7 @@ class BreathingService: ObservableObject {
         progress = 0
         isActive = true
         phase = "Inspira..."
+        startLiveActivity()
         runCycle()
     }
 
@@ -26,9 +29,8 @@ class BreathingService: ObservableObject {
         timer?.cancel()
         timer = nil
         isActive = false
-        phase = ""
-        secondsLeft = 0
-        progress = 0
+        endLiveActivity()
+        activity = nil
     }
 
     private func runCycle() {
@@ -42,10 +44,12 @@ class BreathingService: ObservableObject {
 
                 let cycle = self.elapsed % 8
                 if cycle < 4 {
-                    self.phase = cycle == 0 ? "Inspira..." : "Inspira lentamente... 🌬️"
+                    self.phase = cycle == 0 ? "Inspira..." : "Inspira lentamente..."
                 } else {
-                    self.phase = cycle == 4 ? "Espira..." : "Espira dolcemente... 🌿"
+                    self.phase = cycle == 4 ? "Espira..." : "Espira dolcemente..."
                 }
+
+                self.updateLiveActivity()
 
                 if self.elapsed >= self.totalSeconds {
                     self.complete()
@@ -54,13 +58,55 @@ class BreathingService: ObservableObject {
     }
 
     private func complete() {
-        stop()
+        endLiveActivity(finalState: true)
+        activity = nil
         scheduleCompletionNotification()
+        isActive = false
+    }
+
+    private func startLiveActivity() {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        let attributes = BreathingActivityAttributes(startedAt: Date())
+        let state = BreathingActivityAttributes.ContentState(
+            phase: phase,
+            secondsLeft: secondsLeft,
+            progress: progress
+        )
+        do {
+            activity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: state, staleDate: nil)
+            )
+        } catch {
+            print("Activity start error: \(error)")
+        }
+    }
+
+    private func updateLiveActivity() {
+        Task {
+            let state = BreathingActivityAttributes.ContentState(
+                phase: phase,
+                secondsLeft: secondsLeft,
+                progress: progress
+            )
+            await activity?.update(.init(state: state, staleDate: nil))
+        }
+    }
+
+    private func endLiveActivity(finalState: Bool = false) {
+        Task {
+            let state = BreathingActivityAttributes.ContentState(
+                phase: finalState ? "Completato! 🧘" : "Terminato",
+                secondsLeft: 0,
+                progress: finalState ? 1.0 : progress
+            )
+            await activity?.end(.init(state: state, staleDate: nil), dismissalPolicy: .immediate)
+        }
     }
 
     private func scheduleCompletionNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "Respiro completato! 🧘"
+        content.title = "Respiro completato!"
         content.body = "Hai completato 1 minuto di respiro consapevole."
         content.sound = .default
 

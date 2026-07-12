@@ -170,7 +170,7 @@ struct ChatView: View {
                 Task { @MainActor in
                     guard !text.isEmpty else { return }
                     self.inputText = text
-                    self.viewModel.send(text)
+                    self.viewModel.send(text, persona: aiPersona)
                 }
             }
         }

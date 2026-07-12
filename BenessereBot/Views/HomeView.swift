@@ -6,7 +6,7 @@ struct HomeView: View {
     @State private var showAffirmation = false
     @AppStorage("streak") private var streak = 0
     @AppStorage("lastActiveDate") private var lastActiveDate: String = ""
-    @Query var moods: [MoodEntry]
+    @Query var moodEntries: [MoodEntry]
     @Query var entries: [JournalEntry]
     @Query var sessions: [BreathingSession]
     @Environment(\.modelContext) var context
@@ -30,14 +30,14 @@ struct HomeView: View {
     @EnvironmentObject var breathingService: BreathingService
 
     private var todayLabel: String {
-        moods.last.map { "Oggi: \($0.emoji) \($0.label)" } ?? entries.last.map { "Ultimo pensiero: \($0.date.formatted(date: .abbreviated, time: .omitted))" } ?? "Inizia il tuo percorso"
+        moodEntries.last.map { "Oggi: \($0.emoji) \($0.label)" } ?? entries.last.map { "Ultimo pensiero: \($0.date.formatted(date: .abbreviated, time: .omitted))" } ?? "Inizia il tuo percorso"
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    WellnessScoreView(score: computeWellnessScore(moods: moods.count, streak: streak, sessions: sessions.count, entries: entries.count), label: todayLabel)
+                    WellnessScoreView(score: computeWellnessScore(moods: moodEntries.count, streak: streak, sessions: sessions.count, entries: entries.count), label: todayLabel)
                     greetingSection
                     streakSection
                     moodSection
@@ -110,7 +110,7 @@ struct HomeView: View {
                             selectedMood = emoji
                             showAffirmation = true
                             updateStreak()
-                            let moodEntry = MoodEntry(emoji: emoji, label: label, score: moods.firstIndex(where: { $0.emoji == emoji }).map { ($0 + 1) * 20 } ?? 50)
+                            let moodEntry = MoodEntry(emoji: emoji, label: label, score: (moods.firstIndex(where: { $0.0 == emoji }).map { ($0 + 1) * 20 } ?? 50))
                             context.insert(moodEntry)
                             try? context.save()
                         }

@@ -9,8 +9,6 @@ struct BenessereBotApp: App {
     let modelContainer: ModelContainer
 
     init() {
-        requestNotificationPermission()
-        styleTabBar()
         guard let container = try? ModelContainer(
             for: StoredMessage.self, MoodEntry.self, BreathingSession.self,
             JournalEntry.self, Goal.self, Habit.self, Achievement.self
@@ -18,6 +16,8 @@ struct BenessereBotApp: App {
             fatalError("Could not initialize ModelContainer")
         }
         modelContainer = container
+        requestNotificationPermission()
+        styleTabBar()
     }
 
     var body: some Scene {

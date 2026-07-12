@@ -60,6 +60,7 @@ struct HomeView: View {
             .navigationTitle("")
             .toolbarBackground(.hidden, for: .navigationBar)
             .onAppear {
+                checkStreak()
                 dailyAffirmation = ["Ogni onda passa. Anche questa.", "Sei esattamente dove devi essere.", "La calma è la tua superpotenza.", "Ascolta ciò che il corpo ti dice.", "Non sei solo in questo viaggio."].randomElement()!
                 withAnimation(.easeOut(duration: 0.8)) { animateItems = true }
             }
@@ -278,12 +279,14 @@ struct HomeView: View {
     private func averageMoodColor() -> Color {
         let recent = moodEntries.suffix(7)
         guard !recent.isEmpty else { return Theme.accent }
-        let colors = recent.compactMap { moodColor(for: $0.emoji).cgColor?.components }
-        guard !colors.isEmpty else { return Theme.accent }
-        let avgR = colors.map { $0[0] }.reduce(0, +) / CGFloat(colors.count)
-        let avgG = colors.map { $0[1] }.reduce(0, +) / CGFloat(colors.count)
-        let avgB = colors.map { $0[2] }.reduce(0, +) / CGFloat(colors.count)
-        return Color(red: Double(avgR), green: Double(avgG), blue: Double(avgB))
+        let total = recent.reduce(into: (r: 0.0, g: 0.0, b: 0.0, count: 0)) { acc, entry in
+            let c = moodColor(for: entry.emoji)
+            if let comps = UIColor(c).cgColor.components, comps.count >= 3 {
+                acc.r += Double(comps[0]); acc.g += Double(comps[1]); acc.b += Double(comps[2]); acc.count += 1
+            }
+        }
+        guard total.count > 0 else { return Theme.accent }
+        return Color(red: total.r / Double(total.count), green: total.g / Double(total.count), blue: total.b / Double(total.count))
     }
 
     private func last7Days() -> [(emoji: String, label: String, score: Int, date: Date)] {
@@ -295,6 +298,22 @@ struct HomeView: View {
         }
     }
 
+    private func checkStreak() {
+        let today = formattedDate(Date())
+        if lastActiveDate != today {
+            let cal = Calendar.current
+            if let last = dateFromString(lastActiveDate), let diff = cal.dateComponents([.day], from: last, to: Date()).day {
+                streak = diff <= 1 ? streak + 1 : 0
+            } else { streak = 1 }
+            lastActiveDate = today
+        }
+    }
+    private func updateStreak() {
+        let today = formattedDate(Date())
+        if lastActiveDate != today { streak += 1; lastActiveDate = today }
+    }
+    private func formattedDate(_ d: Date) -> String { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f.string(from: d) }
+    private func dateFromString(_ s: String) -> Date? { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f.date(from: s) }
 }
 
 private struct MoodButton: View {
@@ -310,11 +329,7 @@ private struct MoodButton: View {
             .frame(maxWidth: .infinity).padding(12)
             .background(isSelected ? color.opacity(0.2) : Color.clear)
             .clipShape(.rect(cornerRadius: 16))
-            .overlay {
-                if isSelected {
-                    .rect(cornerRadius: 16).stroke(color.opacity(0.5), lineWidth: 1)
-                }
-            }
+            .overlay(isSelected ? AnyView(RoundedRectangle(cornerRadius: 16).stroke(color.opacity(0.5), lineWidth: 1)) : AnyView(EmptyView()))
         }
     }
 }

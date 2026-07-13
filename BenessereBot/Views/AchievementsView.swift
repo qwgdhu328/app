@@ -38,7 +38,8 @@ private struct AchievementCell: View {
             Text(achievement.details).font(.caption2).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity).padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay {
             RoundedRectangle(cornerRadius: 16).stroke(achievement.isUnlocked ? Theme.accent.opacity(0.4) : Color.clear, lineWidth: 1)
         }

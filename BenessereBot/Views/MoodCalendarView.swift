@@ -33,7 +33,8 @@ struct MoodCalendarView: View {
             }
         }
         .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .navigationTitle("Calendario umore")
     }
 

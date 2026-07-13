@@ -27,13 +27,15 @@ struct GoalsListView: View {
                                 ProgressView(value: g.progress, total: g.target).tint(Theme.accent)
                             }
                             .padding(16)
-                            .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                            .background(Theme.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
                         }
                         Button { showNewGoal = true } label: {
                             Label("Nuovo obiettivo", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
                                 .padding(16)
                                 .frame(maxWidth: .infinity)
-                                .glassEffect(.regular, in: .rect(cornerRadius: 14))
+                                .background(Theme.surface)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
                     }
                     VStack(spacing: 8) {
@@ -52,13 +54,15 @@ struct GoalsListView: View {
                                 }
                             }
                             .padding(16)
-                            .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                            .background(Theme.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
                         }
                         Button { showNewHabit = true } label: {
                             Label("Nuova abitudine", systemImage: "plus.circle").font(.subheadline.weight(.medium)).foregroundStyle(Theme.accent)
                                 .padding(16)
                                 .frame(maxWidth: .infinity)
-                                .glassEffect(.regular, in: .rect(cornerRadius: 14))
+                                .background(Theme.surface)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
                     }
                 }

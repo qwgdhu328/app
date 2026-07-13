@@ -28,19 +28,22 @@ struct BreathingTimerView: View {
                 Button { service.stop() } label: {
                     Label("Stop", systemImage: "stop.circle.fill").font(.subheadline.weight(.semibold))
                         .foregroundStyle(Theme.muted).padding(.horizontal, 28).padding(.vertical, 12)
-                        .glassEffect(.regular, in: .capsule)
+                        .background(Theme.surface)
+                        .clipShape(Capsule())
                 }
                 if !service.isActive {
                     Button { service.start() } label: {
                         Label("Avvia", systemImage: "play.circle.fill").font(.subheadline.weight(.semibold))
                             .foregroundStyle(Theme.text).padding(.horizontal, 28).padding(.vertical, 12)
-                            .glassEffect(.regular, in: .capsule)
+                            .background(Theme.surface)
+                            .clipShape(Capsule())
                     }
                 }
             }
         }
         .padding(24)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
         .padding(.horizontal, 20).padding(.bottom, 12)
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }

@@ -3,10 +3,10 @@ import SwiftUI
 struct IntroView: View {
     @Binding var showIntro: Bool
     @State private var currentPage = 0
-    @State private var animateContent = false
     @State private var name = ""
     @State private var selectedGoal: String? = nil
     @State private var selectedMood: String? = nil
+    @State private var animateContent = false
 
     private let goals = [
         ("Gestire l'ansia", "brain.head.profile"),
@@ -17,265 +17,201 @@ struct IntroView: View {
         ("Sonno e riposo", "moon.stars.fill")
     ]
 
+    private let features: [(icon: String, title: String, desc: String)] = [
+        ("brain.head.profile", "Parla con BenessereBot", "Uno psicologo AI sempre pronto ad ascoltarti. Condividi pensieri ed emozioni in un ambiente sicuro."),
+        ("face.smiling.fill", "Traccia il tuo umore", "Registra come ti senti ogni giorno. Visualizza il tuo percorso di benessere con statistiche e grafici."),
+        ("wind", "Respira con calma", "Esercizi di respiro guidato con supporto Dynamic Island. Ritrova la calma in qualsiasi momento."),
+        ("book.fill", "Diario personale", "Scrivi i tuoi pensieri con prompt guidati. Rileggi il tuo percorso di crescita personale."),
+        ("sparkles", "Il tuo viaggio inizia", "Affermazioni quotidiane, obiettivi, trofei e molto altro. BenessereBot è il tuo compagno per il benessere mentale.")
+    ]
+
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(.systemBackground), Theme.accent.opacity(0.08), Color(.systemBackground).opacity(0.95)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            LinearGradient(colors: [.black, Color(red: 0.05, green: 0.05, blue: 0.12), .black], startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            RadialGradient(colors: [Theme.accent.opacity(0.08), .clear], center: .top, startRadius: 0, endRadius: 400)
+                .ignoresSafeArea()
 
-            VStack {
-                Spacer()
-
-                switch currentPage {
-                case 0: welcomePage
-                case 1: namePage
-                case 2: goalPage
-                case 3: moodPage
-                case 4: finalPage
-                default: welcomePage
-                }
-
-                Spacer()
-
-                if currentPage < 4 {
-                    HStack {
-                        Button("Salta") {
-                            withAnimation {
-                                showIntro = false
-                                UserDefaults.standard.set(true, forKey: "hasSeenIntro")
-                            }
-                        }
-                        .font(.subheadline)
-
-                        Spacer()
-
-                        HStack(spacing: 6) {
-                            ForEach(0..<5) { i in
-                                Circle()
-                                    .fill(currentPage >= i ? Theme.accent : Color.gray.opacity(0.3))
-                                    .frame(width: currentPage == i ? 10 : 6, height: currentPage == i ? 10 : 6)
-                                    .animation(.spring, value: currentPage)
-                            }
-                        }
-
-                        Spacer()
-
-                        Button {
-                            withAnimation(.spring) {
-                                if currentPage < 4 { currentPage += 1 }
-                            }
-                        } label: {
-                            Text(currentPage < 4 ? "Avanti" : "")
-                                .font(.subheadline.weight(.semibold))
-                        }
+            VStack(spacing: 0) {
+                TabView(selection: $currentPage) {
+                    ForEach(0..<features.count, id: \.self) { i in
+                        featurePage(index: i)
+                            .tag(i)
                     }
-                    .padding(.horizontal, 30)
-                    .padding(.bottom, 40)
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.easeInOut, value: currentPage)
+
+                bottomBar
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 40)
             }
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 0.8)) {
-                animateContent = true
-            }
+            withAnimation(.easeOut(duration: 0.6)) { animateContent = true }
         }
     }
 
-    private var welcomePage: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "brain.head.profile")
-                .font(.system(size: 80))
-                .foregroundStyle(Theme.accent)
-                
+    private func featurePage(index: Int) -> some View {
+        let f = features[safe: index] ?? features[0]
+        return VStack(spacing: 0) {
+            Spacer(minLength: 60)
 
-            Text("Benvenuto su\nBenessereBot")
-                .font(.largeTitle.bold())
-                .multilineTextAlignment(.center)
+            ZStack {
+                Circle().fill(Theme.accent.opacity(0.08)).frame(width: 140, height: 140)
+                Circle().fill(Theme.accent.opacity(0.04)).frame(width: 100, height: 100)
+                Image(systemName: f.icon)
+                    .font(.system(size: 56))
+                    .foregroundStyle(Theme.accent)
+                    .symbolEffect(.bounce, value: currentPage)
+            }
+            .padding(.bottom, 40)
 
-            Text("Il tuo compagno per il benessere mentale.\nParla, esplora, cresci.")
+            Text(f.title)
+                .font(.title.weight(.bold))
+                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Theme.muted)
+                .padding(.horizontal, 40)
+                .padding(.bottom, 16)
+
+            Text(f.desc)
                 .font(.body)
+                .foregroundStyle(Theme.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+                .lineSpacing(4)
 
-            Text("Swipe per iniziare →")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .padding(.top, 20)
+            if index == 0 { nameSection }
+            if index == 1 { goalSection }
+            if index == 2 { moodSection }
+
+            Spacer()
         }
-        .padding(30)
         .opacity(animateContent ? 1 : 0)
         .offset(y: animateContent ? 0 : 20)
     }
 
-    private var namePage: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "person.crop.circle.badge.plus")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.accent)
-                
-
-            Text("Come ti chiami?")
-                .font(.title.bold())
-
-            Text("Così posso rivolgermi a te personalmente.")
-                .foregroundStyle(Theme.muted)
-
+    private var nameSection: some View {
+        VStack(spacing: 12) {
             TextField("Il tuo nome...", text: $name)
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(.plain)
                 .font(.title3)
+                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
+                .padding(14)
+                .background(Theme.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
                 .padding(.horizontal, 40)
+                .padding(.top, 8)
 
             if !name.isEmpty {
-                Text("Piacere di conoscerti, \(name)! ✨")
+                Text("Piacere, \(name)!")
                     .font(.headline)
                     .foregroundStyle(Theme.accent)
                     .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
     }
 
-    private var goalPage: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "target")
-                .font(.system(size: 50))
-                .foregroundStyle(Theme.accent)
-
-            Text("Cosa cerchi?")
-                .font(.title.bold())
-
-            Text("Scegli il tuo obiettivo principale.")
-                .foregroundStyle(Theme.muted)
-
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach(goals, id: \.0) { goal, icon in
-                    Button {
-                        withAnimation(.spring) {
-                            selectedGoal = goal
-                        }
-                    } label: {
-                        VStack(spacing: 8) {
-                            Image(systemName: icon)
-                                .font(.title3)
-                            Text(goal)
-                                .font(.caption.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(16)
-                        .background(selectedGoal == goal ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Theme.card))
-                        .foregroundStyle(selectedGoal == goal ? Theme.text : Theme.text)
-                        .clipShape(.rect(cornerRadius: 16))
+    private var goalSection: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            ForEach(goals, id: \.0) { goal, icon in
+                Button {
+                    withAnimation(.spring) { selectedGoal = goal }
+                } label: {
+                    VStack(spacing: 6) {
+                        Image(systemName: icon).font(.title3).foregroundStyle(selectedGoal == goal ? .white : Theme.textSecondary)
+                        Text(goal).font(.caption.weight(.medium)).foregroundStyle(selectedGoal == goal ? .white : Theme.textSecondary)
                     }
-                }
-            }
-            .padding(.horizontal, 20)
-        }
-        .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
-    }
-
-    private var moodPage: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "face.smiling")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.accent)
-
-            Text("Come ti senti ora?")
-                .font(.title.bold())
-
-            Text("Questo mi aiuta a personalizzare la tua esperienza.")
-                .foregroundStyle(Theme.muted)
-
-            HStack(spacing: 16) {
-                ForEach(["😊", "😐", "😢", "😡", "😴"], id: \.self) { emoji in
-                    Button {
-                        withAnimation(.spring) {
-                            selectedMood = emoji
-                        }
-                    } label: {
-                        Text(emoji)
-                            .font(.system(size: 44))
-                            .padding(12)
-                            .background(selectedMood == emoji ? AnyShapeStyle(Theme.accent.opacity(0.2)) : AnyShapeStyle(Theme.card))
-                            .clipShape(.circle)
-                            .overlay(
-                                selectedMood == emoji ?
-                                Circle().stroke(Theme.accent, lineWidth: 2) : nil
-                            )
-                    }
-                }
-            }
-        }
-        .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
-    }
-
-    private var finalPage: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 70))
-                .foregroundStyle(Theme.accent)
-                
-
-            Text("Tutto pronto! 🎉")
-                .font(.largeTitle.bold())
-
-            VStack(alignment: .leading, spacing: 12) {
-                if !name.isEmpty {
-                    Label("Nome: \(name)", systemImage: "person.fill")
-                }
-                if let goal = selectedGoal {
-                    Label("Obiettivo: \(goal)", systemImage: "target")
-                }
-                if let mood = selectedMood {
-                    Label("Umore: \(mood)", systemImage: "face.smiling")
-                }
-            }
-            .font(.subheadline)
-            .padding()
-            .background(Theme.card)
-            .clipShape(.rect(cornerRadius: 16))
-
-            Text("Ora puoi iniziare il tuo percorso di benessere.\nParla con BenessereBot, traccia il tuo umore,\nesplora le funzioni.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(Theme.muted)
-
-            Button {
-                UserDefaults.standard.set(true, forKey: "hasSeenIntro")
-                if !name.isEmpty {
-                    UserDefaults.standard.set(name, forKey: "userName")
-                }
-                if let goal = selectedGoal {
-                    UserDefaults.standard.set(goal, forKey: "userGoal")
-                }
-                withAnimation {
-                    showIntro = false
-                }
-            } label: {
-                Text("Inizia il percorso →")
-                    .font(.headline)
-                    .foregroundStyle(Theme.text)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                    .padding(14)
+                    .background(selectedGoal == goal ? Theme.accent : Theme.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
             }
-            .padding(.horizontal, 40)
         }
-        .padding(30)
-        .opacity(animateContent ? 1 : 0)
-        .offset(y: animateContent ? 0 : 20)
+        .padding(.horizontal, 40)
+        .padding(.top, 8)
+    }
+
+    private var moodSection: some View {
+        HStack(spacing: 12) {
+            ForEach(["😊", "😐", "😢", "😡", "😴"], id: \.self) { emoji in
+                Button {
+                    withAnimation(.spring) { selectedMood = emoji }
+                } label: {
+                    Text(emoji).font(.system(size: 36))
+                        .padding(10)
+                        .background(selectedMood == emoji ? Theme.accent.opacity(0.25) : Theme.surface)
+                        .clipShape(Circle())
+                        .overlay(
+                            selectedMood == emoji ?
+                            Circle().stroke(Theme.accent, lineWidth: 2) : nil
+                        )
+                }
+            }
+        }
+        .padding(.top, 12)
+    }
+
+    private var bottomBar: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 8) {
+                ForEach(0..<features.count, id: \.self) { i in
+                    Capsule()
+                        .fill(currentPage == i ? Theme.accent : Theme.muted.opacity(0.3))
+                        .frame(width: currentPage == i ? 24 : 8, height: 8)
+                        .animation(.spring, value: currentPage)
+                }
+            }
+
+            HStack {
+                if currentPage < features.count - 1 {
+                    Button("Salta") {
+                        completeIntro()
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.muted)
+                } else {
+                    Spacer()
+                }
+
+                Spacer()
+
+                Button {
+                    withAnimation(.spring) {
+                        if currentPage < features.count - 1 {
+                            currentPage += 1
+                        } else {
+                            completeIntro()
+                        }
+                    }
+                } label: {
+                    Text(currentPage < features.count - 1 ? "Avanti" : "Inizia")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 32)
+                        .padding(.vertical, 14)
+                        .background(Theme.accent)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+    }
+
+    private func completeIntro() {
+        UserDefaults.standard.set(true, forKey: "hasSeenIntro")
+        if !name.isEmpty { UserDefaults.standard.set(name, forKey: "userName") }
+        if let goal = selectedGoal { UserDefaults.standard.set(goal, forKey: "userGoal") }
+        withAnimation(.easeInOut(duration: 0.4)) {
+            showIntro = false
+        }
     }
 }
 
-#Preview {
-    IntroView(showIntro: .constant(true))
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
 }
-

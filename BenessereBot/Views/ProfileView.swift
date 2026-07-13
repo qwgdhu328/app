@@ -33,7 +33,8 @@ struct ProfileView: View {
                                     Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
                                 }
                                 .padding(16)
-                                .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                                .background(Theme.surface)
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
                         }
                     }
@@ -64,7 +65,8 @@ struct ProfileView: View {
             }
         }
         .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var statsRow: some View {
@@ -82,7 +84,8 @@ struct ProfileView: View {
             Text(label).font(.caption2).foregroundStyle(Theme.muted)
         }
         .frame(maxWidth: .infinity).padding(14)
-        .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private func navLink<D: View>(icon: String, title: String, destination: D) -> some View {
@@ -94,7 +97,8 @@ struct ProfileView: View {
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
             }
             .padding(16)
-            .glassEffect(.regular, in: .rect(cornerRadius: 20))
+            .background(Theme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
         }
     }
 }

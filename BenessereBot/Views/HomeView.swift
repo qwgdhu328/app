@@ -70,7 +70,7 @@ struct HomeView: View {
 
     private var emotionGradient: some View {
         let averageColor = averageMoodColor()
-        return LinearGradient(colors: [averageColor.opacity(0.12), Theme.bgTop, Theme.bgMid], startPoint: .top, endPoint: .bottom)
+        return LinearGradient(colors: [averageColor.opacity(0.25), Theme.glow2.opacity(0.08), Theme.bgTop], startPoint: .top, endPoint: .bottom)
     }
 
     private var emotionalThermometer: some View {
@@ -81,17 +81,22 @@ struct HomeView: View {
                     .trim(from: 0, to: 0.01 * Double(streak > 0 ? min(streak * 10 + 20, 100) : 20))
                     .stroke(moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent, style: .init(lineWidth: 8, lineCap: .round))
                     .frame(width: 72, height: 72).rotationEffect(.degrees(-90))
+                    .shadow(color: (moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent).opacity(0.6), radius: 8)
             }
             VStack(alignment: .leading, spacing: 4) {
                 let hour = Calendar.current.component(.hour, from: Date())
                 let g = hour < 12 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera"
                 Text("\(g)! \(moodEntries.last.map { $0.emoji } ?? "")").font(.title2.weight(.bold)).foregroundStyle(Theme.text)
-                Text(streak > 0 ? "\(streak) giorni di fila! 🔥" : "Inizia il tuo percorso").font(.subheadline).foregroundStyle(Theme.textSecondary)
+                Text(streak > 0 ? "\(streak) giorni di fila! 🔥" : "Inizia il tuo percorso").font(.subheadline).foregroundStyle(Theme.accentSecondary)
             }
             Spacer()
         }
         .padding(16)
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(moodEntries.last.map { moodColor($0.emoji).opacity(0.08) } ?? Color.clear)
+        )
     }
 
     private var weekConstellation: some View {
@@ -107,12 +112,14 @@ struct HomeView: View {
                     let angle = angles[i] * .pi / 180
                     let x = cx2 + r * cos(angle); let y = cy + r * sin(angle)
                     if days[i].score > 0 {
-                        let starR: CGFloat = highlightedConstellation == i ? 10 : 5 + CGFloat(days[i].score) / 30
+                        let starR: CGFloat = highlightedConstellation == i ? 12 : 5 + CGFloat(days[i].score) / 25
                         let rect = CGRect(x: x - starR, y: y - starR, width: starR * 2, height: starR * 2)
-                        cx.fill(Path(ellipseIn: rect), with: .color(moodColor(days[i].emoji)))
+                        let c = moodColor(days[i].emoji)
+                        cx.addFilter(.shadow(color: UIColor(c).cgColor, radius: highlightedConstellation == i ? 12 : 5))
+                        cx.fill(Path(ellipseIn: rect), with: .color(c))
                     } else {
                         let rect = CGRect(x: x - 3, y: y - 3, width: 6, height: 6)
-                        cx.fill(Path(ellipseIn: rect), with: .color(.gray.opacity(0.4)))
+                        cx.fill(Path(ellipseIn: rect), with: .color(.gray.opacity(0.3)))
                     }
                 }
                 for i in 0..<days.count where days[i].score > 0 {
@@ -123,7 +130,7 @@ struct HomeView: View {
                         var linePath = Path()
                         linePath.move(to: CGPoint(x: x1, y: y1))
                         linePath.addLine(to: CGPoint(x: x2, y: y2))
-                        cx.stroke(linePath, with: .color(.white.opacity(0.12)), lineWidth: 0.5)
+                        cx.stroke(linePath, with: .color(.white.opacity(0.2)), lineWidth: 1)
                     }
                 }
             }
@@ -233,18 +240,18 @@ struct HomeView: View {
         VStack(spacing: 16) {
             Text("🧭 Centro di connessione").font(.headline).foregroundStyle(Theme.text).frame(maxWidth: .infinity, alignment: .leading)
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                HubCard(icon: "brain.head.profile", title: "Mindfulness", subtitle: "Respiro guidato", gradient: [Theme.accent, Theme.accent.opacity(0.5)]) {
+                HubCard(icon: "brain.head.profile", title: "Mindfulness", subtitle: "Respiro guidato", gradient: [Theme.glow1, Theme.accent.opacity(0.5)]) {
                     breathingService.pattern = .simple; breathingService.rounds = 3; breathingService.start()
                 }
-                HubCard(icon: "waveform", title: "Soundscape", subtitle: "Paesaggio sonoro", gradient: [Color(red: 0.5, green: 0.3, blue: 1.0), Theme.accent.opacity(0.5)]) {
+                HubCard(icon: "waveform", title: "Soundscape", subtitle: "Paesaggio sonoro", gradient: [Theme.glow3, Color(red: 0.3, green: 0.2, blue: 0.8)]) {
                     showSoundscape = true
                 }
-                HubCard(icon: "chart.line.uptrend.xyaxis", title: "Statistiche", subtitle: "Il tuo progresso", gradient: [Theme.accentSecondary, Color(red: 1.0, green: 0.4, blue: 0.4)]) {
+                HubCard(icon: "chart.line.uptrend.xyaxis", title: "Statistiche", subtitle: "Il tuo progresso", gradient: [Theme.accentSecondary, Color(red: 1.0, green: 0.2, blue: 0.3)]) {
                     let score = computeWellnessScore(moods: moodEntries.count, streak: streak, sessions: 0, entries: entries.count)
                     dailyAffirmation = "Il tuo benessere è a \(score)%! Continua così 💪"
                     withAnimation { showAffirmation = true }
                 }
-                HubCard(icon: "sparkle.magnifyingglass", title: "Esplora", subtitle: "Tutte le funzioni", gradient: [Theme.accentTertiary, Theme.accent.opacity(0.5)]) {
+                HubCard(icon: "sparkle.magnifyingglass", title: "Esplora", subtitle: "Tutte le funzioni", gradient: [Theme.glow3, Color(red: 0.7, green: 0.2, blue: 0.9)]) {
                     showExplore = true
                 }
             }
@@ -260,7 +267,8 @@ struct HomeView: View {
             .foregroundStyle(Theme.text)
             .padding(.horizontal, 10).padding(.vertical, 8)
             .background(.regularMaterial)
-            .clipShape(.rect(cornerRadius: 10))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.glow1.opacity(0.3), lineWidth: 1))
             .multilineTextAlignment(.center)
     }
 
@@ -329,14 +337,19 @@ private struct MoodButton: View {
                 Text(emoji).font(.system(size: 32))
                     .scaleEffect(isSelected ? 1.3 : 1)
                     .animation(.spring(response: 0.3), value: isSelected)
-                Text(label).font(.caption2).foregroundStyle(Theme.muted)
+                Text(label).font(.caption2).foregroundStyle(isSelected ? color : Theme.muted)
             }
             .frame(maxWidth: .infinity).padding(12)
-            .background(isSelected ? color.opacity(0.2) : Color.clear)
+            .background(
+                Group {
+                    if isSelected { color.opacity(0.25) }
+                    else { color.opacity(0.05) }
+                }
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? color.opacity(0.5) : Color.clear, lineWidth: 1)
+                    .stroke(isSelected ? color.opacity(0.6) : color.opacity(0.15), lineWidth: 1)
             )
         }
     }

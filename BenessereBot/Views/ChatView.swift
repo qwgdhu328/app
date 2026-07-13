@@ -56,7 +56,11 @@ struct ChatView: View {
     private var emptyState: some View {
         VStack(spacing: 20) {
             Spacer(minLength: 100)
-            Image(systemName: "brain.head.profile").font(.system(size: 64)).foregroundStyle(Theme.accent.opacity(0.5))
+            ZStack {
+                Circle().fill(Theme.glow1.opacity(0.1)).frame(width: 100, height: 100)
+                    .overlay(Circle().stroke(Theme.glow1.opacity(0.2), lineWidth: 1))
+                Image(systemName: "brain.head.profile").font(.system(size: 50)).foregroundStyle(Theme.glow1)
+            }
             Text("Parla con BenessereBot").font(.title2.weight(.bold)).foregroundStyle(Theme.text)
             Text("Uno psicologo virtuale sempre pronto ad ascoltarti.\nCondividi ciò che senti, senza giudizio.")
                 .multilineTextAlignment(.center).foregroundStyle(Theme.textSecondary).padding(.horizontal, 40)
@@ -118,10 +122,10 @@ struct ChatView: View {
     private var typingIndicator: some View {
         HStack(spacing: 6) {
             ForEach(0..<3) { i in
-                Circle().fill(Theme.textSecondary).frame(width: 6, height: 6)
+                Circle().fill(i == 0 ? Theme.glow1 : i == 1 ? Theme.accentSecondary : Theme.glow3).frame(width: 6, height: 6)
                     .opacity(viewModel.isLoading ? 1 : 0.3)
             }
-            Text("Sta riflettendo...").font(.caption).foregroundStyle(Theme.muted).padding(.leading, 4)
+            Text("Sta riflettendo...").font(.caption).foregroundStyle(Theme.textSecondary).padding(.leading, 4)
         }
     }
 
@@ -164,9 +168,11 @@ struct MessageBubble: View {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(message.content).padding(14)
-                        .foregroundStyle(Theme.text)
-                        .background(Theme.accent.opacity(0.15))
-                        .clipShape(.rect(cornerRadius: 18))
+                        .foregroundStyle(.white)
+                        .background(
+                            LinearGradient(colors: [Theme.glow1, Theme.accent.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.leading, 60)

@@ -33,15 +33,18 @@ struct SoundscapeView: View {
                                 } label: {
                                     VStack(spacing: 12) {
                                         ZStack {
-                                            Circle().fill(scene.3.opacity(0.2)).frame(width: 64, height: 64)
+                                            Circle().fill(scene.3.opacity(selectedScene == scene.1 && playing ? 0.5 : 0.2)).frame(width: 64, height: 64)
                                             Image(systemName: selectedScene == scene.1 && playing ? "pause.circle.fill" : scene.0)
                                                 .font(.title).foregroundStyle(scene.3)
                                                 .symbolEffect(.pulse, isActive: selectedScene == scene.1 && playing)
                                         }
                                         Text(scene.1).font(.callout.weight(.semibold)).foregroundStyle(Theme.text)
-                                        Text(scene.2).font(.caption2).foregroundStyle(Theme.muted)
+                                        Text(scene.2).font(.caption2).foregroundStyle(Theme.textSecondary)
                                     }
                                     .frame(maxWidth: .infinity).padding(16)
+                                    .background(scene.3.opacity(selectedScene == scene.1 && playing ? 0.15 : 0.05))
+                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(selectedScene == scene.1 && playing ? scene.3.opacity(0.4) : Color.clear, lineWidth: 1))
                                     .glassEffect(.regular, in: .rect(cornerRadius: 20))
                                     .overlay(alignment: .topTrailing) {
                                         if selectedScene == scene.1 && playing {

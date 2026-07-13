@@ -171,14 +171,30 @@ struct SettingsView: View {
     }
 
     private func deleteAllData() {
-        for model in try? context.fetch(FetchDescriptor<StoredMessage>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<MoodEntry>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<BreathingSession>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<JournalEntry>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<Goal>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<Habit>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<Achievement>()) ?? [] { context.delete(model) }
-        for model in try? context.fetch(FetchDescriptor<ChatSession>()) ?? [] { context.delete(model) }
+        if let items = try? context.fetch(FetchDescriptor<StoredMessage>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<MoodEntry>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<BreathingSession>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<JournalEntry>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<Goal>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<Habit>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<Achievement>()) {
+            for item in items { context.delete(item) }
+        }
+        if let items = try? context.fetch(FetchDescriptor<ChatSession>()) {
+            for item in items { context.delete(item) }
+        }
         try? context.save()
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
     }

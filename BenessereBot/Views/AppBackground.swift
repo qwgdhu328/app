@@ -7,13 +7,11 @@ struct AppBackground: View {
         ZStack {
             LinearGradient(colors: [Theme.bgTop, Theme.bgMid, Theme.bgBottom], startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
-            RadialGradient(colors: [Theme.glow1.opacity(animate ? 0.2 : 0.05), .clear], center: .topLeading, startRadius: 0, endRadius: 350)
+            RadialGradient(colors: [Theme.accent.opacity(animate ? 0.12 : 0.04), .clear], center: .topLeading, startRadius: 0, endRadius: 400)
                 .ignoresSafeArea()
-            RadialGradient(colors: [Theme.glow2.opacity(animate ? 0.15 : 0.03), .clear], center: .center, startRadius: 0, endRadius: 400)
-                .ignoresSafeArea()
-            RadialGradient(colors: [Theme.glow3.opacity(animate ? 0.12 : 0.03), .clear], center: .bottomTrailing, startRadius: 0, endRadius: 450)
+            RadialGradient(colors: [Theme.accentTertiary.opacity(animate ? 0.08 : 0.03), .clear], center: .bottomTrailing, startRadius: 0, endRadius: 500)
                 .ignoresSafeArea()
         }
-        .onAppear { withAnimation(.easeInOut(duration: 5).repeatForever(autoreverses: true)) { animate.toggle() } }
+        .onAppear { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { animate.toggle() } }
     }
 }

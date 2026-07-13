@@ -20,23 +20,22 @@ struct HomeView: View {
     @Environment(\.modelContext) var context
 
     private let moodGrid = [
-        ("😊", "Felice", Theme.accent), ("😐", "Neutro", Theme.muted),
-        ("😢", "Triste", Color(red: 0.4, green: 0.5, blue: 1.0)), ("😡", "Arrabbiato", Color(red: 1.0, green: 0.3, blue: 0.3)),
-        ("😴", "Stanco", Color(red: 0.6, green: 0.4, blue: 0.8)), ("🤗", "Riconoscente", Color(red: 1.0, green: 0.7, blue: 0.3))
+        ("😊", "Felice", Theme.moods[0]), ("😐", "Neutro", Theme.moods[1]),
+        ("😢", "Triste", Theme.moods[2]), ("😡", "Arrabbiato", Theme.moods[3]),
+        ("😴", "Stanco", Theme.moods[4]), ("🤗", "Riconoscente", Theme.moods[5])
     ]
 
     var body: some View {
         NavigationStack {
             ZStack {
-                emotionGradient.ignoresSafeArea()
-
+                AppBackground()
                 ScrollView {
-                    VStack(spacing: 28) {
+                    VStack(spacing: 24) {
                         emotionalThermometer
-                            .offset(y: animateItems ? 0 : 40).opacity(animateItems ? 1 : 0)
+                            .offset(y: animateItems ? 0 : 30).opacity(animateItems ? 1 : 0)
                         if !moodEntries.isEmpty {
                             weekConstellation
-                                .offset(y: animateItems ? 0 : 30).opacity(animateItems ? 1 : 0)
+                                .offset(y: animateItems ? 0 : 25).opacity(animateItems ? 1 : 0)
                         }
                         moodRipplePicker
                             .offset(y: animateItems ? 0 : 20).opacity(animateItems ? 1 : 0)
@@ -46,15 +45,12 @@ struct HomeView: View {
                         quickNavHub
                             .offset(y: animateItems ? 0 : 20).opacity(animateItems ? 1 : 0)
                     }
-                    .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 8)
+                    .padding(.horizontal, 20).padding(.top, 16).padding(.bottom, 24)
                 }
                 .scrollBounceBehavior(.basedOnSize)
-
                 ForEach(ripples) { ripple in
                     RippleView(ripple: ripple)
-                        .onAppear {
-                            withAnimation(.easeOut(duration: 0.1)) { ripples.removeAll { $0.id == ripple.id } }
-                        }
+                        .onAppear { withAnimation(.easeOut(duration: 0.1)) { ripples.removeAll { $0.id == ripple.id } } }
                 }
             }
             .navigationTitle("")
@@ -68,40 +64,30 @@ struct HomeView: View {
         }
     }
 
-    private var emotionGradient: some View {
-        let averageColor = averageMoodColor()
-        return LinearGradient(colors: [averageColor.opacity(0.25), Theme.glow2.opacity(0.08), Theme.bgTop], startPoint: .top, endPoint: .bottom)
-    }
-
     private var emotionalThermometer: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: 16) {
             ZStack {
-                Circle().stroke(Theme.cardBorder, lineWidth: 8).frame(width: 72, height: 72)
+                Circle().stroke(Theme.cardBorder, lineWidth: 6).frame(width: 64, height: 64)
                 Circle()
                     .trim(from: 0, to: 0.01 * Double(streak > 0 ? min(streak * 10 + 20, 100) : 20))
-                    .stroke(moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent, style: .init(lineWidth: 8, lineCap: .round))
-                    .frame(width: 72, height: 72).rotationEffect(.degrees(-90))
-                    .shadow(color: (moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent).opacity(0.6), radius: 8)
+                    .stroke(moodEntries.last.map { moodColor($0.emoji) } ?? Theme.accent, style: .init(lineWidth: 6, lineCap: .round))
+                    .frame(width: 64, height: 64).rotationEffect(.degrees(-90))
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 let hour = Calendar.current.component(.hour, from: Date())
                 let g = hour < 12 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera"
-                Text("\(g)! \(moodEntries.last.map { $0.emoji } ?? "")").font(.title2.weight(.bold)).foregroundStyle(Theme.text)
-                Text(streak > 0 ? "\(streak) giorni di fila! 🔥" : "Inizia il tuo percorso").font(.subheadline).foregroundStyle(Theme.accentSecondary)
+                Text("\(g)").font(.title3.weight(.semibold)).foregroundStyle(Theme.text)
+                Text(streak > 0 ? "\(streak) giorni di fila" : "Inizia il tuo percorso").font(.subheadline).foregroundStyle(Theme.textSecondary)
             }
             Spacer()
         }
-        .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(moodEntries.last.map { moodColor($0.emoji).opacity(0.08) } ?? Color.clear)
-        )
+        .padding(20)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var weekConstellation: some View {
         VStack(spacing: 12) {
-            Text("✨ Costellazione della settimana").font(.headline).foregroundStyle(Theme.text).frame(maxWidth: .infinity, alignment: .leading)
+            Text("Costellazione della settimana").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             Canvas { cx, size in
                 let w = size.width; let h = size.height
                 let days = last7Days()
@@ -112,13 +98,11 @@ struct HomeView: View {
                     let angle = angles[i] * .pi / 180
                     let x = cx2 + r * cos(angle); let y = cy + r * sin(angle)
                     if days[i].score > 0 {
-                        let starR: CGFloat = highlightedConstellation == i ? 12 : 5 + CGFloat(days[i].score) / 25
+                        let starR: CGFloat = highlightedConstellation == i ? 10 : 4 + CGFloat(days[i].score) / 30
                         let rect = CGRect(x: x - starR, y: y - starR, width: starR * 2, height: starR * 2)
-                        let c = moodColor(days[i].emoji)
-                        cx.addFilter(.shadow(color: c, radius: highlightedConstellation == i ? 12 : 5))
-                        cx.fill(Path(ellipseIn: rect), with: .color(c))
+                        cx.fill(Path(ellipseIn: rect), with: .color(moodColor(days[i].emoji)))
                     } else {
-                        let rect = CGRect(x: x - 3, y: y - 3, width: 6, height: 6)
+                        let rect = CGRect(x: x - 2, y: y - 2, width: 4, height: 4)
                         cx.fill(Path(ellipseIn: rect), with: .color(.gray.opacity(0.3)))
                     }
                 }
@@ -130,15 +114,15 @@ struct HomeView: View {
                         var linePath = Path()
                         linePath.move(to: CGPoint(x: x1, y: y1))
                         linePath.addLine(to: CGPoint(x: x2, y: y2))
-                        cx.stroke(linePath, with: .color(.white.opacity(0.2)), lineWidth: 1)
+                        cx.stroke(linePath, with: .color(.white.opacity(0.15)), lineWidth: 0.5)
                     }
                 }
             }
-            .frame(height: 180)
+            .frame(height: 160)
             .onTapGesture { location in
                 let days = last7Days()
                 guard !days.isEmpty else { return }
-                let w = UIScreen.main.bounds.width - 40; let h: CGFloat = 180
+                let w = UIScreen.main.bounds.width - 40; let h: CGFloat = 160
                 let angles = stride(from: 0, to: 360, by: max(360 / days.count, 1)).map { Double($0) }
                 let cx = w / 2; let cy = h / 2; let r = min(cx, cy) - 12
                 for i in days.indices {
@@ -153,17 +137,16 @@ struct HomeView: View {
             }
             if let idx = highlightedConstellation, idx < last7Days().count {
                 let d = last7Days()[idx]
-                Text("\(d.emoji) \(d.label) — \(d.date.formatted(date: .abbreviated, time: .omitted))")
-                    .font(.caption).foregroundStyle(Theme.accent).transition(.scale.combined(with: .opacity))
+                Text("\(d.emoji) \(d.label)").font(.caption).foregroundStyle(Theme.accent).transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(20)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var moodRipplePicker: some View {
         VStack(spacing: 16) {
-            Text("Come ti senti ora?").font(.headline).foregroundStyle(Theme.text).frame(maxWidth: .infinity, alignment: .leading)
+            Text("Come ti senti ora?").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                 ForEach(moodGrid.indices, id: \.self) { i in
                     let (emoji, label, color) = moodGrid[i]
@@ -179,14 +162,14 @@ struct HomeView: View {
                 }
             }
         }
-        .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(20)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     private var threeWordSnapshot: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("📝 Istantanea in 3 parole").font(.headline).foregroundStyle(Theme.text)
+                Text("Istantanea in 3 parole").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textSecondary)
                 Spacer()
                 if !word1.isEmpty || !word2.isEmpty || !word3.isEmpty {
                     Button("Salva") {
@@ -204,8 +187,8 @@ struct HomeView: View {
             }
             recentSnapshotCapsules
         }
-        .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(20)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 
     @ViewBuilder
@@ -213,11 +196,11 @@ struct HomeView: View {
         let snapshots = recentEntries.filter { $0.prompt == "3-Word Snapshot" }
         if !snapshots.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     ForEach(snapshots.prefix(5)) { entry in
                         Text(entry.content)
                             .font(.caption2).foregroundStyle(Theme.textSecondary)
-                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .padding(.horizontal, 10).padding(.vertical, 5)
                             .glassEffect(.regular, in: Capsule())
                     }
                 }
@@ -227,33 +210,29 @@ struct HomeView: View {
 
     private var affirmationCard: some View {
         HStack(spacing: 12) {
-            Image(systemName: "quote.opening").font(.title3).foregroundStyle(Theme.accent)
+            Image(systemName: "quote.opening").font(.title3).foregroundStyle(Theme.accent.opacity(0.5))
             Text(dailyAffirmation).font(.subheadline).italic().foregroundStyle(Theme.text).multilineTextAlignment(.center)
-            Image(systemName: "quote.closing").font(.title3).foregroundStyle(Theme.accent)
+            Image(systemName: "quote.closing").font(.title3).foregroundStyle(Theme.accent.opacity(0.5))
         }
-        .padding(16)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(20)
+        .glassEffect(.regular, in: .rect(cornerRadius: 20))
         .transition(.scale.combined(with: .opacity))
     }
 
     private var quickNavHub: some View {
         VStack(spacing: 16) {
-            Text("🧭 Centro di connessione").font(.headline).foregroundStyle(Theme.text).frame(maxWidth: .infinity, alignment: .leading)
+            Text("Hub rapido").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                HubCard(icon: "brain.head.profile", title: "Mindfulness", subtitle: "Respiro guidato", gradient: [Theme.glow1, Theme.accent.opacity(0.5)]) {
+                HubCard(icon: "brain.head.profile", title: "Mindfulness", subtitle: "Respiro guidato", color: Theme.accent, action: {
                     breathingService.pattern = .simple; breathingService.rounds = 3; breathingService.start()
-                }
-                HubCard(icon: "waveform", title: "Soundscape", subtitle: "Paesaggio sonoro", gradient: [Theme.glow3, Color(red: 0.3, green: 0.2, blue: 0.8)]) {
-                    showSoundscape = true
-                }
-                HubCard(icon: "chart.line.uptrend.xyaxis", title: "Statistiche", subtitle: "Il tuo progresso", gradient: [Theme.accentSecondary, Color(red: 1.0, green: 0.2, blue: 0.3)]) {
+                })
+                HubCard(icon: "waveform", title: "Soundscape", subtitle: "Paesaggio sonoro", color: Theme.accentTertiary, action: { showSoundscape = true })
+                HubCard(icon: "chart.line.uptrend.xyaxis", title: "Statistiche", subtitle: "Il tuo progresso", color: Theme.accentSecondary, action: {
                     let score = computeWellnessScore(moods: moodEntries.count, streak: streak, sessions: 0, entries: entries.count)
-                    dailyAffirmation = "Il tuo benessere è a \(score)%! Continua così 💪"
+                    dailyAffirmation = "Il tuo benessere è a \(score)%"
                     withAnimation { showAffirmation = true }
-                }
-                HubCard(icon: "sparkle.magnifyingglass", title: "Esplora", subtitle: "Tutte le funzioni", gradient: [Theme.glow3, Color(red: 0.7, green: 0.2, blue: 0.9)]) {
-                    showExplore = true
-                }
+                })
+                HubCard(icon: "sparkle.magnifyingglass", title: "Esplora", subtitle: "Tutte le funzioni", color: Theme.accentTertiary, action: { showExplore = true })
             }
         }
         .sheet(isPresented: $showExplore) { FeatureIntroView() }
@@ -266,9 +245,9 @@ struct HomeView: View {
             .font(.caption.weight(.medium))
             .foregroundStyle(Theme.text)
             .padding(.horizontal, 10).padding(.vertical, 8)
-            .background(.regularMaterial)
+            .background(Theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.glow1.opacity(0.3), lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.cardBorder, lineWidth: 1))
             .multilineTextAlignment(.center)
     }
 
@@ -288,8 +267,8 @@ struct HomeView: View {
         var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var count = 0
         for entry in recent {
             let c = UIColor(moodColor(entry.emoji))
-            var cr: CGFloat = 0; var cg: CGFloat = 0; var cb: CGFloat = 0; var ca: CGFloat = 0
-            if c.getRed(&cr, green: &cg, blue: &cb, alpha: &ca) {
+            var cr: CGFloat = 0; var cg: CGFloat = 0; var cb: CGFloat = 0
+            if c.getRed(&cr, green: &cg, blue: &cb, alpha: nil) {
                 r += cr; g += cg; b += cb; count += 1
             }
         }
@@ -333,23 +312,18 @@ private struct MoodButton: View {
     let emoji: String; let label: String; let color: Color; let isSelected: Bool; let action: () -> Void
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
-                Text(emoji).font(.system(size: 32))
-                    .scaleEffect(isSelected ? 1.3 : 1)
+            VStack(spacing: 4) {
+                Text(emoji).font(.system(size: 28))
+                    .scaleEffect(isSelected ? 1.2 : 1)
                     .animation(.spring(response: 0.3), value: isSelected)
                 Text(label).font(.caption2).foregroundStyle(isSelected ? color : Theme.muted)
             }
             .frame(maxWidth: .infinity).padding(12)
-            .background(
-                Group {
-                    if isSelected { color.opacity(0.25) }
-                    else { color.opacity(0.05) }
-                }
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(isSelected ? color.opacity(0.20) : Theme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(isSelected ? color.opacity(0.6) : color.opacity(0.15), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? color.opacity(0.5) : Theme.cardBorder, lineWidth: 1)
             )
         }
     }
@@ -358,7 +332,7 @@ private struct MoodButton: View {
 private struct RippleView: View {
     let ripple: Ripple
     @State private var scale: CGFloat = 0.2
-    @State private var opacity: Double = 0.6
+    @State private var opacity: Double = 0.5
 
     var body: some View {
         Circle()
@@ -367,7 +341,7 @@ private struct RippleView: View {
             .scaleEffect(scale)
             .position(ripple.position)
             .onAppear {
-                withAnimation(.easeOut(duration: 1.5)) { scale = 12; opacity = 0 }
+                withAnimation(.easeOut(duration: 1.5)) { scale = 10; opacity = 0 }
             }
     }
 }
@@ -379,22 +353,21 @@ private struct Ripple: Identifiable {
 }
 
 private struct HubCard: View {
-    let icon: String; let title: String; let subtitle: String; let gradient: [Color]; let action: () -> Void
+    let icon: String; let title: String; let subtitle: String; let color: Color; let action: () -> Void
     @State private var pressed = false
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: icon).font(.title2).foregroundStyle(.white)
-                Text(title).font(.callout.weight(.semibold)).foregroundStyle(.white)
-                Text(subtitle).font(.caption2).foregroundStyle(.white.opacity(0.7))
+            VStack(spacing: 6) {
+                Image(systemName: icon).font(.title3).foregroundStyle(color)
+                Text(title).font(.callout.weight(.semibold)).foregroundStyle(Theme.text)
+                Text(subtitle).font(.caption2).foregroundStyle(Theme.textSecondary)
             }
             .frame(maxWidth: .infinity).padding(16)
-            .background(LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
-            .clipShape(.rect(cornerRadius: 20))
+            .background(Theme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(color.opacity(0.25), lineWidth: 1))
         }
         .scaleEffect(pressed ? 0.95 : 1)
         .simultaneousGesture(DragGesture(minimumDistance: 0).onChanged { _ in pressed = true }.onEnded { _ in pressed = false })
     }
 }
-
-

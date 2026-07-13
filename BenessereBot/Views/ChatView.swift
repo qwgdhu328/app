@@ -57,9 +57,8 @@ struct ChatView: View {
         VStack(spacing: 20) {
             Spacer(minLength: 100)
             ZStack {
-                Circle().fill(Theme.glow1.opacity(0.1)).frame(width: 100, height: 100)
-                    .overlay(Circle().stroke(Theme.glow1.opacity(0.2), lineWidth: 1))
-                Image(systemName: "brain.head.profile").font(.system(size: 50)).foregroundStyle(Theme.glow1)
+                Circle().fill(Theme.accent.opacity(0.10)).frame(width: 80, height: 80)
+                Image(systemName: "brain.head.profile").font(.system(size: 40)).foregroundStyle(Theme.accent)
             }
             Text("Parla con BenessereBot").font(.title2.weight(.bold)).foregroundStyle(Theme.text)
             Text("Uno psicologo virtuale sempre pronto ad ascoltarti.\nCondividi ciò che senti, senza giudizio.")
@@ -77,7 +76,9 @@ struct ChatView: View {
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
             }
             .padding(12).padding(.horizontal, 4)
-            .glassEffect(.regular, in: .rect(cornerRadius: 14))
+            .background(Theme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.accent.opacity(0.2), lineWidth: 1))
             .padding(.horizontal, 16).padding(.vertical, 6)
         }
         .buttonStyle(.plain)
@@ -87,7 +88,7 @@ struct ChatView: View {
         HStack(spacing: 10) {
             Button { handleMicTap() } label: {
                 Image(systemName: speechRecognizer?.isListening == true ? "mic.fill" : "mic")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(speechRecognizer?.isListening == true ? Theme.accent : Theme.muted)
                     .frame(width: 36, height: 36)
                     .background(speechRecognizer?.isListening == true ? Theme.accent.opacity(0.15) : Color.clear)
@@ -95,8 +96,10 @@ struct ChatView: View {
             }
             TextField("Scrivi come ti senti...", text: $inputText)
                 .textFieldStyle(.plain)
-                .padding(14)
-                .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                .padding(12)
+                .background(Theme.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
                 .foregroundStyle(Theme.text)
                 .focused($isFocused)
                 .toolbar {
@@ -111,18 +114,18 @@ struct ChatView: View {
                 context.insert(StoredMessage(role: "user", content: text)); try? context.save()
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 32)).foregroundStyle(Theme.accent)
+                    .font(.system(size: 30)).foregroundStyle(Theme.accent)
             }
             .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding(.horizontal, 16).padding(.vertical, 10)
-        .glassEffect(.regular, in: .rect(cornerRadius: 0))
+        .background(Theme.surface)
     }
 
     private var typingIndicator: some View {
         HStack(spacing: 6) {
             ForEach(0..<3) { i in
-                Circle().fill(i == 0 ? Theme.glow1 : i == 1 ? Theme.accentSecondary : Theme.glow3).frame(width: 6, height: 6)
+                Circle().fill(Theme.muted).frame(width: 6, height: 6)
                     .opacity(viewModel.isLoading ? 1 : 0.3)
             }
             Text("Sta riflettendo...").font(.caption).foregroundStyle(Theme.textSecondary).padding(.leading, 4)
@@ -169,9 +172,7 @@ struct MessageBubble: View {
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(message.content).padding(14)
                         .foregroundStyle(.white)
-                        .background(
-                            LinearGradient(colors: [Theme.glow1, Theme.accent.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                        )
+                        .background(Theme.accent.opacity(0.25))
                         .clipShape(RoundedRectangle(cornerRadius: 18))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
@@ -180,7 +181,9 @@ struct MessageBubble: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(message.content).padding(14)
                         .foregroundStyle(Theme.text)
-                        .glassEffect(.regular, in: .rect(cornerRadius: 18))
+                        .background(Theme.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
+                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.cardBorder, lineWidth: 1))
                     Text(message.timestamp.formatted(date: .omitted, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
                 }
                 .padding(.trailing, 60)

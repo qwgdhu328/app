@@ -82,7 +82,8 @@ struct HomeView: View {
             Spacer()
         }
         .padding(20)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var weekConstellation: some View {
@@ -141,7 +142,8 @@ struct HomeView: View {
             }
         }
         .padding(20)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var moodRipplePicker: some View {
@@ -163,7 +165,8 @@ struct HomeView: View {
             }
         }
         .padding(20)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var threeWordSnapshot: some View {
@@ -188,7 +191,8 @@ struct HomeView: View {
             recentSnapshotCapsules
         }
         .padding(20)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     @ViewBuilder
@@ -201,7 +205,8 @@ struct HomeView: View {
                         Text(entry.content)
                             .font(.caption2).foregroundStyle(Theme.textSecondary)
                             .padding(.horizontal, 10).padding(.vertical, 5)
-                            .glassEffect(.regular, in: Capsule())
+                            .background(Theme.surface)
+                            .clipShape(Capsule())
                     }
                 }
             }
@@ -215,7 +220,8 @@ struct HomeView: View {
             Image(systemName: "quote.closing").font(.title3).foregroundStyle(Theme.accent.opacity(0.5))
         }
         .padding(20)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20))
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .transition(.scale.combined(with: .opacity))
     }
 

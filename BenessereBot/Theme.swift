@@ -14,7 +14,7 @@ enum Theme {
     static let text = Color(red: 1.0, green: 1.0, blue: 1.0)
     static let textSecondary = Color(red: 0.82, green: 0.84, blue: 0.92)
     static let muted = Color(red: 0.60, green: 0.62, blue: 0.75)
-    static let surface = Color(red: 0.12, green: 0.12, blue: 0.24).opacity(0.70)
+    static let surface = Color(red: 0.12, green: 0.12, blue: 0.24).opacity(0.85)
     static let moods: [Color] = [
         Color(red: 0.95, green: 0.35, blue: 0.35),
         Color(red: 0.90, green: 0.60, blue: 0.25),

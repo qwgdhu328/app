@@ -5,10 +5,10 @@ import SwiftLlama
 class LocalLLMService {
     static let shared = LocalLLMService()
 
-    private var engine: LlamaEngine?
+    private var service: LlamaService?
     private var isPreparing = false
 
-    var isReady: Bool { engine != nil }
+    var isReady: Bool { service != nil }
 
     private var modelURL: URL {
         let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
@@ -25,13 +25,9 @@ class LocalLLMService {
 
         guard modelExists else { return false }
 
-        do {
-            engine = try LlamaEngine(modelPath: modelURL.path, contextSize: 512)
-            return true
-        } catch {
-            engine = nil
-            return false
-        }
+        let config = LlamaConfig(batchSize: 512, maxTokenCount: 2048, useGPU: true)
+        service = LlamaService(modelUrl: modelURL, config: config)
+        return true
     }
 
     func downloadModel() async -> Bool {
@@ -42,24 +38,29 @@ class LocalLLMService {
     }
 
     func generateReply(for text: String, history: [(role: String, content: String)]) async -> String? {
-        guard let engine = engine else { return nil }
+        guard let service = service else { return nil }
 
-        var prompt = "<bos><start_of_turn>system\nSei BenessereBot, uno psicologo virtuale empatico. Ascolti attivamente, offri supporto emotivo e consigli pratici. Rispondi sempre in italiano.<end_of_turn>\n"
+        var messages: [LlamaChatMessage] = [
+            LlamaChatMessage(role: .system, content: "Sei BenessereBot, uno psicologo virtuale empatico. Ascolti attivamente, offri supporto emotivo e consigli pratici. Rispondi sempre in italiano.")
+        ]
+
         for msg in history.suffix(6) {
-            prompt += "<start_of_turn>\(msg.role)\n\(msg.content)<end_of_turn>\n"
+            let role: LlamaChatMessage.Role = msg.role == "user" ? .user : .assistant
+            messages.append(LlamaChatMessage(role: role, content: msg.content))
         }
-        prompt += "<start_of_turn>user\n\(text)<end_of_turn>\n<start_of_turn>assistant\n"
+        messages.append(LlamaChatMessage(role: .user, content: text))
+
+        let sampling = LlamaSamplingConfig(temperature: 0.7, seed: UInt32.random(in: 0...UInt32.max))
 
         do {
-            return try engine.generate(prompt: prompt, maxTokens: 256, temperature: 0.7)
+            return try await service.respond(to: messages, samplingConfig: sampling)
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-                .replacingOccurrences(of: "<end_of_turn>.*$", with: "", options: .regularExpression)
         } catch {
             return nil
         }
     }
 
     func unload() {
-        engine = nil
+        service = nil
     }
 }

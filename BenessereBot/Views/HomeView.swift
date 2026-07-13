@@ -115,7 +115,7 @@ struct HomeView: View {
                         let starR: CGFloat = highlightedConstellation == i ? 12 : 5 + CGFloat(days[i].score) / 25
                         let rect = CGRect(x: x - starR, y: y - starR, width: starR * 2, height: starR * 2)
                         let c = moodColor(days[i].emoji)
-                        cx.addFilter(.shadow(color: UIColor(c).cgColor, radius: highlightedConstellation == i ? 12 : 5))
+                        cx.addFilter(.shadow(color: c, radius: highlightedConstellation == i ? 12 : 5))
                         cx.fill(Path(ellipseIn: rect), with: .color(c))
                     } else {
                         let rect = CGRect(x: x - 3, y: y - 3, width: 6, height: 6)
@@ -285,7 +285,7 @@ struct HomeView: View {
     private func averageMoodColor() -> Color {
         let recent = moodEntries.suffix(7)
         guard !recent.isEmpty else { return Theme.accent }
-        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0; var count = 0
+        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var count = 0
         for entry in recent {
             let c = UIColor(moodColor(entry.emoji))
             var cr: CGFloat = 0; var cg: CGFloat = 0; var cb: CGFloat = 0; var ca: CGFloat = 0

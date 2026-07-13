@@ -2,6 +2,18 @@ import Foundation
 import SwiftData
 
 @Model
+class ChatSession {
+    var id: String
+    var createdAt: Date
+    @Relationship(deleteRule: .cascade) var messages: [StoredMessage] = []
+
+    init() {
+        self.id = UUID().uuidString
+        self.createdAt = Date()
+    }
+}
+
+@Model
 class StoredMessage {
     var id: String
     var role: String
@@ -9,31 +21,35 @@ class StoredMessage {
     var timestamp: Date
     var isBookmarked: Bool
     var conversationId: String
+    var session: ChatSession?
 
-    init(role: String, content: String, conversationId: String = "main") {
+    init(role: String, content: String, conversationId: String = "main", session: ChatSession? = nil) {
         self.id = UUID().uuidString
         self.role = role
         self.content = content
         self.timestamp = Date()
         self.isBookmarked = false
         self.conversationId = conversationId
+        self.session = session
     }
 }
 
 @Model
 class MoodEntry {
     var id: String
+    var moodValue: Int
     var emoji: String
     var label: String
     var note: String
     var date: Date
     var score: Int
 
-    init(emoji: String, label: String, note: String = "", score: Int = 0) {
+    init(moodValue: Int = 0, emoji: String, label: String, note: String = "", score: Int = 0) {
         self.id = UUID().uuidString
+        self.moodValue = moodValue
         self.emoji = emoji
         self.label = label
-        self.note = note
+        self.note = String(note.prefix(500))
         self.date = Date()
         self.score = score
     }

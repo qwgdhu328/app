@@ -1,14 +1,18 @@
 import SwiftUI
 import UserNotifications
+import SwiftData
 
 struct SettingsView: View {
     @State private var prefs = ReminderPrefs.stored
     @State private var showTimePicker = false
     @State private var notifGranted = false
+    @State private var showDeleteConfirmation = false
+    @Environment(\.modelContext) var context
 
     var body: some View {
         Form {
             reminderSection
+            privacySection
             aboutSection
         }
         .navigationTitle("Impostazioni")
@@ -16,11 +20,17 @@ struct SettingsView: View {
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             notifGranted = settings.authorizationStatus == .authorized
         }
-        .onChange(of: prefs.isEnabled) { _, _ in apply() }
+        .onChange(of: prefs.isEnabled) { _, _ in UIImpactFeedbackGenerator(style: .light).impactOccurred(); apply() }
         .onChange(of: prefs.hour) { _, _ in apply() }
         .onChange(of: prefs.minute) { _, _ in apply() }
         .onChange(of: prefs.message) { _, _ in apply() }
         .onChange(of: prefs.repeatDaily) { _, _ in apply() }
+        .alert("Cancellare tutti i dati?", isPresented: $showDeleteConfirmation) {
+            Button("Annulla", role: .cancel) {}
+            Button("Cancella tutto", role: .destructive) { deleteAllData() }
+        } message: {
+            Text("Questa azione rimuove tutti i messaggi, gli umori, i respiri e i dati del diario. Non può essere annullata.")
+        }
     }
 
     private var reminderSection: some View {
@@ -31,7 +41,7 @@ struct SettingsView: View {
                 HStack {
                     Text("Ora")
                     Spacer()
-                    Button(action: { showTimePicker.toggle() }) {
+                    Button(action: { UIImpactFeedbackGenerator(style: .light).impactOccurred(); showTimePicker.toggle() }) {
                         HStack {
                             Image(systemName: "clock.fill").foregroundStyle(.tint)
                             Text(String(format: "%02d:%02d", prefs.hour, prefs.minute))
@@ -78,6 +88,24 @@ struct SettingsView: View {
         } header: { Label("Promemoria", systemImage: "bell.fill") }
     }
 
+    private var privacySection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Privacy-by-Design", systemImage: "lock.shield.fill")
+                    .font(.subheadline.weight(.semibold))
+                Text("I tuoi dati sono crittografati e non lasciano mai il telefono. Nessun dato viene raccolto o condiviso.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+            }
+            Button(role: .destructive) {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                showDeleteConfirmation = true
+            } label: {
+                Label("Cancella tutti i dati", systemImage: "trash.fill")
+            }
+        } header: { Label("Privacy", systemImage: "hand.raised.fill") }
+    }
+
     private var aboutSection: some View {
         Section {
             aboutRow("Versione", "2.0.0")
@@ -97,9 +125,17 @@ struct SettingsView: View {
         ReminderPrefs.stored = prefs
         ReminderManager.shared.schedule()
     }
-}
 
-#Preview {
-    NavigationStack { SettingsView() }
+    private func deleteAllData() {
+        for model in try? context.fetch(FetchDescriptor<StoredMessage>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<MoodEntry>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<BreathingSession>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<JournalEntry>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<Goal>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<Habit>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<Achievement>()) ?? [] { context.delete(model) }
+        for model in try? context.fetch(FetchDescriptor<ChatSession>()) ?? [] { context.delete(model) }
+        try? context.save()
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+    }
 }
-

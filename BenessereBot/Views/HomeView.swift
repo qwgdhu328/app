@@ -157,7 +157,7 @@ struct HomeView: View {
                             selectedMood = emoji; showAffirmation = true
                             addRipple(color: color)
                             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
-                            let entry = MoodEntry(emoji: emoji, label: label, score: (i + 1) * 20)
+                            let entry = MoodEntry(moodValue: i + 1, emoji: emoji, label: label, score: (i + 1) * 20)
                             context.insert(entry); try? context.save()
                         }
                     }
@@ -317,7 +317,7 @@ struct HomeView: View {
 private struct MoodButton: View {
     let emoji: String; let label: String; let color: Color; let isSelected: Bool; let action: () -> Void
     var body: some View {
-        Button(action: action) {
+        Button(action: { UIImpactFeedbackGenerator(style: .light).impactOccurred(); action() }) {
             VStack(spacing: 4) {
                 Text(emoji).font(.system(size: 28))
                     .scaleEffect(isSelected ? 1.2 : 1)
@@ -362,7 +362,7 @@ private struct HubCard: View {
     let icon: String; let title: String; let subtitle: String; let color: Color; let action: () -> Void
     @State private var pressed = false
     var body: some View {
-        Button(action: action) {
+        Button(action: { UIImpactFeedbackGenerator(style: .light).impactOccurred(); action() }) {
             VStack(spacing: 6) {
                 Image(systemName: icon).font(.title3).foregroundStyle(color)
                 Text(title).font(.callout.weight(.semibold)).foregroundStyle(Theme.text)

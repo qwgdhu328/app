@@ -110,7 +110,7 @@ class BreathingService: ObservableObject {
         do {
             activity = try Activity.request(attributes: attrs, content: .init(state: state, staleDate: nil))
         } catch {
-            print("Activity start error: \(error)")
+            
         }
     }
 

@@ -11,6 +11,7 @@ targets:
     platform: iOS
     sources:
       - path: BenessereBot
+      - path: BenessereBot/PrivacyInfo.xcprivacy
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.benesserebot.app
       INFOPLIST_FILE: BenessereBot/Info.plist

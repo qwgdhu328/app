@@ -8,6 +8,7 @@ struct ChatView: View {
     @State private var speechRecognizer: SpeechRecognizer?
     @State private var aiPersona: AIPersona = .therapist
     @FocusState private var isFocused: Bool
+    @State private var currentSession = ChatSession()
     @Environment(\.modelContext) var context
 
     var body: some View {
@@ -86,7 +87,7 @@ struct ChatView: View {
 
     private var inputBar: some View {
         HStack(spacing: 10) {
-            Button { handleMicTap() } label: {
+            Button { UIImpactFeedbackGenerator(style: .light).impactOccurred(); handleMicTap() } label: {
                 Image(systemName: speechRecognizer?.isListening == true ? "mic.fill" : "mic")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(speechRecognizer?.isListening == true ? Theme.accent : Theme.muted)
@@ -110,8 +111,10 @@ struct ChatView: View {
                 }
             Button {
                 let text = inputText; inputText = ""
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 viewModel.send(text, persona: aiPersona)
-                context.insert(StoredMessage(role: "user", content: text)); try? context.save()
+                let msg = StoredMessage(role: "user", content: text, session: currentSession)
+                context.insert(msg); try? context.save()
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 30)).foregroundStyle(Theme.accent)

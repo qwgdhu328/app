@@ -83,7 +83,7 @@ struct SettingsView: View {
     private var modelSection: some View {
         Section {
             HStack {
-                Label("Gemma 2B", systemImage: "cpu.fill")
+                Label("Mistral 7B", systemImage: "cpu.fill")
                 Spacer()
                 if isDownloading {
                     ProgressView().scaleEffect(0.8)
@@ -92,7 +92,7 @@ struct SettingsView: View {
                 }
             }
             if !modelStatus.isEmpty && !isDownloading {
-                Button("Scarica modello locale (1.5 GB)") {
+                Button("Scarica modello locale (4.1 GB)") {
                     isDownloading = true
                     modelStatus = "Scaricamento..."
                     Task {

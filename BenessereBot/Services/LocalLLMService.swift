@@ -12,7 +12,7 @@ class LocalLLMService {
 
     private var modelURL: URL {
         let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        return dir.appendingPathComponent("gemma-2-2b-it-Q4_K_M.gguf")
+        return dir.appendingPathComponent("mistral-7b-v03-q4.gguf")
     }
 
     var modelExists: Bool { FileManager.default.fileExists(atPath: modelURL.path) }
@@ -23,13 +23,13 @@ class LocalLLMService {
         isPreparing = true
         defer { isPreparing = false }
 
-        let config = LlamaConfig(batchSize: 512, maxTokenCount: 2048, useGPU: true)
+        let config = LlamaConfig(batchSize: 512, maxTokenCount: 4096, useGPU: true)
         service = LlamaService(modelUrl: modelURL, config: config)
         return true
     }
 
     func downloadModel() async -> Bool {
-        let url = URL(string: "https://huggingface.co/brittlewis12/Gemma-2-2B-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf")!
+        let url = URL(string: "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/mistral-7b-instruct-v0.3.Q4_K_M.gguf")!
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return false }
         try? data.write(to: modelURL)
         return await prepare()
@@ -39,7 +39,7 @@ class LocalLLMService {
         guard let service = service else { return nil }
 
         var messages: [LlamaChatMessage] = [
-            LlamaChatMessage(role: .system, content: "Sei BenessereBot, uno psicologo virtuale empatico. Ascolti attivamente, offri supporto emotivo e consigli pratici. Rispondi sempre in italiano.")
+            LlamaChatMessage(role: .system, content: "Sei BenessereBot, un assistente AI empatico e conversazionale. Ascolti, supporti e rispondi in modo naturale e colloquiale. Rispondi sempre in italiano.")
         ]
 
         for msg in history.suffix(6) {

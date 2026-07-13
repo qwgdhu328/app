@@ -13,7 +13,7 @@ struct BenessereBotApp: App {
             ChatSession.self, StoredMessage.self, MoodEntry.self, BreathingSession.self,
             JournalEntry.self, Goal.self, Habit.self, Achievement.self
         ])
-        let config = ModelConfiguration(schema: schema, name: "BenessereBot_v2", isStoredInMemoryOnly: false)
+        let config = ModelConfiguration("BenessereBot_v2", schema: schema, isStoredInMemoryOnly: false)
         guard let container = try? ModelContainer(for: schema, configurations: [config]) else {
             fatalError("Could not initialize ModelContainer")
         }

@@ -7,6 +7,7 @@ class ChatViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var showPsychologists = false
     @Published var suggestedCity = "Milano"
+    @AppStorage("aiMode") var aiMode: String = "hybrid"
 
     func send(_ text: String, persona: AIPersona = .therapist) {
         guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
@@ -17,6 +18,26 @@ class ChatViewModel: ObservableObject {
         showPsychologists = false
 
         Task {
+            if aiMode == "local" || (aiMode == "hybrid" && text.count < 100) {
+                let result = await AppleIntelligenceService.shared.analyze(text)
+                switch result {
+                case .localReply(let reply):
+                    await MainActor.run {
+                        self.messages.append(Message(role: "assistant", content: reply))
+                        self.isLoading = false
+                    }
+                    return
+                case .needsCloud:
+                    if aiMode == "local" {
+                        await MainActor.run {
+                            self.messages.append(Message(role: "assistant", content: "Preferisco parlare con il cloud per darti una risposta più approfondita. Puoi cambiare modalità AI in Impostazioni."))
+                            self.isLoading = false
+                        }
+                        return
+                    }
+                }
+            }
+
             do {
                 OpenRouterService.shared.systemPrompt = persona.systemPrompt
                 var reply = try await OpenRouterService.shared.sendMessage(text, history: messages)

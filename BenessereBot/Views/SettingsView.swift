@@ -9,8 +9,11 @@ struct SettingsView: View {
     @State private var showDeleteConfirmation = false
     @Environment(\.modelContext) var context
 
+    @AppStorage("aiMode") private var aiMode: String = "hybrid"
+
     var body: some View {
         Form {
+            aiSection
             reminderSection
             privacySection
             aboutSection
@@ -31,6 +34,47 @@ struct SettingsView: View {
         } message: {
             Text("Questa azione rimuove tutti i messaggi, gli umori, i respiri e i dati del diario. Non può essere annullata.")
         }
+    }
+
+    private var aiSection: some View {
+        Section {
+            Picker("Modalità AI", selection: $aiMode) {
+                Label("Cloud (GPT-4o)", systemImage: "cloud.fill").tag("cloud")
+                Label("Ibrido", systemImage: "arrow.triangle.2.circlepath").tag("hybrid")
+                Label("Locale (Apple Intelligence)", systemImage: "apple.logo").tag("local")
+            }
+            .pickerStyle(.menu)
+            .onChange(of: aiMode) { _, _ in UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+
+            if aiMode == "local" {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("AI 100% Offline", systemImage: "lock.shield.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.accent)
+                    Text("Nessun dato lascia il telefono. Apple Intelligence elabora tutto localmente usando NaturalLanguage framework. Per conversazioni complesse, passa alla modalità Cloud o Ibrida.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
+            } else if aiMode == "hybrid" {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Privacy + Potenza", systemImage: "arrow.triangle.2.circlepath")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.accent)
+                    Text("Le risposte semplici sono generate localmente da Apple Intelligence. Le conversazioni complesse usano il cloud GPT-4o. Migliore equilibrio tra privacy e qualità.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Massima potenza", systemImage: "cloud.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.accent)
+                    Text("Tutte le conversazioni sono elaborate da GPT-4o via cloud. Risposte più ricche ma richiede connessione internet.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
+            }
+        } header: { Label("Apple Intelligence", systemImage: "apple.logo") }
     }
 
     private var reminderSection: some View {

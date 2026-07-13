@@ -19,6 +19,17 @@ class ChatViewModel: ObservableObject {
 
         Task {
             if aiMode == "local" || (aiMode == "hybrid" && text.count < 100) {
+                if LocalLLMService.shared.isReady {
+                    let reply = await LocalLLMService.shared.generateReply(for: text, history: messages.map { (role: $0.role, content: $0.content) })
+                    if let reply = reply {
+                        await MainActor.run {
+                            self.messages.append(Message(role: "assistant", content: reply))
+                            self.isLoading = false
+                        }
+                        return
+                    }
+                }
+
                 let result = await AppleIntelligenceService.shared.analyze(text)
                 switch result {
                 case .localReply(let reply):
@@ -29,8 +40,11 @@ class ChatViewModel: ObservableObject {
                     return
                 case .needsCloud:
                     if aiMode == "local" {
+                        let msg = LocalLLMService.shared.modelExists
+                            ? "Il modello locale è in caricamento, riprova tra un momento."
+                            : "Attiva il cloud o scarica il modello Gemma 2B da Impostazioni per usare l'AI locale."
                         await MainActor.run {
-                            self.messages.append(Message(role: "assistant", content: "Preferisco parlare con il cloud per darti una risposta più approfondita. Puoi cambiare modalità AI in Impostazioni."))
+                            self.messages.append(Message(role: "assistant", content: msg))
                             self.isLoading = false
                         }
                         return

@@ -10,10 +10,13 @@ struct SettingsView: View {
     @Environment(\.modelContext) var context
 
     @AppStorage("aiMode") private var aiMode: String = "hybrid"
+    @State private var modelStatus: String = ""
+    @State private var isDownloading = false
 
     var body: some View {
         Form {
             aiSection
+            modelSection
             reminderSection
             privacySection
             aboutSection
@@ -75,6 +78,38 @@ struct SettingsView: View {
                 }
             }
         } header: { Label("Apple Intelligence", systemImage: "apple.logo") }
+    }
+
+    private var modelSection: some View {
+        Section {
+            HStack {
+                Label("Gemma 2B", systemImage: "cpu.fill")
+                Spacer()
+                if isDownloading {
+                    ProgressView().scaleEffect(0.8)
+                } else {
+                    Text(modelStatus).font(.caption).foregroundStyle(Theme.muted)
+                }
+            }
+            if !modelStatus.isEmpty && !isDownloading {
+                Button("Scarica modello locale (1.5 GB)") {
+                    isDownloading = true
+                    modelStatus = "Scaricamento..."
+                    Task {
+                        let ok = await LocalLLMService.shared.downloadModel()
+                        await MainActor.run {
+                            isDownloading = false
+                            modelStatus = ok ? "Pronto" : "Errore download"
+                        }
+                    }
+                }
+                .disabled(isDownloading)
+                .font(.subheadline)
+            }
+        } header: { Label("Modello AI Locale", systemImage: "tray.full.fill") }
+        .task {
+            modelStatus = LocalLLMService.shared.modelExists ? "Pronto" : "Non scaricato"
+        }
     }
 
     private var reminderSection: some View {

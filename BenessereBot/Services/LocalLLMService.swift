@@ -23,8 +23,6 @@ class LocalLLMService {
         isPreparing = true
         defer { isPreparing = false }
 
-        guard modelExists else { return false }
-
         let config = LlamaConfig(batchSize: 512, maxTokenCount: 2048, useGPU: true)
         service = LlamaService(modelUrl: modelURL, config: config)
         return true

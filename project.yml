@@ -6,8 +6,8 @@ options:
 settings:
   SWIFT_VERSION: "5.0"
 packages:
-  LlamaCppSPM:
-    url: https://github.com/kevinhermawan/LlamaCppSPM
+  SwiftLlama:
+    url: https://github.com/pgorzelany/swift-llama-cpp
     branch: main
 targets:
   BenessereBot:
@@ -26,8 +26,8 @@ targets:
       CODE_SIGNING_ALLOWED: NO
     dependencies:
       - target: BreathingWidget
-      - package: LlamaCppSPM
-        product: llama
+      - package: SwiftLlama
+        product: SwiftLlama
 
   BreathingWidget:
     type: app-extension

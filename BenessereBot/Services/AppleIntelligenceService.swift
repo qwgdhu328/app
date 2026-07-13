@@ -53,7 +53,7 @@ class AppleIntelligenceService {
         let lower = text.lowercased().trimmingCharacters(in: .whitespaces)
 
         if detectCrisisKeywords(lower) {
-            return .needsCloud
+            return .localReply("Sono molto preoccupato per quello che stai dicendo. Ricorda che non sei solo — il Telefono Amico è disponibile 24/7 al 199 284 284. Se sei in pericolo immediato, chiama il 112. Io sono qui con te, ma queste risorse possono darti l'aiuto immediato di cui hai bisogno.")
         }
 
         if let reply = matchSemantically(lower) {
@@ -61,15 +61,6 @@ class AppleIntelligenceService {
         }
 
         let sentiment = detectSentiment(text)
-
-        if abs(sentiment) < 0.3 && lower.count > 30 {
-            return .needsCloud
-        }
-
-        if lower.count > 100 {
-            return .needsCloud
-        }
-
         let phrase = supportivePhrases.first { $0.sentiment.contains(sentiment) }?.phrase ?? supportivePhrases[3].phrase
         return .localReply(phrase)
     }

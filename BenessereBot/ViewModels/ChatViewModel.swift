@@ -31,24 +31,12 @@ class ChatViewModel: ObservableObject {
                 }
 
                 let result = await AppleIntelligenceService.shared.analyze(text)
-                switch result {
-                case .localReply(let reply):
+                if case .localReply(let reply) = result {
                     await MainActor.run {
                         self.messages.append(Message(role: "assistant", content: reply))
                         self.isLoading = false
                     }
                     return
-                case .needsCloud:
-                    if aiMode == "local" {
-                        let msg = LocalLLMService.shared.modelExists
-                            ? "Il modello locale è in caricamento, riprova tra un momento."
-                            : "Attiva il cloud o scarica il modello Gemma 2B da Impostazioni per usare l'AI locale."
-                        await MainActor.run {
-                            self.messages.append(Message(role: "assistant", content: msg))
-                            self.isLoading = false
-                        }
-                        return
-                    }
                 }
             }
 
@@ -65,9 +53,14 @@ class ChatViewModel: ObservableObject {
                     self.messages.append(Message(role: "assistant", content: reply))
                     self.isLoading = false
                 }
+            } catch let error as URLError {
+                await MainActor.run {
+                    self.errorMessage = "Impossibile contattare il cloud. Verifica la connessione a Internet o passa alla modalità Locale (Impostazioni > AI Mode)."
+                    self.isLoading = false
+                }
             } catch {
                 await MainActor.run {
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = "Errore: \(error.localizedDescription)"
                     self.isLoading = false
                 }
             }

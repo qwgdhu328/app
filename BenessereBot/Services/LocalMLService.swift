@@ -31,7 +31,7 @@ class LocalMLService {
             }
 
             let feature = try MLDictionaryFeatureProvider(dictionary: ["input_ids": input])
-            let output = try model.prediction(from: feature)
+            let output = try await model.prediction(from: feature)
 
             if let tokenIds = output.featureValue(for: "logits")?.multiArrayValue {
                 return "[OpenELM 270M] \(tokenIds.debugDescription.prefix(200))"

@@ -30,7 +30,7 @@ class ChatViewModel: ObservableObject {
                     }
                 }
 
-                let result = await AppleIntelligenceService.shared.analyze(text)
+                let result = AppleIntelligenceService.shared.analyze(text)
                 if case .localReply(let reply) = result {
                     await MainActor.run {
                         self.messages.append(Message(role: "assistant", content: reply))
@@ -53,7 +53,7 @@ class ChatViewModel: ObservableObject {
                     self.messages.append(Message(role: "assistant", content: reply))
                     self.isLoading = false
                 }
-            } catch let error as URLError {
+            } catch _ as URLError {
                 await MainActor.run {
                     self.errorMessage = "Impossibile contattare il cloud. Verifica la connessione a Internet o passa alla modalità Locale (Impostazioni > AI Mode)."
                     self.isLoading = false

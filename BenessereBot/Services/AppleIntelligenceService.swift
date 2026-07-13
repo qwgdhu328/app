@@ -87,7 +87,7 @@ class AppleIntelligenceService {
             }
         }
 
-        if let wordEmbedding = embedding {
+        if let _ = embedding {
             var bestScore: Float = 0
             var bestReply: String?
             for pair in responses {

@@ -25,6 +25,7 @@ struct ProfileView: View {
                             navLink(icon: "target", title: "Obiettivi", destination: GoalsListView())
                             navLink(icon: "trophy.fill", title: "Trofei", destination: AchievementsView())
                             navLink(icon: "wind", title: "Storico respiri", destination: BreathingHistoryView())
+                            navLink(icon: "gearshape.fill", title: "Impostazioni", destination: SettingsView())
                             Button { showFeatures = true } label: {
                                 HStack {
                                     Image(systemName: "sparkles.rectangle.stack").font(.title3).foregroundStyle(Theme.accent).frame(width: 28)

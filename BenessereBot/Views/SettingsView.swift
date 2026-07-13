@@ -11,7 +11,6 @@ struct SettingsView: View {
 
     @AppStorage("aiMode") private var aiMode: String = "hybrid"
     @State private var modelStatus: String = ""
-    @State private var isDownloading = false
 
     var body: some View {
         Form {
@@ -85,30 +84,22 @@ struct SettingsView: View {
             HStack {
                 Label("Mistral 7B", systemImage: "cpu.fill")
                 Spacer()
-                if isDownloading {
-                    ProgressView().scaleEffect(0.8)
-                } else {
-                    Text(modelStatus).font(.caption).foregroundStyle(Theme.muted)
-                }
+                Text(modelStatus).font(.caption).foregroundStyle(Theme.muted)
             }
-            if !modelStatus.isEmpty && !isDownloading {
-                Button("Scarica modello locale (4.1 GB)") {
-                    isDownloading = true
-                    modelStatus = "Scaricamento..."
-                    Task {
-                        let ok = await LocalLLMService.shared.downloadModel()
-                        await MainActor.run {
-                            isDownloading = false
-                            modelStatus = ok ? "Pronto" : "Errore download"
-                        }
-                    }
-                }
-                .disabled(isDownloading)
-                .font(.subheadline)
+            if LocalLLMService.shared.isDownloading {
+                ProgressView(value: LocalLLMService.shared.downloadProgress)
+                    .progressViewStyle(.linear).tint(Theme.accent)
+            }
+            if LocalLLMService.shared.downloadError != nil {
+                Button("Riprova download") {
+                    Task { await LocalLLMService.shared.startDownload() }
+                }.font(.subheadline)
             }
         } header: { Label("Modello AI Locale", systemImage: "tray.full.fill") }
         .task {
-            modelStatus = LocalLLMService.shared.modelExists ? "Pronto" : "Non scaricato"
+            modelStatus = LocalLLMService.shared.modelExists
+                ? (LocalLLMService.shared.isReady ? "Pronto" : "In caricamento...")
+                : (LocalLLMService.shared.isDownloading ? "Scaricamento..." : "In attesa...")
         }
     }
 

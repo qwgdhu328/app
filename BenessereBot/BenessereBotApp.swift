@@ -5,6 +5,7 @@ import SwiftData
 @main
 struct BenessereBotApp: App {
     @State private var showIntro = !UserDefaults.standard.bool(forKey: "hasSeenIntro")
+    @State private var showDownload = !LocalLLMService.shared.modelExists
     @StateObject private var breathingService = BreathingService()
     let modelContainer: ModelContainer
 
@@ -26,7 +27,10 @@ struct BenessereBotApp: App {
         WindowGroup {
             ZStack {
                 AppBackground()
-                if showIntro {
+                if showDownload {
+                    ModelDownloadView(onComplete: { showDownload = false })
+                        .transition(.opacity)
+                } else if showIntro {
                     IntroView(showIntro: $showIntro)
                         .transition(.opacity)
                 } else {

@@ -24,12 +24,9 @@ jobs:
 
       - name: Select correct Xcode
         run: |
-          XCODE_PATH=$(xcodes list 2>/dev/null | head -1 | awk '{print $2}' || ls /Applications/Xcode*.app/Contents/Developer | head -1)
-          if [ -z "$XCODE_PATH" ]; then
-            XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
-          fi
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
           if [ -n "$XCODE_PATH" ]; then
-            sudo xcode-select -s "$XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
           fi
           xcodebuild -version
 
@@ -99,7 +96,7 @@ jobs:
         run: |
           XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
           if [ -n "$XCODE_PATH" ]; then
-            sudo xcode-select -s "$XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
           fi
           xcodebuild -version
 

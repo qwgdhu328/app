@@ -50,7 +50,7 @@ struct ModelDownloadView: View {
 
             Spacer()
         }
-        .background(Theme.bg)
+        .background(Theme.bgTop)
         .onAppear { start() }
     }
 

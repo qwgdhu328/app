@@ -82,7 +82,7 @@ class AppleIntelligenceService {
         if cleaned.count < 3 { return nil }
 
         if let sentenceEmbedding = sentenceEmbedding {
-            var bestMatch: (index: Int, distance: Float)?
+            var bestMatch: (index: Int, distance: NLDistance)?
             for (i, pair) in responses.enumerated() {
                 let dist = sentenceEmbedding.distance(between: cleaned, and: pair.query)
                 if dist < 0.5 {

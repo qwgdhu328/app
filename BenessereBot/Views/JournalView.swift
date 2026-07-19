@@ -16,19 +16,25 @@ struct JournalView: View {
         ZStack {
             AppBackground()
             if entries.isEmpty {
-                ContentUnavailableView("Nessun pensiero", systemImage: "book", description: Text("Inizia a scrivere il tuo diario")).foregroundStyle(Theme.muted)
+                ContentUnavailableView("Nessun pensiero", systemImage: "book", description: Text("Inizia a scrivere il tuo diario"))
+                    .foregroundStyle(Theme.muted)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(entries) { entry in
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(entry.prompt).font(.caption).foregroundStyle(Theme.accent)
+                                HStack {
+                                    Image(systemName: "quote.opening").font(.caption2).foregroundStyle(Theme.accent)
+                                    Text(entry.prompt).font(.caption).foregroundStyle(Theme.accent)
+                                }
                                 Text(entry.content).font(.body).foregroundStyle(Theme.text).lineLimit(4)
-                                Text(entry.date.formatted(date: .abbreviated, time: .shortened)).font(.caption2).foregroundStyle(Theme.muted)
+                                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
+                                    .font(.caption2).foregroundStyle(Theme.muted)
                             }
                             .padding(16)
                             .background(Theme.surface)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
                         }
                     }
                     .padding()
@@ -38,7 +44,9 @@ struct JournalView: View {
         .navigationTitle("Diario")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showWrite = true } label: { Image(systemName: "square.and.pencil").foregroundStyle(Theme.accent) }
+                Button { showWrite = true } label: {
+                    Image(systemName: "square.and.pencil").foregroundStyle(Theme.accent)
+                }
             }
         }
         .sheet(isPresented: $showWrite) { JournalWriteView(prompts: prompts) }
@@ -57,14 +65,20 @@ struct JournalWriteView: View {
             ZStack {
                 AppBackground()
                 VStack(spacing: 16) {
-                    Text(prompt).font(.headline).foregroundStyle(Theme.accent).multilineTextAlignment(.center).padding(.top)
+                    Text(prompt)
+                        .font(.headline).foregroundStyle(Theme.gold)
+                        .multilineTextAlignment(.center).padding(.top)
                     TextEditor(text: $content)
                         .scrollContentBackground(.hidden).padding(14)
                         .background(Theme.surface)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.cardBorder, lineWidth: 1))
                         .foregroundStyle(Theme.text)
                     HStack {
-                        Button("Salta") { prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."; content = "" }.foregroundStyle(Theme.muted).buttonStyle(.plain)
+                        Button("Salta") {
+                            prompt = prompts.randomElement() ?? "Scrivi cosa vuoi..."
+                            content = ""
+                        }.foregroundStyle(Theme.muted).buttonStyle(.plain)
                         Spacer()
                         Button("Salva") {
                             guard !content.isEmpty else { return }
@@ -76,7 +90,11 @@ struct JournalWriteView: View {
                 .padding()
             }
             .navigationTitle("Nuovo pensiero")
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Chiudi") { dismiss() }.foregroundStyle(Theme.muted) } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Chiudi") { dismiss() }.foregroundStyle(Theme.muted)
+                }
+            }
         }
         .onAppear { prompt = prompts.randomElement() ?? prompts[0] }
     }

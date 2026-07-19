@@ -19,9 +19,30 @@ class AchievementService {
     ]
 
     func checkAndUnlock(context: ModelContext, basedOn stats: (messages: Int, moods: Int, sessions: Int, entries: Int, streak: Int, hasVisitedAll: Bool, goalsCompleted: Int)) {
-        let descriptors = FetchDescriptor<Achievement>()
-        guard let existing = try? context.fetch(descriptors), existing.isEmpty else { return }
-        for a in all { context.insert(a) }
+        guard let existing = try? context.fetch(FetchDescriptor<Achievement>()), !existing.isEmpty else {
+            for a in all { context.insert(a) }
+            try? context.save()
+            return
+        }
+
+        let checks: [(index: Int, condition: Bool)] = [
+            (0, stats.messages >= 1),
+            (1, stats.moods >= 1),
+            (2, stats.sessions >= 1),
+            (3, stats.entries >= 1),
+            (4, stats.streak >= 7),
+            (5, stats.hasVisitedAll),
+            (6, stats.goalsCompleted >= 1),
+            (7, false),
+            (8, stats.messages >= 10),
+            (9, stats.streak >= 30),
+        ]
+
+        for (i, condition) in checks {
+            guard i < existing.count, condition, !existing[i].isUnlocked else { continue }
+            existing[i].isUnlocked = true
+            existing[i].unlockedAt = Date()
+        }
         try? context.save()
     }
 }

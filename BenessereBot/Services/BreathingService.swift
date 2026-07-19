@@ -39,7 +39,7 @@ class BreathingService: ObservableObject {
     private var elapsed = 0
     private var currentPhaseIndex = 0
     private var phaseElapsed = 0
-    private var roundsCompleted = 0
+    @Published private(set) var roundsCompleted = 0
     private var activity: Activity<BreathingActivityAttributes>?
 
     func start() {
@@ -137,6 +137,6 @@ class BreathingService: ObservableObject {
         content.title = "Respiro completato!"
         content.body = "Hai completato \(rounds) cicli di \(pattern.rawValue.lowercased())."
         content.sound = .default
-        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "breathing-complete", content: content, trigger: nil))
+        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
     }
 }

@@ -15,9 +15,9 @@ struct WellbeingView: View {
                     VStack(spacing: 16) {
                         statsGrid
                         navCard(icon: "calendar", title: "Calendario umore", color: Theme.accent, destination: MoodCalendarView())
-                        navCard(icon: "book.fill", title: "Diario dei pensieri", color: Theme.accent, destination: JournalView())
-                        navCard(icon: "target", title: "Obiettivi e abitudini", color: Theme.accent, destination: GoalsListView())
-                        navCard(icon: "trophy.fill", title: "Trofei", color: Theme.accent, destination: AchievementsView())
+                        navCard(icon: "book.fill", title: "Diario dei pensieri", color: Theme.gold, destination: JournalView())
+                        navCard(icon: "target", title: "Obiettivi e abitudini", color: Theme.accentSecondary, destination: GoalsListView())
+                        navCard(icon: "trophy.fill", title: "Trofei", color: Theme.accentTertiary, destination: AchievementsView())
                         if !sessions.isEmpty {
                             navCard(icon: "wind", title: "Storico respiri", color: Theme.accent, destination: BreathingHistoryView())
                         }
@@ -48,7 +48,8 @@ struct WellbeingView: View {
         }
         .frame(maxWidth: .infinity).padding(14)
         .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.cardBorder, lineWidth: 1))
         .scaleEffect(animateStats ? 1 : 0.8)
         .opacity(animateStats ? 1 : 0)
         .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.1), value: animateStats)
@@ -57,7 +58,10 @@ struct WellbeingView: View {
     private func navCard<D: View>(icon: String, title: String, color: Color, destination: D) -> some View {
         NavigationLink(destination: destination) {
             HStack {
-                Image(systemName: icon).font(.title3).foregroundStyle(color).frame(width: 28)
+                ZStack {
+                    Circle().fill(color.opacity(0.1)).frame(width: 36, height: 36)
+                    Image(systemName: icon).font(.subheadline).foregroundStyle(color)
+                }
                 Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.text)
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
@@ -65,6 +69,7 @@ struct WellbeingView: View {
             .padding(16)
             .background(Theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
         }
     }
 }
@@ -82,8 +87,8 @@ struct BreathingHistoryView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         HStack(spacing: 12) {
-                            statPill("Totale minuti", value: "\(totalMinutes) min", color: Theme.accent)
-                            statPill("Sessioni totali", value: "\(sessions.count)", color: Theme.text)
+                            statPill("Totale minuti", value: "\(totalMinutes)", color: Theme.accent)
+                            statPill("Sessioni", value: "\(sessions.count)", color: Theme.gold)
                         }
                         LazyVStack(spacing: 8) {
                             ForEach(sessions) { s in
@@ -99,6 +104,7 @@ struct BreathingHistoryView: View {
                                 .padding(16)
                                 .background(Theme.surface)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
                             }
                         }
                     }
@@ -117,5 +123,6 @@ struct BreathingHistoryView: View {
         .frame(maxWidth: .infinity).padding(12)
         .background(Theme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.cardBorder, lineWidth: 1))
     }
 }

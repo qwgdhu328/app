@@ -20,23 +20,24 @@ struct IntroView: View {
     private let features: [(icon: String, title: String, desc: String)] = [
         ("brain.head.profile", "Parla con BenessereBot", "Uno psicologo AI sempre pronto ad ascoltarti. Condividi pensieri ed emozioni in un ambiente sicuro."),
         ("face.smiling.fill", "Traccia il tuo umore", "Registra come ti senti ogni giorno. Visualizza il tuo percorso di benessere con statistiche e grafici."),
-        ("wind", "Respira con calma", "Esercizi di respiro guidato con supporto Dynamic Island. Ritrova la calma in qualsiasi momento."),
-        ("book.fill", "Diario personale", "Scrivi i tuoi pensieri con prompt guidati. Rileggi il tuo percorso di crescita personale."),
-        ("sparkles", "Il tuo viaggio inizia", "Affermazioni quotidiane, obiettivi, trofei e molto altro. BenessereBot è il tuo compagno per il benessere mentale.")
+        ("wind", "Respira con calma", "Esercizi di respiro guidato. Ritrova la calma in qualsiasi momento."),
+        ("book.fill", "Diario personale", "Scrivi i tuoi pensieri con prompt guidati. Rileggi il tuo percorso."),
+        ("sparkles", "Il tuo viaggio inizia", "Affermazioni quotidiane, obiettivi, trofei. BenessereBot è il tuo compagno per il benessere mentale.")
     ]
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.black, Color(red: 0.05, green: 0.05, blue: 0.12), .black], startPoint: .top, endPoint: .bottom)
+            LinearGradient(colors: [.black, Theme.bgMid, .black], startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
-            RadialGradient(colors: [Theme.accent.opacity(0.08), .clear], center: .top, startRadius: 0, endRadius: 400)
+            RadialGradient(colors: [Theme.accent.opacity(0.06), .clear], center: .top, startRadius: 0, endRadius: 400)
+                .ignoresSafeArea()
+            RadialGradient(colors: [Theme.accentSecondary.opacity(0.04), .clear], center: .bottom, startRadius: 0, endRadius: 400)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 TabView(selection: $currentPage) {
                     ForEach(0..<features.count, id: \.self) { i in
-                        featurePage(index: i)
-                            .tag(i)
+                        featurePage(index: i).tag(i)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -58,11 +59,11 @@ struct IntroView: View {
             Spacer(minLength: 60)
 
             ZStack {
-                Circle().fill(Theme.accent.opacity(0.08)).frame(width: 140, height: 140)
-                Circle().fill(Theme.accent.opacity(0.04)).frame(width: 100, height: 100)
+                Circle().fill(Theme.gradientAccent.opacity(0.1)).frame(width: 140, height: 140)
+                Circle().fill(Theme.gradientAccent.opacity(0.05)).frame(width: 100, height: 100)
                 Image(systemName: f.icon)
                     .font(.system(size: 56))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.gradientAccent)
                     .symbolEffect(.bounce, value: currentPage)
             }
             .padding(.bottom, 40)
@@ -128,6 +129,7 @@ struct IntroView: View {
                     .padding(14)
                     .background(selectedGoal == goal ? Theme.accent : Theme.surface)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(selectedGoal == goal ? Theme.accent.opacity(0.5) : Theme.cardBorder, lineWidth: 1))
                 }
             }
         }
@@ -160,7 +162,7 @@ struct IntroView: View {
             HStack(spacing: 8) {
                 ForEach(0..<features.count, id: \.self) { i in
                     Capsule()
-                        .fill(currentPage == i ? Theme.accent : Theme.muted.opacity(0.3))
+                        .fill(currentPage == i ? Theme.gradientAccent : Theme.muted.opacity(0.3))
                         .frame(width: currentPage == i ? 24 : 8, height: 8)
                         .animation(.spring, value: currentPage)
                 }

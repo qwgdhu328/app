@@ -8,17 +8,23 @@ struct SettingsView: View {
     @State private var notifGranted = false
     @State private var showDeleteConfirmation = false
     @Environment(\.modelContext) var context
-
     @AppStorage("aiMode") private var aiMode: String = "hybrid"
     @State private var modelStatus: String = ""
 
     var body: some View {
-        Form {
-            aiSection
-            modelSection
-            reminderSection
-            privacySection
-            aboutSection
+        ZStack {
+            AppBackground()
+            ScrollView {
+                VStack(spacing: 16) {
+                    aiSection
+                    modelSection
+                    reminderSection
+                    privacySection
+                    aboutSection
+                }
+                .padding()
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
         .navigationTitle("Impostazioni")
         .task {
@@ -38,64 +44,76 @@ struct SettingsView: View {
         }
     }
 
-    private var aiSection: some View {
-        Section {
-            Picker("Modalità AI", selection: $aiMode) {
-                Label("Cloud (GPT-4o)", systemImage: "cloud.fill").tag("cloud")
-                Label("Ibrido", systemImage: "arrow.triangle.2.circlepath").tag("hybrid")
-                Label("Locale (Apple Intelligence)", systemImage: "apple.logo").tag("local")
+    private func sectionCard<Content: View>(icon: String, title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Image(systemName: icon).font(.subheadline).foregroundStyle(Theme.accent)
+                Text(title).font(.headline.weight(.semibold)).foregroundStyle(Theme.text)
+                Spacer()
             }
-            .pickerStyle(.menu)
-            .onChange(of: aiMode) { _, _ in UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+            .padding(.bottom, 12)
+            content()
+        }
+        .padding(16)
+        .background(Theme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
+    }
 
-            if aiMode == "local" {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("AI 100% Offline", systemImage: "lock.shield.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.accent)
-                    Text("Nessun dato lascia il telefono. Apple Intelligence elabora tutto localmente usando NaturalLanguage framework. Per conversazioni complesse, passa alla modalità Cloud o Ibrida.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.muted)
+    private var aiSection: some View {
+        sectionCard(icon: "apple.logo", title: "Intelligenza") {
+            VStack(spacing: 12) {
+                Picker("Modalità AI", selection: $aiMode) {
+                    Label("Cloud (GPT-4o)", systemImage: "cloud.fill").tag("cloud")
+                    Label("Ibrido", systemImage: "arrow.triangle.2.circlepath").tag("hybrid")
+                    Label("Locale (Apple Intelligence)", systemImage: "apple.logo").tag("local")
                 }
-            } else if aiMode == "hybrid" {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("Privacy + Potenza", systemImage: "arrow.triangle.2.circlepath")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.accent)
-                    Text("Le risposte semplici sono generate localmente da Apple Intelligence. Le conversazioni complesse usano il cloud GPT-4o. Migliore equilibrio tra privacy e qualità.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.muted)
-                }
-            } else {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("Massima potenza", systemImage: "cloud.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.accent)
-                    Text("Tutte le conversazioni sono elaborate da GPT-4o via cloud. Risposte più ricche ma richiede connessione internet.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.muted)
+                .pickerStyle(.segmented)
+                .onChange(of: aiMode) { _, _ in UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+
+                if aiMode == "local" {
+                    HStack {
+                        Image(systemName: "lock.shield.fill").foregroundStyle(Theme.accentTertiary)
+                        Text("AI 100% offline. Nessun dato lascia il telefono.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                } else if aiMode == "hybrid" {
+                    HStack {
+                        Image(systemName: "arrow.triangle.2.circlepath").foregroundStyle(Theme.gold)
+                        Text("Risposte semplici in locale, complesse via cloud.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                } else {
+                    HStack {
+                        Image(systemName: "cloud.fill").foregroundStyle(Theme.accentSecondary)
+                        Text("Massima potenza, richiede connessione internet.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
                 }
             }
-        } header: { Label("Apple Intelligence", systemImage: "apple.logo") }
+        }
     }
 
     private var modelSection: some View {
-        Section {
-            HStack {
-                Label("Mistral 7B", systemImage: "cpu.fill")
-                Spacer()
-                Text(modelStatus).font(.caption).foregroundStyle(Theme.muted)
+        sectionCard(icon: "tray.full.fill", title: "Modello AI Locale") {
+            VStack(spacing: 10) {
+                HStack {
+                    Image(systemName: "cpu.fill").foregroundStyle(Theme.accentSecondary)
+                    Text("Mistral 7B")
+                    Spacer()
+                    Text(modelStatus).font(.caption).foregroundStyle(Theme.muted)
+                }
+                if LocalLLMService.shared.isDownloading {
+                    ProgressView(value: LocalLLMService.shared.downloadProgress)
+                        .progressViewStyle(.linear).tint(Theme.accent)
+                }
+                if LocalLLMService.shared.downloadError != nil {
+                    Button("Riprova download") {
+                        Task { await LocalLLMService.shared.startDownload() }
+                    }.font(.subheadline).foregroundStyle(Theme.accent)
+                }
             }
-            if LocalLLMService.shared.isDownloading {
-                ProgressView(value: LocalLLMService.shared.downloadProgress)
-                    .progressViewStyle(.linear).tint(Theme.accent)
-            }
-            if LocalLLMService.shared.downloadError != nil {
-                Button("Riprova download") {
-                    Task { await LocalLLMService.shared.startDownload() }
-                }.font(.subheadline)
-            }
-        } header: { Label("Modello AI Locale", systemImage: "tray.full.fill") }
+        }
         .task {
             modelStatus = LocalLLMService.shared.modelExists
                 ? (LocalLLMService.shared.isReady ? "Pronto" : "In caricamento...")
@@ -104,91 +122,121 @@ struct SettingsView: View {
     }
 
     private var reminderSection: some View {
-        Section {
-            Toggle("Promemoria giornaliero", isOn: $prefs.isEnabled)
+        sectionCard(icon: "bell.fill", title: "Promemoria") {
+            VStack(spacing: 12) {
+                Toggle("Promemoria giornaliero", isOn: $prefs.isEnabled)
+                    .tint(Theme.accent)
 
-            if prefs.isEnabled {
-                HStack {
-                    Text("Ora")
-                    Spacer()
-                    Button(action: { UIImpactFeedbackGenerator(style: .light).impactOccurred(); showTimePicker.toggle() }) {
-                        HStack {
-                            Image(systemName: "clock.fill").foregroundStyle(.tint)
-                            Text(String(format: "%02d:%02d", prefs.hour, prefs.minute))
-                                .font(.title3.weight(.medium))
+                if prefs.isEnabled {
+                    HStack {
+                        Text("Ora")
+                        Spacer()
+                        Button(action: {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            withAnimation { showTimePicker.toggle() }
+                        }) {
+                            HStack {
+                                Image(systemName: "clock.fill").foregroundStyle(Theme.accent)
+                                Text(String(format: "%02d:%02d", prefs.hour, prefs.minute))
+                                    .font(.title3.weight(.medium)).foregroundStyle(Theme.text)
+                            }
+                            .padding(.horizontal, 12).padding(.vertical, 6)
+                            .background(Theme.bgTop.opacity(0.5))
+                            .clipShape(.rect(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.cardBorder, lineWidth: 1))
                         }
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Theme.card).clipShape(.rect(cornerRadius: 10))
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+
+                    if showTimePicker {
+                        DatePicker("Seleziona ora",
+                            selection: Binding(
+                                get: { Calendar.current.date(from: DateComponents(hour: prefs.hour, minute: prefs.minute)) ?? Date() },
+                                set: {
+                                    let c = Calendar.current.dateComponents([.hour, .minute], from: $0)
+                                    prefs.hour = c.hour ?? 9; prefs.minute = c.minute ?? 0
+                                    withAnimation { showTimePicker = false }
+                                }
+                            ),
+                            displayedComponents: .hourAndMinute
+                        ).datePickerStyle(.wheel)
+                    }
+
+                    Toggle("Ripeti ogni giorno", isOn: $prefs.repeatDaily).tint(Theme.accent)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Messaggio").font(.subheadline).foregroundStyle(Theme.muted)
+                        TextField("Testo del promemoria", text: $prefs.message)
+                            .textFieldStyle(.plain).padding(10)
+                            .background(Theme.bgTop.opacity(0.5))
+                            .clipShape(.rect(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.cardBorder, lineWidth: 1))
+                    }
                 }
 
-                if showTimePicker {
-                    DatePicker("Seleziona ora",
-                        selection: Binding(
-                            get: { Calendar.current.date(from: DateComponents(hour: prefs.hour, minute: prefs.minute)) ?? Date() },
-                            set: { let c = Calendar.current.dateComponents([.hour, .minute], from: $0); prefs.hour = c.hour ?? 9; prefs.minute = c.minute ?? 0; showTimePicker = false }
-                        ),
-                        displayedComponents: .hourAndMinute
-                    ).datePickerStyle(.wheel)
+                if !notifGranted && prefs.isEnabled {
+                    Button("Abilita notifiche") {
+                        Task { notifGranted = await ReminderManager.shared.requestPermission() }
+                    }.font(.subheadline).foregroundStyle(Theme.accent)
                 }
 
-                Toggle("Ripeti ogni giorno", isOn: $prefs.repeatDaily)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Messaggio").font(.subheadline).foregroundStyle(Theme.muted)
-                    TextField("Testo del promemoria", text: $prefs.message)
-                        .textFieldStyle(.plain).padding(10)
-                        .background(Theme.card).clipShape(.rect(cornerRadius: 10))
-                }
+                Button("Test promemoria") {
+                    let c = UNMutableNotificationContent()
+                    c.title = "BenessereBot"; c.body = prefs.message; c.sound = .default
+                    UNUserNotificationCenter.current().add(
+                        UNNotificationRequest(identifier: UUID().uuidString, content: c,
+                            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))
+                    )
+                }.font(.subheadline).foregroundStyle(Theme.accent)
             }
-
-            if !notifGranted && prefs.isEnabled {
-                Button("Abilita notifiche") {
-                    Task { notifGranted = await ReminderManager.shared.requestPermission() }
-                }.font(.subheadline).foregroundStyle(.tint)
-            }
-
-            Button("Test promemoria") {
-                let c = UNMutableNotificationContent(); c.title = "BenessereBot"; c.body = prefs.message; c.sound = .default
-                UNUserNotificationCenter.current().add(
-                    UNNotificationRequest(identifier: "testReminder", content: c, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))
-                )
-            }.font(.subheadline).foregroundStyle(.tint)
-        } header: { Label("Promemoria", systemImage: "bell.fill") }
+        }
     }
 
     private var privacySection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Privacy-by-Design", systemImage: "lock.shield.fill")
-                    .font(.subheadline.weight(.semibold))
+        sectionCard(icon: "hand.raised.fill", title: "Privacy") {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "lock.shield.fill").foregroundStyle(Theme.accentTertiary)
+                    Text("Privacy-by-Design")
+                        .font(.subheadline.weight(.semibold)).foregroundStyle(Theme.text)
+                }
                 Text("I tuoi dati sono crittografati e non lasciano mai il telefono. Nessun dato viene raccolto o condiviso.")
-                    .font(.caption)
-                    .foregroundStyle(Theme.muted)
+                    .font(.caption).foregroundStyle(Theme.muted)
+                Button(role: .destructive) {
+                    UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                    showDeleteConfirmation = true
+                } label: {
+                    Label("Cancella tutti i dati", systemImage: "trash.fill")
+                        .font(.subheadline)
+                }
             }
-            Button(role: .destructive) {
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                showDeleteConfirmation = true
-            } label: {
-                Label("Cancella tutti i dati", systemImage: "trash.fill")
-            }
-        } header: { Label("Privacy", systemImage: "hand.raised.fill") }
+        }
     }
 
     private var aboutSection: some View {
-        Section {
-            aboutRow("Versione", "2.0.0")
-            aboutRow("AI Model", "OpenRouter GPT-4o")
-            aboutRow("Piattaforma", "iOS nativo")
-            Link(destination: URL(string: "https://github.com/qwgdhu328/app")!) {
-                HStack { Text("Codice sorgente"); Spacer(); Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary) }
+        sectionCard(icon: "info.circle.fill", title: "Informazioni") {
+            VStack(spacing: 8) {
+                aboutRow("Versione", "2.0.0")
+                aboutRow("AI Model", "Gemini 2.5 Flash Lite")
+                aboutRow("Piattaforma", "iOS nativo")
+                Link(destination: URL(string: "https://github.com/qwgdhu328/app")!) {
+                    HStack {
+                        Text("Codice sorgente")
+                        Spacer()
+                        Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary)
+                    }
+                }
             }
-        } header: { Label("Informazioni", systemImage: "info.circle.fill") }
+        }
     }
 
     private func aboutRow(_ label: String, _ value: String) -> some View {
-        HStack { Text(label).foregroundStyle(Theme.muted); Spacer(); Text(value) }
+        HStack {
+            Text(label).foregroundStyle(Theme.muted)
+            Spacer()
+            Text(value).foregroundStyle(Theme.text)
+        }
+        .font(.subheadline)
     }
 
     private func apply() {
@@ -197,31 +245,20 @@ struct SettingsView: View {
     }
 
     private func deleteAllData() {
-        if let items = try? context.fetch(FetchDescriptor<StoredMessage>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<MoodEntry>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<BreathingSession>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<JournalEntry>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<Goal>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<Habit>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<Achievement>()) {
-            for item in items { context.delete(item) }
-        }
-        if let items = try? context.fetch(FetchDescriptor<ChatSession>()) {
-            for item in items { context.delete(item) }
-        }
+        deleteType(StoredMessage.self)
+        deleteType(MoodEntry.self)
+        deleteType(BreathingSession.self)
+        deleteType(JournalEntry.self)
+        deleteType(Goal.self)
+        deleteType(Habit.self)
+        deleteType(Achievement.self)
+        deleteType(ChatSession.self)
         try? context.save()
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+    }
+
+    private func deleteType<T: PersistentModel>(_ type: T.Type) {
+        guard let items = try? context.fetch(FetchDescriptor<T>()) else { return }
+        for item in items { context.delete(item) }
     }
 }

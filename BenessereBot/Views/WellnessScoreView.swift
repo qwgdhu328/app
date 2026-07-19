@@ -7,10 +7,10 @@ struct WellnessScoreView: View {
     var body: some View {
         HStack(spacing: 16) {
             ZStack {
-                Circle().stroke(Theme.cardBorder, lineWidth: 6).frame(width: 56, height: 56)
+                Circle().stroke(Theme.cardBorder, lineWidth: 5).frame(width: 56, height: 56)
                 Circle()
                     .trim(from: 0, to: Double(score) / 100)
-                    .stroke(scoreColor, style: .init(lineWidth: 6, lineCap: .round))
+                    .stroke(Theme.gradientAccent, style: .init(lineWidth: 5, lineCap: .round))
                     .frame(width: 56, height: 56).rotationEffect(.degrees(-90))
                     .animation(.easeOut(duration: 1), value: score)
                 Text("\(score)").font(.callout.weight(.bold)).foregroundStyle(Theme.text)
@@ -24,7 +24,6 @@ struct WellnessScoreView: View {
         .padding(16)
         .background(Theme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
     }
-
-    private var scoreColor: Color { score >= 80 ? Theme.accent : score >= 50 ? Theme.accentSecondary : .red.opacity(0.7) }
 }

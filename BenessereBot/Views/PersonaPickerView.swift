@@ -22,11 +22,27 @@ struct PersonaPickerView: View {
     @Binding var selected: AIPersona
 
     var body: some View {
-        Picker("Stile", selection: $selected) {
+        HStack(spacing: 0) {
             ForEach(AIPersona.allCases, id: \.self) { p in
-                Label(p.rawValue, systemImage: p.icon).tag(p)
+                Button {
+                    withAnimation(.spring) { selected = p }
+                } label: {
+                    VStack(spacing: 4) {
+                        Image(systemName: p.icon)
+                            .font(.system(size: 14))
+                        Text(p.rawValue)
+                            .font(.caption2.weight(.medium))
+                    }
+                    .foregroundStyle(selected == p ? Theme.accent : Theme.muted)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(selected == p ? Theme.accent.opacity(0.12) : .clear)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
             }
         }
-        .pickerStyle(.segmented)
+        .padding(4)
+        .background(Theme.bgTop.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

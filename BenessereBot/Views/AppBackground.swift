@@ -7,11 +7,19 @@ struct AppBackground: View {
         ZStack {
             LinearGradient(colors: [Theme.bgTop, Theme.bgMid, Theme.bgBottom], startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
-            RadialGradient(colors: [Theme.accent.opacity(animate ? 0.12 : 0.04), .clear], center: .topLeading, startRadius: 0, endRadius: 400)
+
+            RadialGradient(colors: [Theme.accent.opacity(animate ? 0.10 : 0.03), .clear], center: .topTrailing, startRadius: 0, endRadius: 500)
                 .ignoresSafeArea()
-            RadialGradient(colors: [Theme.accentTertiary.opacity(animate ? 0.08 : 0.03), .clear], center: .bottomTrailing, startRadius: 0, endRadius: 500)
+                .animation(.easeInOut(duration: 5).repeatForever(autoreverses: true), value: animate)
+
+            RadialGradient(colors: [Theme.accentSecondary.opacity(animate ? 0.06 : 0.02), .clear], center: .bottomLeading, startRadius: 0, endRadius: 600)
                 .ignoresSafeArea()
+                .animation(.easeInOut(duration: 7).repeatForever(autoreverses: true).delay(1), value: animate)
+
+            RadialGradient(colors: [Theme.gold.opacity(animate ? 0.04 : 0.01), .clear], center: .center, startRadius: 0, endRadius: 400)
+                .ignoresSafeArea()
+                .animation(.easeInOut(duration: 8).repeatForever(autoreverses: true).delay(2), value: animate)
         }
-        .onAppear { withAnimation(.easeInOut(duration: 6).repeatForever(autoreverses: true)) { animate.toggle() } }
+        .onAppear { animate = true }
     }
 }

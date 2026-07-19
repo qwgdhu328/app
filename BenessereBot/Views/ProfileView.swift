@@ -28,7 +28,10 @@ struct ProfileView: View {
                             navLink(icon: "gearshape.fill", title: "Impostazioni", destination: SettingsView())
                             Button { showFeatures = true } label: {
                                 HStack {
-                                    Image(systemName: "sparkles.rectangle.stack").font(.title3).foregroundStyle(Theme.accent).frame(width: 28)
+                                    ZStack {
+                                        Circle().fill(Theme.accent.opacity(0.1)).frame(width: 36, height: 36)
+                                        Image(systemName: "sparkles.rectangle.stack").font(.subheadline).foregroundStyle(Theme.accent)
+                                    }
                                     Text("Scopri le funzioni").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.text)
                                     Spacer()
                                     Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
@@ -36,6 +39,7 @@ struct ProfileView: View {
                                 .padding(16)
                                 .background(Theme.surface)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
                             }
                         }
                     }
@@ -53,21 +57,23 @@ struct ProfileView: View {
     private var heroSection: some View {
         VStack(spacing: 16) {
             ZStack {
-                Circle().fill(Theme.accent.opacity(0.1)).frame(width: 88, height: 88)
+                Circle().fill(Theme.gradientAccent.opacity(0.1)).frame(width: 88, height: 88)
                 Image(systemName: "person.crop.circle.fill")
-                    .font(.system(size: 72)).foregroundStyle(Theme.accent.opacity(0.4))
+                    .font(.system(size: 72)).foregroundStyle(Theme.accent.opacity(0.5))
             }
-            Text(userName.isEmpty ? "Il tuo profilo" : userName).font(.title2.weight(.bold)).foregroundStyle(Theme.text)
+            Text(userName.isEmpty ? "Il tuo profilo" : userName)
+                .font(.title2.weight(.bold)).foregroundStyle(Theme.text)
             if !userGoal.isEmpty {
                 HStack(spacing: 6) {
-                    Image(systemName: "star.fill").font(.caption).foregroundStyle(Theme.accentSecondary)
+                    Image(systemName: "star.fill").font(.caption).foregroundStyle(Theme.gold)
                     Text(userGoal).font(.subheadline).foregroundStyle(Theme.textSecondary)
                 }
             }
         }
         .padding(16)
         .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private var statsRow: some View {
@@ -86,13 +92,17 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity).padding(14)
         .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private func navLink<D: View>(icon: String, title: String, destination: D) -> some View {
         NavigationLink(destination: destination) {
             HStack {
-                Image(systemName: icon).font(.title3).foregroundStyle(Theme.accent).frame(width: 28)
+                ZStack {
+                    Circle().fill(Theme.accent.opacity(0.1)).frame(width: 36, height: 36)
+                    Image(systemName: icon).font(.subheadline).foregroundStyle(Theme.accent)
+                }
                 Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.text)
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
@@ -100,6 +110,7 @@ struct ProfileView: View {
             .padding(16)
             .background(Theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.cardBorder, lineWidth: 1))
         }
     }
 }

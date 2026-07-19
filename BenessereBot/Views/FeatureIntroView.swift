@@ -27,16 +27,17 @@ struct FeatureIntroView: View {
         VStack(spacing: 8) {
             Image(systemName: "sparkles.rectangle.stack.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.gradientAccent)
             Text("Tutto ciò che puoi fare")
-                .font(.title2.bold())
+                .font(.title2.bold()).foregroundStyle(Theme.text)
             Text("Esplora le funzioni di BenessereBot")
                 .foregroundStyle(Theme.muted)
         }
         .frame(maxWidth: .infinity)
         .padding(24)
         .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private var featureCards: some View {
@@ -54,12 +55,12 @@ struct FeatureIntroView: View {
 
     private func featureCard(icon: String, title: String, description: String) -> some View {
         HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(Theme.accent)
-                .frame(width: 48, height: 48)
-                .background(Theme.accent.opacity(0.12))
-                .clipShape(.circle)
+            ZStack {
+                Circle().fill(Theme.accent.opacity(0.1)).frame(width: 48, height: 48)
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(Theme.accent)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline).foregroundStyle(Theme.text)
                 Text(description).font(.subheadline).foregroundStyle(Theme.muted).fixedSize(horizontal: false, vertical: true)
@@ -68,11 +69,11 @@ struct FeatureIntroView: View {
         }
         .padding(16)
         .background(Theme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.cardBorder, lineWidth: 1))
     }
 }
 
 #Preview {
     FeatureIntroView()
 }
-

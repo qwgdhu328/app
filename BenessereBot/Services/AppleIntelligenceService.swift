@@ -39,14 +39,12 @@ class AppleIntelligenceService {
         ("sofferenza", "La sofferenza merita di essere ascoltata. Sono qui, prenditi tutto il tempo che ti serve."),
     ]
 
-    private let supportivePhrases: [(sentiment: ClosedRange<Double>, phrase: String)] = [
-        ((-1.0)...(-0.4), "Ti ascolto. Il dolore che senti è reale e importante. Non devi affrontarlo da solo."),
-        ((-0.4)...(-0.1), "Capisco che questo momento è difficile. A volte parlare dei nostri sentimenti è il primo passo per stare meglio."),
-        ((-1.0)...(-0.4), "Quello che provi è valido. Prenditi un momento per respirare, un passo alla volta."),
-        ((-0.1)...(0.1), "Ti ascolto. Cosa ti passa per la mente in questo momento?"),
-        ((-0.1)...(0.1), "Grazie per aver condiviso questo con me. Come posso supportarti meglio?"),
-        ((0.1)...(0.4), "Mi fa piacere sentire che le cose vanno meglio. Cosa ha contribuito a questo cambiamento?"),
-        ((0.4)...(1.0), "Sono contento per te! Continuare a coltivare queste emozioni positive fa bene."),
+    private let supportivePhrases: [(range: Range<Double>, phrase: String)] = [
+        ((-1.0)..<(-0.4), "Ti ascolto. Il dolore che senti è reale e importante. Non devi affrontarlo da solo."),
+        ((-0.4)..<(-0.1), "Capisco che questo momento è difficile. Parlare dei nostri sentimenti è il primo passo per stare meglio."),
+        ((-0.1)..<(0.1), "Ti ascolto. Cosa ti passa per la mente in questo momento?"),
+        ((0.1)..<(0.4), "Mi fa piacere sentire che le cose vanno meglio. Cosa ha contribuito a questo cambiamento?"),
+        ((0.4)..<(1.0), "Sono contento per te! Continuare a coltivare queste emozioni positive fa bene."),
     ]
 
     func analyze(_ text: String) -> AnalysisResult {
@@ -61,7 +59,7 @@ class AppleIntelligenceService {
         }
 
         let sentiment = detectSentiment(text)
-        let phrase = supportivePhrases.first { $0.sentiment.contains(sentiment) }?.phrase ?? supportivePhrases[3].phrase
+        let phrase = supportivePhrases.first { $0.range.contains(sentiment) }?.phrase ?? supportivePhrases[2].phrase
         return .localReply(phrase)
     }
 
@@ -94,12 +92,10 @@ class AppleIntelligenceService {
                 let words = pair.query.split(separator: " ")
                 var score: Float = 0
                 for word in words {
-                    if let _ = embedding?.neighbors(for: String(word), maximumCount: 5) {
-                        let neighbors = embedding?.neighbors(for: String(word), maximumCount: 10) ?? []
-                        for (neighbor, _) in neighbors {
-                            if cleaned.contains(neighbor) {
-                                score += 1
-                            }
+                    let neighbors = embedding?.neighbors(for: String(word), maximumCount: 10) ?? []
+                    for (neighbor, _) in neighbors {
+                        if cleaned.contains(neighbor) {
+                            score += 1
                         }
                     }
                 }

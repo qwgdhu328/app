@@ -10,15 +10,19 @@ struct ModelDownloadView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
-            Image(systemName: "cpu.and.arrow.down")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.accent)
+
+            ZStack {
+                Circle().fill(Theme.gradientAccent.opacity(0.1)).frame(width: 100, height: 100)
+                Image(systemName: "cpu.and.arrow.down")
+                    .font(.system(size: 50))
+                    .foregroundStyle(Theme.gradientAccent)
+            }
 
             Text("Installazione modello AI")
                 .font(.title2.weight(.bold))
                 .foregroundStyle(Theme.text)
 
-            Text("Sto scaricando Mistral 7B (4.1 GB)\nla prima conversazione partirà automaticamente.")
+            Text("Scaricamento Mistral 7B (4.1 GB)\nla prima conversazione partirà automaticamente.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline)
                 .foregroundStyle(Theme.muted)
@@ -27,7 +31,7 @@ struct ModelDownloadView: View {
             if let error = error {
                 VStack(spacing: 12) {
                     Label(error, systemImage: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Theme.gold)
                     Button("Riprova") {
                         self.error = nil
                         progress = 0
@@ -35,7 +39,10 @@ struct ModelDownloadView: View {
                         hasStarted = false
                         start()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 24).padding(.vertical, 10)
+                    .background(Theme.accent)
+                    .clipShape(Capsule())
                 }
             } else {
                 ProgressView(value: progress)

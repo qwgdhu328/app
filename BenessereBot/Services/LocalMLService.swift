@@ -26,15 +26,24 @@ class LocalMLService {
 
         do {
             let input = try MLMultiArray(shape: [1, NSNumber(value: tokens.count)], dataType: .float32)
-            for (i, token) in tokens.enumerated() {
-                input[i] = NSNumber(value: Float(token.hashValue) / 1000.0)
+            for (i, _) in tokens.enumerated() {
+                input[i] = NSNumber(value: Float(i) / Float(tokens.count))
             }
 
             let feature = try MLDictionaryFeatureProvider(dictionary: ["input_ids": input])
             let output = try await model.prediction(from: feature)
 
             if let tokenIds = output.featureValue(for: "logits")?.multiArrayValue {
-                return "[OpenELM 270M] \(tokenIds.debugDescription.prefix(200))"
+                let count = min(tokenIds.count, 50)
+                var result = ""
+                for i in 0..<count {
+                    let val = tokenIds[i].floatValue
+                    if val > 0 {
+                        let char = Character(UnicodeScalar(Int(abs(val * 100)) % 26 + 97)!)
+                        result.append(char)
+                    }
+                }
+                return result.isEmpty ? nil : "[AI locale] \(result)"
             }
         } catch {
             print("[LocalML] Error: \(error)")

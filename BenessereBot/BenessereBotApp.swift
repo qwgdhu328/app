@@ -71,8 +71,8 @@ struct BenessereBotApp: App {
         tabAppearance.configureWithTransparentBackground()
         tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Theme.muted)
         tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Theme.muted)]
-        tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.breathing)
-        tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Theme.breathing)]
+        tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.accent)
+        tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Theme.accent)]
         UITabBar.appearance().standardAppearance = tabAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabAppearance
 
@@ -86,18 +86,4 @@ struct BenessereBotApp: App {
     }
 }
 
-enum Tab: String, CaseIterable {
-    case home = "Home"
-    case chat = "Chat"
-    case wellbeing = "Benessere"
-    case profile = "Profilo"
 
-    var icon: String {
-        switch self {
-        case .home: return "house.fill"
-        case .chat: return "message.fill"
-        case .wellbeing: return "heart.circle.fill"
-        case .profile: return "person.crop.circle.fill"
-        }
-    }
-}

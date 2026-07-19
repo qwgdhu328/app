@@ -1,19 +1,19 @@
-name: Build and Archive iOS
+name: Build iOS IPA
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 env:
   SCHEME: BenessereBot
-  PROJECT: BenessereBot.xcodeproj
 
 jobs:
-  build_device:
-    name: Build Device IPA
-    runs-on: macos-latest
+  build:
+    name: Build IPA
+    runs-on: macos-15
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install XcodeGen
@@ -22,50 +22,46 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate --project .
 
-      - name: Select correct Xcode
+      - name: Select Xcode
         run: |
-          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
-          if [ -n "$XCODE_PATH" ]; then
-            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
-          fi
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
 
-      - name: Build for Device (Release)
+      - name: Inject API key into Info.plist
+        run: |
+          /usr/libexec/PlistBuddy -c "Add OPENROUTER_API_KEY string ${{ secrets.OPENROUTER_API_KEY }}" BenessereBot/Info.plist 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set OPENROUTER_API_KEY ${{ secrets.OPENROUTER_API_KEY }}" BenessereBot/Info.plist
+
+      - name: Build unsigned IPA
         run: |
           set -o pipefail
           xcodebuild clean build \
-            -project "${{ env.PROJECT }}" \
+            -project "${{ env.SCHEME }}.xcodeproj" \
             -scheme "${{ env.SCHEME }}" \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            SYMROOT="$PWD/build" 2>&1 | tee build_device.log
+            SYMROOT="$PWD/build" 2>&1 | tee build.log
           exit ${PIPESTATUS[0]}
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
 
-      - name: Show Xcode errors
+      - name: Show build errors
         if: failure()
         run: |
-          echo "=== BUILD ERRORS ==="
-          grep -n "error:" build_device.log 2>/dev/null | head -50
-          echo "=== LAST 50 LINES ==="
-          tail -50 build_device.log 2>/dev/null
-          echo "=== FULL ERROR LIST ==="
-          grep -n "error:" build_device.log 2>/dev/null
-          echo "=== END ==="
+          echo "=== ERRORS ==="
+          grep -n "error:" build.log | head -50 || true
+          echo "=== TAIL ==="
+          tail -30 build.log
 
-      - name: Upload build log (Device)
+      - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log-device
-          path: build_device.log
+          name: build-log
+          path: build.log
 
-      - name: Create unsigned IPA
+      - name: Package IPA
         run: |
           APP_PATH=$(find "$PWD/build" -name "*.app" -type d | head -1)
           mkdir -p build/ipa/Payload
@@ -76,94 +72,5 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-App
+          name: BenessereBot-IPA
           path: build/ipa/*.ipa
-
-  build_simulator:
-    name: Build Simulator .app (for Appetize.io)
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen generate --project .
-
-      - name: Select correct Xcode
-        run: |
-          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
-          if [ -n "$XCODE_PATH" ]; then
-            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
-          fi
-          xcodebuild -version
-
-      - name: Build for Simulator (Debug)
-        run: |
-          set -o pipefail
-          xcodebuild clean build \
-            -project "${{ env.PROJECT }}" \
-            -scheme "${{ env.SCHEME }}" \
-            -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            SYMROOT="$PWD/build-sim" 2>&1 | tee build_sim.log
-          exit ${PIPESTATUS[0]}
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
-
-      - name: Show Xcode errors
-        if: failure()
-        run: |
-          echo "=== BUILD ERRORS ==="
-          grep -n "error:" build_sim.log 2>/dev/null | head -50
-          echo "=== LAST 50 LINES ==="
-          tail -50 build_sim.log 2>/dev/null
-
-      - name: Upload build log (Simulator)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log-simulator
-          path: build_sim.log
-
-      - name: Upload Simulator .app (artifact)
-        uses: actions/upload-artifact@v4
-        with:
-          name: iOS-App-Simulator
-          path: build-sim/**/BenessereBot.app
-          compression-level: 6
-
-      - name: Zip .app for Appetize
-        run: |
-          APP_PATH=$(find "$PWD/build-sim" -name "*.app" -type d | head -1)
-          cd "$(dirname "$APP_PATH")"
-          zip -r "${{ env.SCHEME }}-simulator.zip" "$(basename "$APP_PATH")"
-          echo "ZIP_PATH=$(pwd)/${{ env.SCHEME }}-simulator.zip" >> $GITHUB_ENV
-
-      - name: Upload to Appetize.io
-        env:
-          APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
-        run: |
-          if [ -z "$APPETIZE_TOKEN" ]; then
-            echo "⚠️ APPETIZE_TOKEN not set — skipping upload"
-            exit 0
-          fi
-          echo "Uploading to Appetize.io..."
-          RESPONSE=$(curl -s -X POST https://api.appetize.io/v1/apps \
-            -u "$APPETIZE_TOKEN:" \
-            -F "file=@$ZIP_PATH" \
-            -F "platform=ios")
-          echo "Response: $RESPONSE"
-          PUBLIC_KEY=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('publicKey',''))" 2>/dev/null || echo "")
-          if [ -n "$PUBLIC_KEY" ]; then
-            echo "✅ App uploaded to https://appetize.io/app/$PUBLIC_KEY"
-            echo "Appetize URL: https://appetize.io/app/$PUBLIC_KEY" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Upload failed: $RESPONSE"
-          fi
